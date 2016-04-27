@@ -18,4 +18,17 @@ Service uses the following client
 
 # Usage
 
+Sample Request:
     http://localhost:9000/locations?ip=23.16.0.0
+
+Sample Response:
+```
+    {
+      "address": {
+        "city": "Sparwood",
+        "country": "CAN"
+      },
+      "latitude": "49.7333",
+      "longitude": "-114.8853"
+    }
+```
