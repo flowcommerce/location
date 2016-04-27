@@ -1,0 +1,12 @@
+code:
+  flow:
+    common:
+      version: latest
+      generators:
+        play_2_x_routes: api/conf/common.routes
+        play_2_4_client: generated/app
+    location:
+      version: latest
+      generators:
+        play_2_x_routes: api/conf/location.routes
+        play_2_4_client: generated/app

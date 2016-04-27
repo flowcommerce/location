@@ -1,0 +1,11 @@
+FROM flowdocker/play:0.0.48
+
+ADD . /opt/play
+
+WORKDIR /opt/play
+
+RUN sbt clean stage
+
+WORKDIR api/target/universal/stage
+
+ENTRYPOINT ["java", "-jar", "/root/environment-provider.jar", "--service", "play", "location", "bin/location-api"]
