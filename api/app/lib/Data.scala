@@ -4,6 +4,7 @@ import play.Play
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
 import io.flow.common.v0.models.Address
 import io.flow.geolocation.v0.models.Location
+import io.flow.reference.ReferenceData
 
 object Data {
   val dbFilePath = Play.application().getFile("data/GeoLite2-City.mmdb").getAbsolutePath
@@ -48,11 +49,22 @@ object Data {
       Address(
         city = ipl.city,
         postalCode = ipl.postalCode,
-        country = ipl.countryName
+        country = getCountryCode(ipl)
       ),
       latitude = lat,
       longitude = lon
     )
+  }
+
+  def getCountryCode(ipl: IpLocation): Option[String]= {
+    ipl.countryName match {
+      case Some(country) =>
+        ReferenceData.Countries.find(_.name.toLowerCase == country.toLowerCase) match {
+          case Some(c) => Some(c.iso31663)
+          case None => None
+        }
+      case None => None
+    }
   }
 
   def getLatLon(ipl: IpLocation): (String, String) = {
