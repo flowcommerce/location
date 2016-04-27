@@ -2,9 +2,20 @@
 
 location
 =========
+Retrieves Geolocation information base on IP address
 
 # Geolocation
 
-Main country data is pulled from
+Main geolocation data is pulled from (GeoLite2-City.mmdb)
 
-    https://www.maxmind.com/en/home
+    http://dev.maxmind.com/geoip/geoip2/geolite2/
+
+# Dependencies
+
+Service uses the following client
+
+    https://github.com/Sanoma-CDA/maxmind-geoip2-scala
+
+# Usage
+
+    http://localhost:9000/locations?ip=23.16.0.0
