@@ -6,7 +6,12 @@ import io.flow.location.v0.models.Location
 import play.Play
 
 object Helpers {
-  val dbFilePath = Play.application().getFile("conf/GeoLite2-City.mmdb").getAbsolutePath
+  import sys.process._
+  import java.net.URL
+  import java.io.File
+  import scala.language.postfixOps
+  val dbFilePath = new URL("https://s3.amazonaws.com/io.flow.aws-s3-public/location/GeoLite2-City.mmdb") #> new File("GeoLite2-City.mmdb") !!
+
   val geoIp = MaxMindIpGeo(dbFilePath, 1000)
 
   def getByIp(ip: String) = {
