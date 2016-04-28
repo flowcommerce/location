@@ -25,7 +25,7 @@ lazy val api = project
   .enablePlugins(NewRelic)
   .settings(commonSettings: _*)
   .settings(
-    routesImport += "io.flow.geolocation.v0.Bindables._",
+    routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       ws,
