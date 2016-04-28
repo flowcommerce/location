@@ -5,7 +5,7 @@ import io.flow.location.v0.errors.UnitResponse
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
-trait Helpers {
+trait TestHelpers {
 
   val DefaultDuration = Duration(5, TimeUnit.SECONDS)
 

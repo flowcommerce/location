@@ -10,7 +10,7 @@ import io.flow.location.v0.models.json._
 
 import scala.concurrent.Await
 
-class LocationsSpec extends PlaySpec with OneServerPerSuite with Helpers {
+class LocationsSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -54,19 +54,4 @@ class LocationsSpec extends PlaySpec with OneServerPerSuite with Helpers {
       case JsError(_) => assert(false)
     }
   }
-
-  /*"GET /countries by query" in new WithServer {
-    await(
-      client.countries.get(q = Some("usa"))
-    ).map(_.name) must be(Seq("United States"))
-
-    await(
-      client.countries.get(q = Some("us"))
-    ).map(_.name) must be(Seq("United States"))
-
-    await(
-      client.countries.get(q = Some(" united states "))
-    ).map(_.name) must be(Seq("United States"))
-  }*/
-
 }

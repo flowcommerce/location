@@ -1,11 +1,11 @@
-package lib
+package controllers
 
-import play.Play
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.Location
+import play.Play
 
-object Data {
+object Helpers {
   val dbFilePath = Play.application().getFile("data/GeoLite2-City.mmdb").getAbsolutePath
   val geoIp = MaxMindIpGeo(dbFilePath, 1000)
 

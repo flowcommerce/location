@@ -2,6 +2,7 @@ package lib
 
 import com.sanoma.cda.geo.Point
 import com.sanoma.cda.geoip.IpLocation
+import controllers.Helpers
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.Location
 import org.scalatestplus.play._
@@ -28,29 +29,29 @@ class DataSpec extends PlaySpec with OneAppPerSuite {
       continent = None)
 
     "return valid latitude/longitude when ipLocation is valid" in {
-      val (lat, lon) = Data.getLatLon(validIpLocation)
+      val (lat, lon) = Helpers.getLatLon(validIpLocation)
 
       lat must equal("49.7333")
       lon must equal("-114.8853")
     }
 
     "return empty latitude/longitude when ipLocation is invalid" in {
-      val (lat, lon) = Data.getLatLon(invalidIpLocation)
+      val (lat, lon) = Helpers.getLatLon(invalidIpLocation)
 
       lat must equal("")
       lon must equal("")
     }
 
     "return valid country 3 character iso code when ipLocation is valid" in {
-      Data.getCountryCode(validIpLocation) must equal(Some("CAN"))
+      Helpers.getCountryCode(validIpLocation) must equal(Some("CAN"))
     }
 
     "return no country code when ipLocation is invalid" in {
-      Data.getCountryCode(invalidIpLocation) must equal(None)
+      Helpers.getCountryCode(invalidIpLocation) must equal(None)
     }
 
     "return valid location when ipLocation is valid" in {
-      Data.getLocation(validIpLocation) must equal(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
+      Helpers.getLocation(validIpLocation) must equal(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
     }
   }
 }
