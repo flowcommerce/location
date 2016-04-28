@@ -42,17 +42,24 @@ object Helpers {
     }
   }
 
-  def getLocation(ipl: IpLocation): Location = {
-    val (lat, lon) = getLatLon(ipl)
-    Location(
-      Address(
-        city = ipl.city,
-        postal = ipl.postalCode,
-        country = getCountryCode(ipl)
-      ),
-      latitude = lat,
-      longitude = lon
-    )
+  def getLocation(ipl: IpLocation): Either[Seq[String], Location] = {
+    getLatLon(ipl) match {
+      case None => Left(Seq(s"Could not geolocate IP"))
+      case Some(geo) => {
+        Right(
+          Location(
+            Address(
+              city = ipl.city,
+              province = ipl.region,
+              postal = ipl.postalCode,
+              country = getCountryCode(ipl)
+            ),
+            latitude = geo.latitude,
+            longitude = geo.longitude
+          )
+        )
+      }
+    }
   }
 
   def getCountryCode(ipl: IpLocation): Option[String]= {
@@ -66,10 +73,14 @@ object Helpers {
     }
   }
 
-  def getLatLon(ipl: IpLocation): (String, String) = {
-    ipl.geoPoint match {
-      case Some(p) => (p.latitude.toString, p.longitude.toString)
-      case None => ("", "")
+  case class LatLong(latitude: String, longitude: String)
+
+  def getLatLon(ipl: IpLocation): Option[LatLong] = {
+    ipl.geoPoint.map { p =>
+      LatLong(
+        latitude = p.latitude.toString,
+        longitude = p.longitude.toString
+      )
     }
   }
 }

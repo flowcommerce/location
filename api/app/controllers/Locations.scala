@@ -20,7 +20,10 @@ class Locations extends Controller {
         ip match {
           case Some(ip) => Helpers.getByIp(ip) match {
             case Some(ipl) =>
-              Ok(Json.toJson(Helpers.getLocation(ipl)))
+              Helpers.getLocation(ipl) match {
+                case Left(errors) => UnprocessableEntity(Json.toJson(Validation.errors(errors)))
+                case Right(loc) => Ok(Json.toJson(loc))
+              }
             case None => UnprocessableEntity(Json.toJson(Validation.error(s"No location found for ip [$ip]")))
           }
           case None => UnprocessableEntity(Json.toJson(Validation.error("No valid query string parameters given.  Please provide an [ip]")))
