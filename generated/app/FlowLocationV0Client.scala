@@ -106,6 +106,7 @@ package io.flow.location.v0 {
 
   object Constants {
 
+    val BaseUrl = "https://location.api.flow.io"
     val Namespace = "io.flow.location.v0"
     val UserAgent = "apidoc:0.11.24 http://www.apidoc.me/flow/location/0.0.12/play_2_4_client"
     val Version = "0.0.12"
@@ -114,7 +115,7 @@ package io.flow.location.v0 {
   }
 
   class Client(
-    val baseUrl: String,
+    val baseUrl: String = "https://location.api.flow.io",
     auth: scala.Option[io.flow.location.v0.Authorization] = None,
     defaultHeaders: Seq[(String, String)] = Nil
   ) extends interfaces.Client {
