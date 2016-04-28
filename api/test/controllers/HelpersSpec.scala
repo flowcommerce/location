@@ -1,15 +1,14 @@
-package lib
+package controllers
 
 import com.sanoma.cda.geo.Point
 import com.sanoma.cda.geoip.IpLocation
-import controllers.Helpers
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.Location
 import org.scalatestplus.play._
 
-class DataSpec extends PlaySpec with OneAppPerSuite {
+class HelpersSpec extends PlaySpec with OneAppPerSuite {
 
-  "Data" should {
+  "Helpers" should {
     val validIpLocation = IpLocation(
       countryCode = Some("CA"),
       countryName = Some("Canada"),
