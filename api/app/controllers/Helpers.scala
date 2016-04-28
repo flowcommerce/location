@@ -3,11 +3,15 @@ package controllers
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.Location
-import play.Play
 
 object Helpers {
-  val dbFilePath = Play.application().getFile("conf/GeoLite2-City.mmdb").getAbsolutePath
-  val geoIp = MaxMindIpGeo(dbFilePath, 1000)
+  import sys.process._
+  import java.net.URL
+  import java.io.File
+  import scala.language.postfixOps
+  new URL("https://s3.amazonaws.com/io.flow.aws-s3-public/location/GeoLite2-City.mmdb") #> new File("GeoLite2-City.mmdb") !!
+
+   val geoIp = MaxMindIpGeo("GeoLite2-City.mmdb", 1000)
 
   def getByIp(ip: String): Option[IpLocation] = {
     geoIp.getLocation(ip)
