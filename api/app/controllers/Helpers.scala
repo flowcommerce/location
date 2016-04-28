@@ -9,7 +9,7 @@ object Helpers {
   val dbFilePath = Play.application().getFile("conf/GeoLite2-City.mmdb").getAbsolutePath
   val geoIp = MaxMindIpGeo(dbFilePath, 1000)
 
-  def getByIp(ip: String) = {
+  def getByIp(ip: String): Option[IpLocation] = {
     geoIp.getLocation(ip)
   }
 
@@ -44,7 +44,10 @@ object Helpers {
 
   def getLocation(ipl: IpLocation): Either[Seq[String], Location] = {
     getLatLon(ipl) match {
-      case None => Left(Seq(s"Could not geolocate IP"))
+      case None => {
+        Left(Seq(s"Could not geolocate IP"))
+      }
+
       case Some(geo) => {
         Right(
           Location(
@@ -63,7 +66,7 @@ object Helpers {
   }
 
   def getCountryCode(ipl: IpLocation): Option[String]= {
-    ipl.countryName match {
+    ipl.countryCode match {
       case Some(country) =>
         io.flow.reference.Countries.find(country) match {
           case Some(c) => Some(c.iso31663)
