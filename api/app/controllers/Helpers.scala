@@ -9,7 +9,7 @@ object Helpers {
   val dbFilePath = Play.application().getFile("conf/GeoLite2-City.mmdb").getAbsolutePath
   val geoIp = MaxMindIpGeo(dbFilePath, 1000)
 
-  def getByIp(ip: String) = {
+  def getByIp(ip: String): Option[IpLocation] = {
     geoIp.getLocation(ip)
   }
 
@@ -42,21 +42,31 @@ object Helpers {
     }
   }
 
-  def getLocation(ipl: IpLocation): Location = {
-    val (lat, lon) = getLatLon(ipl)
-    Location(
-      Address(
-        city = ipl.city,
-        postal = ipl.postalCode,
-        country = getCountryCode(ipl)
-      ),
-      latitude = lat,
-      longitude = lon
-    )
+  def getLocation(ipl: IpLocation): Either[Seq[String], Location] = {
+    getLatLon(ipl) match {
+      case None => {
+        Left(Seq(s"Could not geolocate IP"))
+      }
+
+      case Some(geo) => {
+        Right(
+          Location(
+            Address(
+              city = ipl.city,
+              province = ipl.region,
+              postal = ipl.postalCode,
+              country = getCountryCode(ipl)
+            ),
+            latitude = geo.latitude,
+            longitude = geo.longitude
+          )
+        )
+      }
+    }
   }
 
   def getCountryCode(ipl: IpLocation): Option[String]= {
-    ipl.countryName match {
+    ipl.countryCode match {
       case Some(country) =>
         io.flow.reference.Countries.find(country) match {
           case Some(c) => Some(c.iso31663)
@@ -66,10 +76,14 @@ object Helpers {
     }
   }
 
-  def getLatLon(ipl: IpLocation): (String, String) = {
-    ipl.geoPoint match {
-      case Some(p) => (p.latitude.toString, p.longitude.toString)
-      case None => ("", "")
+  case class LatLong(latitude: String, longitude: String)
+
+  def getLatLon(ipl: IpLocation): Option[LatLong] = {
+    ipl.geoPoint.map { p =>
+      LatLong(
+        latitude = p.latitude.toString,
+        longitude = p.longitude.toString
+      )
     }
   }
 }

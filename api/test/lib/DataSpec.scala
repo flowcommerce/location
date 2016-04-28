@@ -29,17 +29,16 @@ class DataSpec extends PlaySpec with OneAppPerSuite {
       continent = None)
 
     "return valid latitude/longitude when ipLocation is valid" in {
-      val (lat, lon) = Helpers.getLatLon(validIpLocation)
+      val geo = Helpers.getLatLon(validIpLocation).getOrElse {
+        sys.error("Failed to resolve known IP")
+      }
 
-      lat must equal("49.7333")
-      lon must equal("-114.8853")
+      geo.latitude must equal("49.7333")
+      geo.longitude must equal("-114.8853")
     }
 
     "return empty latitude/longitude when ipLocation is invalid" in {
-      val (lat, lon) = Helpers.getLatLon(invalidIpLocation)
-
-      lat must equal("")
-      lon must equal("")
+      Helpers.getLatLon(invalidIpLocation) must be(None)
     }
 
     "return valid country 3 character iso code when ipLocation is valid" in {
@@ -51,7 +50,9 @@ class DataSpec extends PlaySpec with OneAppPerSuite {
     }
 
     "return valid location when ipLocation is valid" in {
-      Helpers.getLocation(validIpLocation) must equal(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
+      Helpers.getLocation(validIpLocation) must equal(
+        Right(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
+      )
     }
   }
 }
