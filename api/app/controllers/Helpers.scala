@@ -30,12 +30,12 @@ object Helpers {
     validInputError ++ latitudeError ++ longitudeError
   }
 
-  def getLocation(
+  def getLocations(
     address: Option[String],
     latitude: Option[String],
     longitude: Option[String],
     ip: Option[String]
-  ): Either[Seq[String], Location] = {
+  ): Either[Seq[String], Seq[Location]] = {
     validateRequestParameters(address, latitude, longitude, ip) match {
       case Nil => {
         (ip, address) match {
@@ -43,12 +43,12 @@ object Helpers {
             MaxMind.getByIp(i) match {
               case Some(ipl) => MaxMind.getLocation(ipl) match {
                 case Left(errors) => Left(errors)
-                case Right(location) => Right(location)
+                case Right(location) => Right(Seq(location))
               }
               case None => Left(Seq("No location found for ip [$ip]"))
             }
           }
-          case (None, Some(a)) => Google.getLocationByAddress(a)
+          case (None, Some(a)) => Google.getLocationsByAddress(a)
           case _ => Left(Seq("Invalid input. Either use ip or address, not both.")) // limitation for now, we can clean up later
         }
       }

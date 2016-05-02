@@ -135,7 +135,7 @@ package io.flow.location.v0 {
         latitude: _root_.scala.Option[String] = None,
         longitude: _root_.scala.Option[String] = None,
         requestHeaders: Seq[(String, String)] = Nil
-      )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[io.flow.location.v0.models.Location] = {
+      )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.location.v0.models.Location]] = {
         val queryParameters = Seq(
           address.map("address" -> _),
           ip.map("ip" -> _),
@@ -144,7 +144,7 @@ package io.flow.location.v0 {
         ).flatten
 
         _executeRequest("GET", s"/locations", queryParameters = queryParameters, requestHeaders = requestHeaders).map {
-          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("io.flow.location.v0.models.Location", r, _.validate[io.flow.location.v0.models.Location])
+          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("Seq[io.flow.location.v0.models.Location]", r, _.validate[Seq[io.flow.location.v0.models.Location]])
           case r if r.status == 401 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 404 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 422 => throw new io.flow.location.v0.errors.ErrorsResponse(r)
@@ -262,13 +262,17 @@ package io.flow.location.v0 {
   }
 
   trait Locations {
+    /**
+     * Based on the provided location parameters, returns a list of the best potential
+     * matching addresses.
+     */
     def get(
       address: _root_.scala.Option[String] = None,
       ip: _root_.scala.Option[String] = None,
       latitude: _root_.scala.Option[String] = None,
       longitude: _root_.scala.Option[String] = None,
       requestHeaders: Seq[(String, String)] = Nil
-    )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[io.flow.location.v0.models.Location]
+    )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.location.v0.models.Location]]
   }
 
   package errors {

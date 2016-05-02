@@ -4,7 +4,7 @@ import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
 import io.flow.location.v0.models.Location
 import com.google.maps.{GeoApiContext, GeocodingApi}
-import com.google.maps.model.AddressComponent
+import com.google.maps.model.{AddressComponent, GeocodingResult}
 import io.flow.play.util.Config
 
 /**
@@ -14,72 +14,73 @@ object Google {
   val config = play.api.Play.current.injector.instanceOf[Config]
   val context = new GeoApiContext().setApiKey(config.requiredString("google.api.key"))
 
-  def getLocationByAddress(address: String): Either[Seq[String], Location] = {
+  def getLocationsByAddress(address: String): Either[Seq[String], Seq[Location]] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
         Left(Seq(s"No results found in Google for address: [$address]"))
       }
-      case one :: Nil => {
-        val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
-        val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
-        val street = Seq(streetNumber, streetAddress).flatten.mkString(" ")
-        val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
+      case results => {
+        Right(parseResults(address, results))
+      }
+    }
+  }
 
-        val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
-          case None => sys.error("Google could not find country from address [$address]")
-          case Some(q) => Countries.find(q) match {
-            case None => sys.error(s"Reference lookup could not find country $q")
-            case Some(c) => Some(c.iso31663)
-          }
+  private def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Location] = {
+    results.map { one =>
+      val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
+      val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
+      val street = Seq(streetNumber, streetAddress).flatten.mkString(" ")
+      val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
+
+      val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
+        case None => sys.error("Google could not find country from address [$address]")
+        case Some(q) => Countries.find(q) match {
+          case None => sys.error(s"Reference lookup could not find country $q")
+          case Some(c) => Some(c.iso31663)
         }
-
-        val city = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Locality)) match {
-          case Some(city) => Some(city)
-          case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Sublocality)) match {
-            case Some(sublocality) => Some(sublocality)
-            case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Neighborhood)) match {
-              case Some(neighborhood) => Some(neighborhood)
-              case None => sys.error("Could not find city based on Google maps Locality, Sublocality, or Neighborhood")
-            }
-          }
-        }
-
-        val adminAreas = Seq(
-          findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel1)),
-          findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel2)),
-          findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel3)),
-          findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel4)),
-          findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel5))
-        ).flatten
-
-        val (province, county) = adminAreas match {
-          case Nil => (None, None)
-          case a :: Nil => (Some(a), None)
-          case a :: b :: Nil => (Some(a), Some(b))
-          case a :: b :: more => {
-            // TODO: Investigate what the other pieces are
-            (Some(a), Some(b))
-          }
-        }
-
-        val location = Location(
-          address = Address(
-            text = Some(address),
-            streets = Some(Seq(street)),
-            province = province,
-            city = city,
-            postal = postal,
-            country = country
-          ),
-          latitude = one.geometry.location.lat.toString,
-          longitude = one.geometry.location.lng.toString
-        )
-        Right(location)
       }
 
-      case multiple => {
-        Left(Seq(s"Multiple results found for address: $address") ++ multiple.map(_.toString))
+      val city = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Locality)) match {
+        case Some(city) => Some(city)
+        case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Sublocality)) match {
+          case Some(sublocality) => Some(sublocality)
+          case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Neighborhood)) match {
+            case Some(neighborhood) => Some(neighborhood)
+            case None => sys.error("Could not find city based on Google maps Locality, Sublocality, or Neighborhood")
+          }
+        }
       }
+
+      val adminAreas = Seq(
+        findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel1)),
+        findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel2)),
+        findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel3)),
+        findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel4)),
+        findAsString(one.addressComponents, Seq(Google.AddressComponentType.AdministrativeAreaLevel5))
+      ).flatten
+
+      val (province, county) = adminAreas match {
+        case Nil => (None, None)
+        case a :: Nil => (Some(a), None)
+        case a :: b :: Nil => (Some(a), Some(b))
+        case a :: b :: more => {
+          // TODO: Investigate what the other pieces are
+          (Some(a), Some(b))
+        }
+      }
+
+      Location(
+        address = Address(
+          text = Some(address),
+          streets = Some(Seq(street)),
+          province = province,
+          city = city,
+          postal = postal,
+          country = country
+        ),
+        latitude = one.geometry.location.lat.toString,
+        longitude = one.geometry.location.lng.toString
+      )
     }
   }
 

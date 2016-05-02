@@ -44,12 +44,12 @@ class LocationsSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
   }
 
   "GET /locations?ip=23.16.0.0" in new WithServer {
-    val location = await(
+    val locations = await(
       client.locations.get(ip = Some("23.16.0.0"))
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(location).validate[Location] match {
+    Json.toJson(locations).validate[Seq[Location]] match {
       case JsSuccess(c,_) => assert(true)
       case JsError(_) => assert(false)
     }
