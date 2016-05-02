@@ -1,4 +1,4 @@
-package controllers
+package utils
 
 import com.sanoma.cda.geo.Point
 import com.sanoma.cda.geoip.IpLocation
@@ -6,9 +6,9 @@ import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.Location
 import org.scalatestplus.play._
 
-class HelpersSpec extends PlaySpec with OneAppPerSuite {
+class MaxMindSpec extends PlaySpec with OneAppPerSuite {
 
-  "Helpers" should {
+  "MaxMind" should {
     val validIpLocation = IpLocation(
       countryCode = Some("CA"),
       countryName = Some("Canada"),
@@ -28,7 +28,7 @@ class HelpersSpec extends PlaySpec with OneAppPerSuite {
       continent = None)
 
     "return valid latitude/longitude when ipLocation is valid" in {
-      val geo = Helpers.getLatLon(validIpLocation).getOrElse {
+      val geo = MaxMind.getLatLong(validIpLocation).getOrElse {
         sys.error("Failed to resolve known IP")
       }
 
@@ -37,19 +37,19 @@ class HelpersSpec extends PlaySpec with OneAppPerSuite {
     }
 
     "return empty latitude/longitude when ipLocation is invalid" in {
-      Helpers.getLatLon(invalidIpLocation) must be(None)
+      MaxMind.getLatLong(invalidIpLocation) must be(None)
     }
 
     "return valid country 3 character iso code when ipLocation is valid" in {
-      Helpers.getCountryCode(validIpLocation) must equal(Some("CAN"))
+      MaxMind.getCountryCode(validIpLocation) must equal(Some("CAN"))
     }
 
     "return no country code when ipLocation is invalid" in {
-      Helpers.getCountryCode(invalidIpLocation) must equal(None)
+      MaxMind.getCountryCode(invalidIpLocation) must equal(None)
     }
 
     "return valid location when ipLocation is valid" in {
-      Helpers.getLocation(validIpLocation) must equal(
+      MaxMind.getLocation(validIpLocation) must equal(
         Right(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
       )
     }
