@@ -13,9 +13,9 @@ class Locations extends Controller {
     latitude: Option[String],
     longitude: Option[String]
   ) = Action { request =>
-    Helpers.getLocation(address, latitude, longitude, ip) match {
+    Helpers.getLocations(address, latitude, longitude, ip) match {
       case Left(errors) => UnprocessableEntity(Json.toJson(Validation.errors(errors)))
-      case Right(location) => Ok(Json.toJson(location))
+      case Right(locations) => Ok(Json.toJson(locations))
     }
   }
 }
