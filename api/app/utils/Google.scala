@@ -66,8 +66,9 @@ object Google {
         )
         Right(location)
       }
+
       case multiple => {
-        Left(Seq(s"Multiple results found for address: [$address]"))
+        Left(Seq(s"Multiple results found for address: $address") ++ multiple.map(_.toString))
       }
     }
   }
