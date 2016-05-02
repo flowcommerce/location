@@ -23,7 +23,6 @@ object Google {
         val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
         val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
         val street = Seq(streetNumber, streetAddress).flatten.mkString(" ")
-        val city = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Locality))
         val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
 
         val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
@@ -31,6 +30,17 @@ object Google {
           case Some(q) => Countries.find(q) match {
             case None => sys.error(s"Reference lookup could not find country $q")
             case Some(c) => Some(c.iso31663)
+          }
+        }
+
+        val city = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Locality)) match {
+          case Some(city) => Some(city)
+          case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Sublocality)) match {
+            case Some(sublocality) => Some(sublocality)
+            case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Neighborhood)) match {
+              case Some(neighborhood) => Some(neighborhood)
+              case None => sys.error("Could not find city based on Google maps Locality, Sublocality, or Neighborhood")
+            }
           }
         }
 
@@ -114,7 +124,7 @@ object Google {
     case object INTERSECTION extends AddressComponentType { override def toString() = "intersection" }
     case object Locality extends AddressComponentType { override def toString() = "locality" }
     case object NATURAL_FEATURE extends AddressComponentType { override def toString() = "natural_feature" }
-    case object NEIGHBORHOOD extends AddressComponentType { override def toString() = "neighborhood" }
+    case object Neighborhood extends AddressComponentType { override def toString() = "neighborhood" }
     case object PARK extends AddressComponentType { override def toString() = "park" }
     case object PARKING extends AddressComponentType { override def toString() = "parking" }
     case object POINT_OF_INTEREST extends AddressComponentType { override def toString() = "point_of_interest" }
@@ -129,7 +139,7 @@ object Google {
     case object Route extends AddressComponentType { override def toString() = "route" }
     case object StreetAddress extends AddressComponentType { override def toString() = "street_address" }
     case object StreetNumber extends AddressComponentType { override def toString() = "street_number" }
-    case object SUBLOCALITY extends AddressComponentType { override def toString() = "sublocality" }
+    case object Sublocality extends AddressComponentType { override def toString() = "sublocality" }
     case object SUBLOCALITY_LEVEL_1  extends AddressComponentType { override def toString() = "sublocality_level_1" }
     case object SUBLOCALITY_LEVEL_2  extends AddressComponentType { override def toString() = "sublocality_level_2" }
     case object SUBLOCALITY_LEVEL_3  extends AddressComponentType { override def toString() = "sublocality_level_3" }
@@ -140,7 +150,7 @@ object Google {
     case object TRANSIT_STATION extends AddressComponentType { override def toString() = "transit_station" }
     case object UNKNOWN extends AddressComponentType { override def toString() = "unknown" }
 
-    val all = Seq(AdministrativeAreaLevel1, AdministrativeAreaLevel2, AdministrativeAreaLevel3, AdministrativeAreaLevel4, AdministrativeAreaLevel5, AIRPORT, BUS_STATION, COLLOQUIAL_AREA, Country, ESTABLISHMENT, FLOOR, INTERSECTION, Locality, NATURAL_FEATURE, NEIGHBORHOOD, PARK, PARKING, POINT_OF_INTEREST, POLITICAL, PostBox, PostalCode, PostalCodePrefix, PostalCodeSuffix, POSTAL_TOWN, PREMISE, ROOM, Route, StreetAddress, StreetNumber, SUBLOCALITY, SUBLOCALITY_LEVEL_1, SUBLOCALITY_LEVEL_2, SUBLOCALITY_LEVEL_3, SUBLOCALITY_LEVEL_4, SUBLOCALITY_LEVEL_5, SUBPREMISE, TRAIN_STATION, TRANSIT_STATION, UNKNOWN)
+    val all = Seq(AdministrativeAreaLevel1, AdministrativeAreaLevel2, AdministrativeAreaLevel3, AdministrativeAreaLevel4, AdministrativeAreaLevel5, AIRPORT, BUS_STATION, COLLOQUIAL_AREA, Country, ESTABLISHMENT, FLOOR, INTERSECTION, Locality, NATURAL_FEATURE, Neighborhood, PARK, PARKING, POINT_OF_INTEREST, POLITICAL, PostBox, PostalCode, PostalCodePrefix, PostalCodeSuffix, POSTAL_TOWN, PREMISE, ROOM, Route, StreetAddress, StreetNumber, Sublocality, SUBLOCALITY_LEVEL_1, SUBLOCALITY_LEVEL_2, SUBLOCALITY_LEVEL_3, SUBLOCALITY_LEVEL_4, SUBLOCALITY_LEVEL_5, SUBPREMISE, TRAIN_STATION, TRANSIT_STATION, UNKNOWN)
     private[this] val byName = all.map(x => x.toString.toLowerCase -> x).toMap
     def apply(value: String): AddressComponentType = fromString(value).getOrElse(UNKNOWN)
     def fromString(value: String): Option[AddressComponentType] = byName.get(value.toLowerCase)
