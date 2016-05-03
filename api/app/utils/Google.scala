@@ -40,13 +40,14 @@ object Google {
         }
       }
 
+      // best effort to find city/town name
       val city = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Locality)) match {
         case Some(city) => Some(city)
         case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Sublocality)) match {
           case Some(sublocality) => Some(sublocality)
           case None => findAsString(one.addressComponents, Seq(Google.AddressComponentType.Neighborhood)) match {
             case Some(neighborhood) => Some(neighborhood)
-            case None => sys.error("Could not find city based on Google maps Locality, Sublocality, or Neighborhood")
+            case None => None
           }
         }
       }
