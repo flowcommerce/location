@@ -17,7 +17,7 @@ object Google {
   def getLocationsByAddress(address: String): Either[Seq[String], Seq[Location]] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
-        Left(Seq(s"No results found in Google for address: [$address]"))
+        Left(Seq(s"No results found for address: [$address]"))
       }
       case results => {
         Right(parseResults(address, results))
@@ -33,7 +33,7 @@ object Google {
       val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
 
       val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
-        case None => sys.error("Google could not find country from address [$address]")
+        case None => sys.error("Could not find country from address [$address]")
         case Some(q) => Countries.find(q) match {
           case None => sys.error(s"Reference lookup could not find country $q")
           case Some(c) => Some(c.iso31663)
