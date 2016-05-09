@@ -69,7 +69,7 @@ class Helpers @javax.inject.Inject() (
               }
 
               case None => {
-                Google.getLocationsByAddress(a)
+                google.getLocationsByAddress(a)
               }
             }
           }
