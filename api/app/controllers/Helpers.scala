@@ -3,7 +3,10 @@ package controllers
 import io.flow.location.v0.models.Location
 import utils._
 
-object Helpers {
+@javax.inject.Singleton
+class Helpers @javax.inject.Inject() (
+  google: Google
+) {
   def validateRequestParameters(
     address: Option[String],
     latitude: Option[String],
@@ -48,7 +51,7 @@ object Helpers {
               case None => Left(Seq("No location found for ip [$ip]"))
             }
           }
-          case (None, Some(a)) => Google.getLocationsByAddress(a)
+          case (None, Some(a)) => google.getLocationsByAddress(a)
           case _ => Left(Seq("Invalid input. Either use ip or address, not both.")) // limitation for now, we can clean up later
         }
       }
