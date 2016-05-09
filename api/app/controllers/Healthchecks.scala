@@ -5,7 +5,10 @@ import io.flow.common.v0.models.json._
 import play.api.mvc._
 import play.api.libs.json._
 
-class Healthchecks extends Controller {
+@javax.inject.Singleton
+class Healthchecks @javax.inject.Inject() (
+  environmentVariables: utils.EnvironmentVariables
+) extends Controller {
 
   def getHealthcheck() = Action { request =>
     Ok(Json.toJson(Healthcheck("healthy")))

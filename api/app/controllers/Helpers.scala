@@ -5,7 +5,10 @@ import io.flow.location.v0.models.Location
 import io.flow.reference.Countries
 import utils._
 
-object Helpers {
+@javax.inject.Singleton
+class Helpers @javax.inject.Inject() (
+  google: Google
+) {
   def validateRequestParameters(
     address: Option[String],
     latitude: Option[String],
@@ -66,7 +69,7 @@ object Helpers {
               }
 
               case None => {
-                Google.getLocationsByAddress(a)
+                google.getLocationsByAddress(a)
               }
             }
           }
