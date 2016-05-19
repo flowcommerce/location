@@ -1,8 +1,7 @@
 package utils
 
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
-import io.flow.common.v0.models.Address
-import io.flow.location.v0.models.Location
+import io.flow.common.v0.models.Location
 
 case class LatLong(latitude: String, longitude: String)
 
@@ -48,14 +47,12 @@ object MaxMind {
       case Some(geo) => {
         Right(
           Location(
-            Address(
-              city = ipl.city,
-              province = ipl.region,
-              postal = ipl.postalCode,
-              country = MaxMind.getCountryCode(ipl)
-            ),
-            latitude = geo.latitude,
-            longitude = geo.longitude
+            city = ipl.city,
+            province = ipl.region,
+            postal = ipl.postalCode,
+            country = MaxMind.getCountryCode(ipl),
+            latitude = Some(geo.latitude),
+            longitude = Some(geo.longitude)
           )
         )
       }

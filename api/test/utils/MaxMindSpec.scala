@@ -2,8 +2,7 @@ package utils
 
 import com.sanoma.cda.geo.Point
 import com.sanoma.cda.geoip.IpLocation
-import io.flow.common.v0.models.Address
-import io.flow.location.v0.models.Location
+import io.flow.common.v0.models.Location
 import org.scalatestplus.play._
 
 class MaxMindSpec extends PlaySpec with OneAppPerSuite {
@@ -50,7 +49,7 @@ class MaxMindSpec extends PlaySpec with OneAppPerSuite {
 
     "return valid location when ipLocation is valid" in {
       MaxMind.getLocation(validIpLocation) must equal(
-        Right(Location(Address(None,None,Some("Sparwood"),None,None,Some("CAN")),"49.7333","-114.8853"))
+        Right(Location(None,None,Some("Sparwood"),None,None,Some("CAN"),Some("49.7333"),Some("-114.8853")))
       )
     }
   }
