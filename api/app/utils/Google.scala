@@ -1,8 +1,7 @@
 package utils
 
-import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
-import io.flow.location.v0.models.Location
+import io.flow.common.v0.models.Location
 import com.google.maps.{GeoApiContext, GeocodingApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult}
 
@@ -125,16 +124,14 @@ class Google @javax.inject.Inject() (
       }
 
       Location(
-        address = Address(
-          text = Some(address),
-          streets = Some(Seq(street)),
-          province = province,
-          city = city,
-          postal = postal,
-          country = country
-        ),
-        latitude = one.geometry.location.lat.toString,
-        longitude = one.geometry.location.lng.toString
+        text = Some(address),
+        streets = Some(Seq(street)),
+        province = province,
+        city = city,
+        postal = postal,
+        country = country,
+        latitude = Some(one.geometry.location.lat.toString),
+        longitude = Some(one.geometry.location.lng.toString)
       )
     }
   }

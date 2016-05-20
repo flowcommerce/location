@@ -1,7 +1,6 @@
 package controllers
 
-import io.flow.common.v0.models.Address
-import io.flow.location.v0.models.Location
+import io.flow.common.v0.models.Location
 import io.flow.reference.Countries
 import utils._
 
@@ -60,9 +59,9 @@ class Helpers @javax.inject.Inject() (
                 Right(
                   Seq(
                     Location(
-                      address = Address(country = Some(c.iso31663)),
-                      latitude = "0",
-                      longitude = "0"
+                      country = Some(c.iso31663),
+                      latitude = Some("0"),
+                      longitude = Some("0")
                     )
                   )
                 )

@@ -3,7 +3,6 @@ package controllers
 import play.api.libs.json._
 import play.api.mvc._
 import io.flow.play.util.Validation
-import io.flow.location.v0.models.json._
 import io.flow.common.v0.models.json._
 
 @javax.inject.Singleton

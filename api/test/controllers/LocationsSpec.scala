@@ -1,12 +1,12 @@
 package controllers
 
-import io.flow.location.v0.models.Location
+import io.flow.common.v0.models.Location
 import org.scalatestplus.play._
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.test.Helpers._
 import play.api.test._
 import io.flow.location.v0.Client
-import io.flow.location.v0.models.json._
+import io.flow.common.v0.models.json._
 
 import scala.concurrent.Await
 
