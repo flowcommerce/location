@@ -82,7 +82,10 @@ class Google @javax.inject.Inject() (
     results.map { one =>
       val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
       val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
-      val street = Seq(streetNumber, streetAddress).flatten.mkString(" ")
+      val streets = Seq(streetNumber, streetAddress).filter(_.isDefined) match {
+        case Nil => None
+        case streets => Some(streets.flatten)
+      }
       val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
 
       val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
@@ -125,7 +128,7 @@ class Google @javax.inject.Inject() (
 
       Location(
         text = Some(address),
-        streets = Some(Seq(street)),
+        streets = streets,
         province = province,
         city = city,
         postal = postal,
