@@ -1,9 +1,10 @@
 package utils
 
-import io.flow.reference.Countries
-import io.flow.common.v0.models.Location
 import com.google.maps.{GeoApiContext, GeocodingApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult}
+import io.flow.reference.Countries
+import io.flow.common.v0.models.Location
+import play.api.Logger
 
 object Google {
 
@@ -73,12 +74,19 @@ class Google @javax.inject.Inject() (
         Left(Seq(s"No results found for address: [$address]"))
       }
       case results => {
-        Right(parseResults(address, results))
+        Right(sortLocations(parseResults(address, results)))
       }
     }
   }
 
-  private def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Location] = {
+  /**
+    * Ensures locations w/ countries are defined earlier in list
+    */
+  private[this] def sortLocations(locations: Seq[Location]): Seq[Location] = {
+    locations.filter(_.country.isDefined) ++ locations.filter(_.country.isEmpty)
+  }
+
+  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Location] = {
     results.map { one =>
       val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
       val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
@@ -89,10 +97,22 @@ class Google @javax.inject.Inject() (
       val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
 
       val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
-        case None => sys.error("Could not find country from address [$address]")
-        case Some(q) => Countries.find(q) match {
-          case None => sys.error(s"Reference lookup could not find country $q")
-          case Some(c) => Some(c.iso31663)
+        case None => {
+          Logger.warn(s"Could not determine country for address[$address]")
+          None
+        }
+
+        case Some(q) => {
+          Countries.find(q) match {
+            case None => {
+              Logger.warn(s"Country code[$q] was not valid in reference data. Skipping country")
+              None
+            }
+
+            case Some(c) => {
+              Some(c.iso31663)
+            }
+          }
         }
       }
 
