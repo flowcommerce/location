@@ -80,7 +80,7 @@ class Google @javax.inject.Inject() (
   }
 
   /**
-    * Ensures locations w/ countries are defined earlier in lost
+    * Ensures locations w/ countries are defined earlier in list
     */
   private[this] def sortLocations(locations: Seq[Location]): Seq[Location] = {
     locations.filter(_.country.isDefined) ++ locations.filter(_.country.isEmpty)
