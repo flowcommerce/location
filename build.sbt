@@ -1,12 +1,8 @@
 import play.PlayImport.PlayKeys._
-import scoverage.ScoverageSbtPlugin.ScoverageKeys._
 
 name := "location"
 
 scalaVersion in ThisBuild := "2.11.8"
-
-// required because of issue between scoverage & sbt
-parallelExecution in Test in ThisBuild := true
 
 lazy val generated = project
   .in(file("generated"))
@@ -29,7 +25,7 @@ lazy val api = project
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       ws,
-      "io.flow" %% "lib-play" % "0.1.37",
+      "io.flow" %% "lib-play" % "0.1.41",
       "io.flow" %% "lib-reference" % "0.0.91",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
@@ -44,7 +40,6 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     "org.scalatest" %% "scalatest" % "2.2.6" % Test
   ),
   scalacOptions += "-feature",
-  coverageHighlighting := true,
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   resolvers += "Artifactory" at "https://flow.artifactoryonline.com/flow/libs-release/",
   credentials += Credentials(
@@ -54,4 +49,3 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     System.getenv("ARTIFACTORY_PASSWORD")
   )
 )
-version := "0.0.17"
