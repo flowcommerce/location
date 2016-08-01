@@ -1,6 +1,6 @@
 package controllers
 
-import io.flow.common.v0.models.Location
+import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
 import utils._
 
@@ -39,7 +39,7 @@ class Helpers @javax.inject.Inject() (
     latitude: Option[String],
     longitude: Option[String],
     ip: Option[String]
-  ): Either[Seq[String], Seq[Location]] = {
+  ): Either[Seq[String], Seq[Address]] = {
     validateRequestParameters(address, latitude, longitude, ip) match {
       case Nil => {
         (ip, address) match {
@@ -58,7 +58,7 @@ class Helpers @javax.inject.Inject() (
               case Some(c) => {
                 Right(
                   Seq(
-                    Location(
+                    Address(
                       country = Some(c.iso31663),
                       latitude = Some("0"),
                       longitude = Some("0")

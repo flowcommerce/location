@@ -7,7 +7,7 @@ import io.flow.common.v0.models.json._
 import scala.concurrent.Future
 
 @javax.inject.Singleton
-class Locations @javax.inject.Inject() (
+class Addresses @javax.inject.Inject() (
   helpers: Helpers
 ) extends Controller {
 

@@ -1,7 +1,7 @@
 package utils
 
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
-import io.flow.common.v0.models.Location
+import io.flow.common.v0.models.Address
 
 case class LatLong(latitude: String, longitude: String)
 
@@ -38,7 +38,7 @@ object MaxMind {
     }
   }
 
-  def getLocation(ipl: IpLocation): Either[Seq[String], Location] = {
+  def getLocation(ipl: IpLocation): Either[Seq[String], Address] = {
     MaxMind.getLatLong(ipl) match {
       case None => {
         Left(Seq(s"Could not geolocate IP"))
@@ -46,7 +46,7 @@ object MaxMind {
 
       case Some(geo) => {
         Right(
-          Location(
+          Address(
             city = ipl.city,
             province = ipl.region,
             postal = ipl.postalCode,
