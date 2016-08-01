@@ -3,7 +3,7 @@ package utils
 import com.google.maps.{GeoApiContext, GeocodingApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult}
 import io.flow.reference.Countries
-import io.flow.common.v0.models.Location
+import io.flow.common.v0.models.Address
 import play.api.Logger
 
 object Google {
@@ -68,7 +68,7 @@ class Google @javax.inject.Inject() (
 ) {
   val context = new GeoApiContext().setApiKey(environmentVariables.googleApiKey)
 
-  def getLocationsByAddress(address: String): Either[Seq[String], Seq[Location]] = {
+  def getLocationsByAddress(address: String): Either[Seq[String], Seq[Address]] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
         Left(Seq(s"No results found for address: [$address]"))
@@ -82,11 +82,11 @@ class Google @javax.inject.Inject() (
   /**
     * Ensures locations w/ countries are defined earlier in list
     */
-  private[this] def sortLocations(locations: Seq[Location]): Seq[Location] = {
+  private[this] def sortLocations(locations: Seq[Address]): Seq[Address] = {
     locations.filter(_.country.isDefined) ++ locations.filter(_.country.isEmpty)
   }
 
-  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Location] = {
+  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {
     results.map { one =>
       val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
       val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
@@ -146,7 +146,7 @@ class Google @javax.inject.Inject() (
         }
       }
 
-      Location(
+      Address(
         text = Some(address),
         streets = streets,
         province = province,
