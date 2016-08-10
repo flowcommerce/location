@@ -107,7 +107,7 @@ package io.flow.common.v0.models {
   )
 
   case class Margin(
-    name: io.flow.common.v0.models.MarginType,
+    `type`: io.flow.common.v0.models.MarginType,
     value: BigDecimal
   )
 
@@ -161,7 +161,7 @@ package io.flow.common.v0.models {
   )
 
   case class Rounding(
-    name: io.flow.common.v0.models.RoundingType,
+    `type`: io.flow.common.v0.models.RoundingType,
     method: io.flow.common.v0.models.RoundingMethod,
     value: BigDecimal
   )
@@ -1844,14 +1844,14 @@ package io.flow.common.v0.models {
 
     implicit def jsonReadsCommonMargin: play.api.libs.json.Reads[Margin] = {
       (
-        (__ \ "name").read[io.flow.common.v0.models.MarginType] and
+        (__ \ "type").read[io.flow.common.v0.models.MarginType] and
         (__ \ "value").read[BigDecimal]
       )(Margin.apply _)
     }
 
     def jsObjectMargin(obj: io.flow.common.v0.models.Margin) = {
       play.api.libs.json.Json.obj(
-        "name" -> play.api.libs.json.JsString(obj.name.toString),
+        "type" -> play.api.libs.json.JsString(obj.`type`.toString),
         "value" -> play.api.libs.json.JsNumber(obj.value)
       )
     }
@@ -2012,7 +2012,7 @@ package io.flow.common.v0.models {
 
     implicit def jsonReadsCommonRounding: play.api.libs.json.Reads[Rounding] = {
       (
-        (__ \ "name").read[io.flow.common.v0.models.RoundingType] and
+        (__ \ "type").read[io.flow.common.v0.models.RoundingType] and
         (__ \ "method").read[io.flow.common.v0.models.RoundingMethod] and
         (__ \ "value").read[BigDecimal]
       )(Rounding.apply _)
@@ -2020,7 +2020,7 @@ package io.flow.common.v0.models {
 
     def jsObjectRounding(obj: io.flow.common.v0.models.Rounding) = {
       play.api.libs.json.Json.obj(
-        "name" -> play.api.libs.json.JsString(obj.name.toString),
+        "type" -> play.api.libs.json.JsString(obj.`type`.toString),
         "method" -> play.api.libs.json.JsString(obj.method.toString),
         "value" -> play.api.libs.json.JsNumber(obj.value)
       )
