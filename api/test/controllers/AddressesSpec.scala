@@ -21,25 +21,13 @@ class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
 
   "GET /locations" in new WithServer {
     expectStatus(422) {
-      Await.result(client.addresses.get(), DefaultDuration)
+      client.addresses.get()
     }
   }
 
   "GET /locations?address=sample" in new WithServer {
     expectStatus(422) {
-      Await.result(client.addresses.get(address = Some("sample")), DefaultDuration)
-    }
-  }
-
-  "GET /locations?latitude=sample" in new WithServer {
-    expectStatus(422) {
-      Await.result(client.addresses.get(latitude = Some("sample")), DefaultDuration)
-    }
-  }
-
-  "GET /locations?longitude=sample" in new WithServer {
-    expectStatus(422) {
-      Await.result(client.addresses.get(longitude = Some("sample")), DefaultDuration)
+      client.addresses.get(address = Some("sample"))
     }
   }
 

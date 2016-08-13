@@ -27,7 +27,7 @@ class MaxMindSpec extends PlaySpec with OneAppPerSuite {
       continent = None)
 
     "return valid latitude/longitude when ipLocation is valid" in {
-      val geo = MaxMind.getLatLong(validIpLocation).getOrElse {
+      val geo = MaxMind.latLong(validIpLocation).getOrElse {
         sys.error("Failed to resolve known IP")
       }
 
@@ -36,19 +36,19 @@ class MaxMindSpec extends PlaySpec with OneAppPerSuite {
     }
 
     "return empty latitude/longitude when ipLocation is invalid" in {
-      MaxMind.getLatLong(invalidIpLocation) must be(None)
+      MaxMind.latLong(invalidIpLocation) must be(None)
     }
 
     "return valid country 3 character iso code when ipLocation is valid" in {
-      MaxMind.getCountryCode(validIpLocation) must equal(Some("CAN"))
+      MaxMind.country(validIpLocation).map(_.iso31663) must equal(Some("CAN"))
     }
 
     "return no country code when ipLocation is invalid" in {
-      MaxMind.getCountryCode(invalidIpLocation) must equal(None)
+      MaxMind.country(invalidIpLocation) must equal(None)
     }
 
     "return valid location when ipLocation is valid" in {
-      MaxMind.getLocation(validIpLocation) must equal(
+      MaxMind.address(validIpLocation) must equal(
         Right(Address(None,None,Some("Sparwood"),None,None,Some("CAN"),Some("49.7333"),Some("-114.8853")))
       )
     }

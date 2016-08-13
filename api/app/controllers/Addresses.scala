@@ -15,13 +15,11 @@ class Addresses @javax.inject.Inject() (
 
   def get(
     address: Option[String],
-    ip: Option[String],
-    latitude: Option[String],
-    longitude: Option[String]
+    ip: Option[String]
   ) = Action.async { request =>
     Future {
-      helpers.getLocations(address, latitude, longitude, ip) match {
-        case Left(errors) => UnprocessableEntity(Json.toJson(Validation.errors(errors)))
+      helpers.getLocations(address = address, ip = ip) match {
+        case Left(_) => UnprocessableEntity(Json.toJson(Validation.error("Must specify either 'address' or 'ip'")))
         case Right(locations) => Ok(Json.toJson(locations))
       }
     }

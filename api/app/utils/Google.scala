@@ -68,22 +68,22 @@ class Google @javax.inject.Inject() (
 ) {
   val context = new GeoApiContext().setApiKey(environmentVariables.googleApiKey)
 
-  def getLocationsByAddress(address: String): Either[Seq[String], Seq[Address]] = {
+  def getLocationsByAddress(address: String): Seq[Address] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
-        Left(Seq(s"No results found for address: [$address]"))
+        Nil
       }
       case results => {
-        Right(sortLocations(parseResults(address, results)))
+        sortAddresses(parseResults(address, results))
       }
     }
   }
 
   /**
-    * Ensures locations w/ countries are defined earlier in list
+    * Ensures addresses w/ countries are defined earlier in list
     */
-  private[this] def sortLocations(locations: Seq[Address]): Seq[Address] = {
-    locations.filter(_.country.isDefined) ++ locations.filter(_.country.isEmpty)
+  private[this] def sortAddresses(addresses: Seq[Address]): Seq[Address] = {
+    addresses.filter(_.country.isDefined) ++ addresses.filter(_.country.isEmpty)
   }
 
   private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {

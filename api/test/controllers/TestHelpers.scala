@@ -1,19 +1,20 @@
 package controllers
 
-import java.util.concurrent.TimeUnit
 import io.flow.location.v0.errors.UnitResponse
+import java.util.concurrent.TimeUnit
+import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
 
 trait TestHelpers {
 
-  val DefaultDuration = Duration(5, TimeUnit.SECONDS)
+  val DefaultDuration = Duration(1, TimeUnit.SECONDS)
 
-  def expectStatus(code: Int)(f: => Unit) {
+  def expectStatus[T](code: Int)(f: => Future[T]) {
     assert(code >= 400, s"code[$code] must be >= 400")
 
     Try(
-      f
+      Await.result(f, DefaultDuration)
     ) match {
       case Success(response) => {
         org.specs2.execute.Failure(s"Expected HTTP[$code] but got HTTP 2xx")
