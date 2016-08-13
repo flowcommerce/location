@@ -49,7 +49,7 @@ class MaxMindSpec extends PlaySpec with OneAppPerSuite {
 
     "return valid location when ipLocation is valid" in {
       MaxMind.address(validIpLocation) must equal(
-        Right(Address(None,None,Some("Sparwood"),None,None,Some("CAN"),Some("49.7333"),Some("-114.8853")))
+        Address(None,None,Some("Sparwood"),None,None,Some("CAN"),Some("49.7333"),Some("-114.8853"))
       )
     }
   }
