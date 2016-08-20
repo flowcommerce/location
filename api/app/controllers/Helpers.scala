@@ -2,12 +2,35 @@ package controllers
 
 import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
+import io.flow.reference.v0.models.Timezone
 import utils._
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
   google: Google
 ) {
+
+  def getTimezones(
+    address: Option[String] = None,
+    ip: Option[String] = None
+  ): Either[Seq[String], Seq[Timezone]] = {
+    getLocations(address = address, ip = ip) match {
+      case Left(_) => Left(Seq("Must specify either 'address' or 'ip'"))
+      case Right(addresses) => {
+        val eithers = addresses.map{ a =>
+          (a.latitude, a.longitude) match {
+            case (Some(lat), Some(lng)) => Right(google.getTimezone(lat.toDouble, lng.toDouble))
+            case _ => Left("Latitude and Longitude must be defined to get timezone")
+          }
+        }
+
+        eithers.filter(_.isLeft) match {
+          case Nil => Right(eithers.filter(_.isRight).map(_.right.get)) // if there are no errors, then get all the timezones
+          case lefts => Left(lefts.map(_.left.get)) // seq of all the errors collected
+        }
+      }
+    }
+  }
 
   def getLocations(
     country: Option[String] = None,
