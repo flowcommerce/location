@@ -10,3 +10,7 @@ code:
       generators:
         play_2_x_routes: api/conf/location.routes
         play_2_4_client: generated/app
+    reference:
+      version: latest
+      generators:
+        play_2_4_client: generated/app

@@ -25,6 +25,7 @@ package io.flow.location.v0.models {
     import play.api.libs.functional.syntax._
     import io.flow.common.v0.models.json._
     import io.flow.location.v0.models.json._
+    import io.flow.reference.v0.models.json._
 
     private[v0] implicit val jsonReadsUUID = __.read[String].map(java.util.UUID.fromString)
 
@@ -124,6 +125,7 @@ package io.flow.location.v0 {
   ) extends interfaces.Client {
     import io.flow.common.v0.models.json._
     import io.flow.location.v0.models.json._
+    import io.flow.reference.v0.models.json._
 
     private[this] val logger = play.api.Logger("io.flow.location.v0.Client")
 
@@ -132,6 +134,8 @@ package io.flow.location.v0 {
     def addresses: Addresses = Addresses
 
     def countryDefaults: CountryDefaults = CountryDefaults
+
+    def timezones: Timezones = Timezones
 
     object Addresses extends Addresses {
       override def get(
@@ -185,6 +189,27 @@ package io.flow.location.v0 {
           case r if r.status == 401 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 404 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
           case r => throw new io.flow.location.v0.errors.FailedRequest(r.status, s"Unsupported response code[${r.status}]. Expected: 200, 401, 404")
+        }
+      }
+    }
+
+    object Timezones extends Timezones {
+      override def get(
+        address: _root_.scala.Option[String] = None,
+        ip: _root_.scala.Option[String] = None,
+        requestHeaders: Seq[(String, String)] = Nil
+      )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.reference.v0.models.Timezone]] = {
+        val queryParameters = Seq(
+          address.map("address" -> _),
+          ip.map("ip" -> _)
+        ).flatten
+
+        _executeRequest("GET", s"/timezones", queryParameters = queryParameters, requestHeaders = requestHeaders).map {
+          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("Seq[io.flow.reference.v0.models.Timezone]", r, _.validate[Seq[io.flow.reference.v0.models.Timezone]])
+          case r if r.status == 401 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
+          case r if r.status == 404 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
+          case r if r.status == 422 => throw new io.flow.location.v0.errors.ErrorsResponse(r)
+          case r => throw new io.flow.location.v0.errors.FailedRequest(r.status, s"Unsupported response code[${r.status}]. Expected: 200, 401, 404, 422")
         }
       }
     }
@@ -294,6 +319,7 @@ package io.flow.location.v0 {
       def baseUrl: String
       def addresses: io.flow.location.v0.Addresses
       def countryDefaults: io.flow.location.v0.CountryDefaults
+      def timezones: io.flow.location.v0.Timezones
     }
 
   }
@@ -324,10 +350,22 @@ package io.flow.location.v0 {
     )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[io.flow.location.v0.models.CountryDefaults]
   }
 
+  trait Timezones {
+    /**
+     * Provides timezone based on address or geolocated IP.
+     */
+    def get(
+      address: _root_.scala.Option[String] = None,
+      ip: _root_.scala.Option[String] = None,
+      requestHeaders: Seq[(String, String)] = Nil
+    )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.reference.v0.models.Timezone]]
+  }
+
   package errors {
 
     import io.flow.common.v0.models.json._
     import io.flow.location.v0.models.json._
+    import io.flow.reference.v0.models.json._
 
     case class ErrorsResponse(
       response: play.api.libs.ws.WSResponse,
