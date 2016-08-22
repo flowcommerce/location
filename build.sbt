@@ -36,8 +36,7 @@ lazy val api = project
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   name <<= name("location-" + _),
   libraryDependencies ++= Seq(
-    specs2 % Test,
-    "org.scalatest" %% "scalatest" % "2.2.6" % Test
+    specs2 % Test
   ),
   scalacOptions += "-feature",
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
