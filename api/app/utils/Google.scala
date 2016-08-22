@@ -77,7 +77,7 @@ class Google @javax.inject.Inject() (
     Timezone(
       name = tz.getID(), // America/New_York
       description = tz.getDisplayName(), // Eastern Standard Time
-      offset = tz.getRawOffset()
+      offset = tz.getRawOffset() / 60000 // raw offset is milliseconds, Timezone description is minutes
     )
   }
 
