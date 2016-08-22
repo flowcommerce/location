@@ -19,7 +19,10 @@ class Helpers @javax.inject.Inject() (
       case Right(addresses) => {
         val eithers = addresses.map{ a =>
           (a.latitude, a.longitude) match {
-            case (Some(lat), Some(lng)) => Right(google.getTimezone(lat.toDouble, lng.toDouble))
+            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble) match {
+              case None => Left("Unable to determine timezone based on address/ip")
+              case Some(tz) => Right(tz)
+            }
             case _ => Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup")
           }
         }
