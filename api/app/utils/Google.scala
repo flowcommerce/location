@@ -2,7 +2,7 @@ package utils
 
 import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
-import io.flow.reference.Countries
+import io.flow.reference.{Countries, Timezones}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Timezone
 import play.api.Logger
@@ -69,16 +69,10 @@ class Google @javax.inject.Inject() (
 ) {
   val context = new GeoApiContext().setApiKey(environmentVariables.googleApiKey)
 
-  def getTimezone(lat: Double, lng: Double): Timezone = {
+  def getTimezone(lat: Double, lng: Double): Option[Timezone] = {
     // returns java.util.TimeZone, which has getID()
     val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
-
-    // put together our timezone
-    Timezone(
-      name = tz.getID(), // America/New_York
-      description = tz.getDisplayName(), // Eastern Standard Time
-      offset = tz.getRawOffset() / 60000 // raw offset is milliseconds, Timezone description is minutes
-    )
+    Timezones.find(tz.getID())
   }
 
   def getLocationsByAddress(address: String): Seq[Address] = {
