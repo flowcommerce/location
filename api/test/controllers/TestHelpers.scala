@@ -1,6 +1,6 @@
 package controllers
 
-import io.flow.location.v0.errors.UnitResponse
+import io.flow.location.v0.errors.{ErrorsResponse, UnitResponse}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
@@ -29,5 +29,25 @@ trait TestHelpers {
       }
     }
   }
-}
 
+  def expectErrors[T](
+    f: => Future[T],
+    duration: Duration = DefaultDuration
+  ): ErrorsResponse = {
+    Try(
+      Await.result(f, duration)
+    ) match {
+      case Success(response) => {
+        sys.error("Expected function to fail but it succeeded with: " + response)
+      }
+      case Failure(ex) =>  ex match {
+        case e: ErrorsResponse => {
+          e
+        }
+        case e => {
+          sys.error(s"Expected an exception of type[ErrorsResponse] but got[$e]")
+        }
+      }
+    }
+  }
+}

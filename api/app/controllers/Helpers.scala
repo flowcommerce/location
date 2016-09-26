@@ -34,7 +34,7 @@ class Helpers @javax.inject.Inject() (
       }
     }
   }
-
+  
   def getLocations(
     country: Option[String] = None,
     address: Option[String] = None,
