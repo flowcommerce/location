@@ -6,7 +6,8 @@ import io.flow.play.util.Validation
 import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
 import io.flow.location.v0.models.{AddressVerification, AddressSuggestion}
-  import scala.concurrent.Future
+import io.flow.location.v0.models.json._
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
