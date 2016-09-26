@@ -240,11 +240,11 @@ package io.flow.location.v0 {
       override def postVerifications(
         address: io.flow.common.v0.models.Address,
         requestHeaders: Seq[(String, String)] = Nil
-      )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.location.v0.models.AddressVerification]] = {
+      )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[io.flow.location.v0.models.AddressVerification] = {
         val payload = play.api.libs.json.Json.toJson(address)
 
         _executeRequest("POST", s"/addresses/verifications", body = Some(payload), requestHeaders = requestHeaders).map {
-          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("Seq[io.flow.location.v0.models.AddressVerification]", r, _.validate[Seq[io.flow.location.v0.models.AddressVerification]])
+          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("io.flow.location.v0.models.AddressVerification", r, _.validate[io.flow.location.v0.models.AddressVerification])
           case r if r.status == 401 => throw new io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 422 => throw new io.flow.location.v0.errors.ErrorsResponse(r)
           case r => throw new io.flow.location.v0.errors.FailedRequest(r.status, s"Unsupported response code[${r.status}]. Expected: 200, 401, 422")
@@ -432,7 +432,7 @@ package io.flow.location.v0 {
     def postVerifications(
       address: io.flow.common.v0.models.Address,
       requestHeaders: Seq[(String, String)] = Nil
-    )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.location.v0.models.AddressVerification]]
+    )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[io.flow.location.v0.models.AddressVerification]
   }
 
   trait CountryDefaults {

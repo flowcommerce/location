@@ -19,19 +19,19 @@ class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
 
   lazy val client = new Client(s"http://localhost:$port")
 
-  "GET /locations" in new WithServer {
+  "GET /addresses" in new WithServer {
     expectStatus(422) {
       client.addresses.get()
     }
   }
 
-  "GET /locations?address=sample" in new WithServer {
+  "GET /addresses?address=sample" in new WithServer {
     expectStatus(422) {
       client.addresses.get(address = Some("sample"))
     }
   }
 
-  "GET /locations?ip=23.16.0.0" in new WithServer {
+  "GET /addresses?ip=23.16.0.0" in new WithServer {
     val locations = await(
       client.addresses.get(ip = Some("23.16.0.0"))
     )
@@ -42,4 +42,13 @@ class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
       case JsError(_) => assert(false)
     }
   }
+
+  "POST /addresses/verifications" in new WithServer {
+    expectErrors(
+      client.addresses.postVerifications(address = Address())
+    ).errors.map(_.message) must be(
+      Seq("Address to verify cannot be empty")
+    )
+  }
+
 }
