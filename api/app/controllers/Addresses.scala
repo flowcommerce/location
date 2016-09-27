@@ -6,6 +6,7 @@ import io.flow.play.util.Validation
 import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
 import io.flow.location.v0.models.json._
+import io.flow.reference.Countries
 import scala.concurrent.Future
 import utils.AddressVerifier
 
@@ -31,16 +32,12 @@ class Addresses @javax.inject.Inject() (
   def postVerifications() = Action.async(parse.json) { request =>
     Future {
       val address = request.body.as[Address]
-      println(address)
-      val text = address.text.getOrElse {
-        (address.streets ++ Seq(address.city, address.province, address.postal, address.country).flatten).mkString(", ")
-      }
-      text.trim match {
-        case "" => {
+      AddressVerifier.toText(address) match {
+        case None => {
           UnprocessableEntity(Json.toJson(Validation.error("Address to verify cannot be empty")))
         }
 
-        case value => {
+        case Some(text) => {
           helpers.getLocations(address = Some(text)) match {
             case Left(errors) => {
               sys.error(s"Error in address verification: $errors")

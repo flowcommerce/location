@@ -40,13 +40,16 @@ object AddressVerifier {
 
   private[utils] def toSuggestions(address: Address, matched: Seq[Address]): Seq[AddressSuggestion] = {
     matched.map { m =>
+      println("Address: " + address)
+      println("      m: " + m)
+
       AddressSuggestion(
         address = m,
-        streets = compare(Some(address.streets.mkString(" ")), Some(m.streets.mkString(" "))),
-        city = compare(address.city, m.city),
-        province = compare(address.province, m.province),
-        postal = compare(address.postal, m.postal),
-        country = compare(
+        streets = isDifferent(Some(address.streets.mkString(" ")), Some(m.streets.mkString(" "))),
+        city = isDifferent(address.city, m.city),
+        province = isDifferent(address.province, m.province),
+        postal = isDifferent(address.postal, m.postal),
+        country = isDifferent(
           address.country.flatMap(Countries.find(_).map(_.iso31663)),
           m.country.flatMap(Countries.find(_).map(_.iso31663))
         )
@@ -54,8 +57,27 @@ object AddressVerifier {
     }
   }
 
-  private[utils] def compare(a: Option[String], b: Option[String]): Boolean = {
-    urlKey.format(a.getOrElse("")) == urlKey.format(b.getOrElse(""))
+  private[utils] def isDifferent(a: Option[String], b: Option[String]): Boolean = {
+    urlKey.format(a.getOrElse("")) != urlKey.format(b.getOrElse(""))
   }
 
+  def toText(address: Address): Option[String] = {
+    val text = address.text.getOrElse {
+      Seq(
+        address.streets.map { values =>
+          values.mkString(" ")
+        },
+        address.city,
+        address.province,
+        address.postal,
+        address.country.flatMap { Countries.find(_).map(_.name) }
+      ).flatten.mkString(" ")
+    }
+
+    text.trim match {
+      case "" => None
+      case v => Some(v)
+    }
+  }
+  
 }

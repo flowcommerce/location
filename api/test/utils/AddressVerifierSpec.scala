@@ -21,13 +21,20 @@ class AddressVerifierSpec extends PlaySpec with OneAppPerSuite {
     country = Some("UK")
   )
 
-  "compare" in {
-    AddressVerifier.compare(None, None) must be(true)
-    AddressVerifier.compare(None, Some("a")) must be(false)
-    AddressVerifier.compare(Some("a"), None) must be(false)
-    AddressVerifier.compare(Some("a"), Some("a")) must be(true)
-    AddressVerifier.compare(Some("A"), Some("  a   ")) must be(true)
-    AddressVerifier.compare(Some("BHZ 750"), Some("  bhz - 750   ")) must be(true)
+  "toText" in {
+    AddressVerifier.toText(Address()) must be(None)
+    AddressVerifier.toText(Address(text = Some("foo"))) must be(Some("foo"))
+    AddressVerifier.toText(yongeStreet) must be(Some("123 Yonge Street Toronto Ontario M5C 1W4 Canada"))
+    AddressVerifier.toText(ukGardens) must be(Some("76 Belsize Park Gardens London NW3 4NG"))
+  }
+
+  "isDifferent" in {
+    AddressVerifier.isDifferent(None, None) must be(false)
+    AddressVerifier.isDifferent(None, Some("a")) must be(true)
+    AddressVerifier.isDifferent(Some("a"), None) must be(true)
+    AddressVerifier.isDifferent(Some("a"), Some("a")) must be(false)
+    AddressVerifier.isDifferent(Some("A"), Some("  a   ")) must be(false)
+    AddressVerifier.isDifferent(Some("BHZ 750"), Some("  bhz - 750   ")) must be(false)
   }
 
   "toSuggestions" in {
@@ -37,11 +44,11 @@ class AddressVerifierSpec extends PlaySpec with OneAppPerSuite {
     AddressVerifier.toSuggestions(yongeStreet, Seq(caCopy)).toList match {
       case sugg :: Nil => {
         sugg.address must be(caCopy)
-        sugg.streets must be(true)
-        sugg.city must be(true)
-        sugg.province must be(true)
-        sugg.postal must be(true)
-        sugg.country must be(true)
+        sugg.streets must be(false)
+        sugg.city must be(false)
+        sugg.province must be(false)
+        sugg.postal must be(false)
+        sugg.country must be(false)
       }
       case _ => {
         sys.error("Expected exactly one match")
@@ -51,11 +58,11 @@ class AddressVerifierSpec extends PlaySpec with OneAppPerSuite {
     AddressVerifier.toSuggestions(yongeStreet, Seq(ukGardens)).toList match {
       case sugg :: Nil => {
         sugg.address must be(ukGardens)
-        sugg.streets must be(false)
-        sugg.city must be(false)
-        sugg.province must be(false)
-        sugg.postal must be(false)
-        sugg.country must be(false)
+        sugg.streets must be(true)
+        sugg.city must be(true)
+        sugg.province must be(true)
+        sugg.postal must be(true)
+        sugg.country must be(true)
       }
       case _ => {
         sys.error("Expected exactly one match")
