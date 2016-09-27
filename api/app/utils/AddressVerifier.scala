@@ -26,7 +26,7 @@ object AddressVerifier {
         // add actual address verification.
         (address.country, first.country) match {
           case (Some(a), Some(b)) => Countries.find(a) == Countries.find(b)
-          case (_, _) => false
+          case (_, _) => true
         }
       }
     }

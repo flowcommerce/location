@@ -51,4 +51,11 @@ class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
     )
   }
 
+  "POST /addresses/verifications with UK address" in new WithServer {
+    val result = await(
+      client.addresses.postVerifications(address = Address(text = Some("76 Belsize Park NW3-4NG")))
+    )
+    result.valid must be(true)
+  }
+
 }
