@@ -90,7 +90,14 @@ class Google @javax.inject.Inject() (
     * Ensures addresses w/ countries are defined earlier in list
     */
   private[this] def sortAddresses(addresses: Seq[Address]): Seq[Address] = {
-    addresses.filter(_.country.isDefined) ++ addresses.filter(_.country.isEmpty)
+    sortByPostalCode(addresses.filter(_.country.isDefined)) ++ sortByPostalCode(addresses.filter(_.country.isEmpty))
+  }
+
+  /**
+    * Prefer longer postal code as that indicates more precision
+    */
+  private[this] def sortByPostalCode(addresses: Seq[Address]): Seq[Address] = {
+    addresses.sortBy { a => a.postal.map(_.length).getOrElse(0) }.reverse
   }
 
   private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {
