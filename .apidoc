@@ -3,8 +3,16 @@ code:
     common:
       version: latest
       generators:
-        play_2_x_routes: api/conf/common.routes
+        play_2_x_json: generated/app
+    error:
+      version: latest
+      generators:
+        play_2_x_json: generated/app
+    healthcheck:
+      version: latest
+      generators:
         play_2_4_client: generated/app
+        play_2_x_routes: api/conf/healthcheck.routes
     location:
       version: latest
       generators:

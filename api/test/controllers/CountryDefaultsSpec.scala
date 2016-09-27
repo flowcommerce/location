@@ -7,7 +7,7 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.test.Helpers._
 import play.api.test._
 import io.flow.location.v0.Client
-import io.flow.common.v0.models.json._
+import io.flow.error.v0.models.json._
 
 import scala.concurrent.Await
 
