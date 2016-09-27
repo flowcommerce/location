@@ -40,9 +40,6 @@ object AddressVerifier {
 
   private[utils] def toSuggestions(address: Address, matched: Seq[Address]): Seq[AddressSuggestion] = {
     matched.map { m =>
-      println("Address: " + address)
-      println("      m: " + m)
-
       AddressSuggestion(
         address = m,
         streets = isDifferent(Some(address.streets.mkString(" ")), Some(m.streets.mkString(" "))),
