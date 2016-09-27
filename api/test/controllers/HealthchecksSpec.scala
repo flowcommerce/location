@@ -1,7 +1,7 @@
 package controllers
 
-import io.flow.common.v0.Client
-import io.flow.common.v0.models.Healthcheck
+import io.flow.healthcheck.v0.Client
+import io.flow.healthcheck.v0.models.Healthcheck
 import play.api.test._
 import play.api.test.Helpers._
 import org.scalatestplus.play._

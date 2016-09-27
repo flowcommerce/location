@@ -4,7 +4,7 @@ import play.api.libs.json._
 import play.api.mvc._
 import io.flow.play.util.Validation
 import io.flow.reference.v0.models.json._
-import io.flow.common.v0.models.json._
+import io.flow.error.v0.models.json._
 import scala.concurrent.Future
 
 @javax.inject.Singleton

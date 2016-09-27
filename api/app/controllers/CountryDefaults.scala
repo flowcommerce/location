@@ -1,6 +1,6 @@
 package controllers
 
-import io.flow.common.v0.models.json._
+import io.flow.error.v0.models.json._
 import io.flow.location.v0.models
 import io.flow.location.v0.models.json._
 import io.flow.location.v0.models.json._
