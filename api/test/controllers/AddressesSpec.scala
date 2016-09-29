@@ -46,7 +46,7 @@ class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
   "POST /addresses/verifications" in new WithServer {
     expectErrors(
       client.addresses.postVerifications(address = Address())
-    ).validationError.messages must be(
+    ).genericError.messages must be(
       Seq("Address to verify cannot be empty")
     )
   }

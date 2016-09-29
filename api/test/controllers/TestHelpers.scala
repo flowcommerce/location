@@ -1,6 +1,6 @@
 package controllers
 
-import io.flow.location.v0.errors.{ValidationErrorResponse, UnitResponse}
+import io.flow.location.v0.errors.{GenericErrorResponse, UnitResponse}
 import java.util.concurrent.TimeUnit
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
@@ -33,7 +33,7 @@ trait TestHelpers {
   def expectErrors[T](
     f: => Future[T],
     duration: Duration = DefaultDuration
-  ): ValidationErrorResponse = {
+  ): GenericErrorResponse = {
     Try(
       Await.result(f, duration)
     ) match {
@@ -41,11 +41,11 @@ trait TestHelpers {
         sys.error("Expected function to fail but it succeeded with: " + response)
       }
       case Failure(ex) =>  ex match {
-        case e: ValidationErrorResponse => {
+        case e: GenericErrorResponse => {
           e
         }
         case e => {
-          sys.error(s"Expected an exception of type[ValidationErrorResponse] but got[$e]")
+          sys.error(s"Expected an exception of type[GenericErrorResponse] but got[$e]")
         }
       }
     }
