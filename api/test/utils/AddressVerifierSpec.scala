@@ -70,6 +70,22 @@ class AddressVerifierSpec extends PlaySpec with OneAppPerSuite {
     }
   }
 
+  "collapseStreets will collapse leading prefix from google result" in {
+    val variant = yongeStreet.copy(
+      streets = Some(Seq("123", "Yonge Street"))
+    )
+    
+    AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(yongeStreet))
+  }
+
+  "collapseStreets will not merge streets if leading prefix is different" in {
+    val variant = yongeStreet.copy(
+      streets = Some(Seq("931", "Yonge Street"))
+    )
+    
+    AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(variant))
+  }
+
   "apply" in {
     AddressVerifier(yongeStreet, Nil) must be(
       AddressVerification(
