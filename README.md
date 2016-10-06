@@ -19,7 +19,7 @@ Service uses the following client
 # Usage
 
 Sample Request:
-    http://localhost:9000/locations?ip=23.16.0.0
+    http://localhost:9000/addresses?ip=23.16.0.0
 
 Sample Response:
 ```
