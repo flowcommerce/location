@@ -10,7 +10,7 @@ class EnvironmentVariables @javax.inject.Inject() (
 ) {
 
   val googleApiKey = playEnv.mode match {
-    case Mode.Test => "testGoogleApiKey"
+    case Mode.Test => config.requiredString("google.api.key")
     case _ => config.requiredString("google.api.key")
   }
 
