@@ -161,7 +161,6 @@ class Google @javax.inject.Inject() (
       }
 
       Address(
-        text = Some(address),
         streets = streets,
         province = province,
         city = city,
