@@ -160,8 +160,19 @@ class Google @javax.inject.Inject() (
         }
       }
 
+      val text = Seq(
+        (streets.toList match {
+          case Nil => None
+          case values => Some(values.mkString(" "))
+        }),
+        province,
+        city,
+        postal,
+        country
+      ).flatten.mkString(" ")
+
       Address(
-        text = Some(address),
+        text = Some(text),
         streets = streets,
         province = province,
         city = city,
