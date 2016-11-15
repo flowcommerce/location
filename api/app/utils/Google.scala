@@ -11,6 +11,7 @@ import io.flow.reference.v0.models.Timezone
 import play.api.Logger
 
 import scala.concurrent.Future
+import scala.util.{Failure, Success, Try}
 
 object Google {
 
@@ -81,19 +82,35 @@ class Google @javax.inject.Inject() (
   def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] = {
     Future {
       // returns java.util.TimeZone, which has getID()
-      val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
-      Timezones.find(tz.getID())
+      Try {
+        val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
+        Timezones.find(tz.getID())
+      } match {
+        case Success(result) => result
+        case Failure(e) => {
+          Logger.warn(s"Encountered the following error from the timezone API: $e")
+          None
+        }
+      }
     }
   }
 
   def getLocationsByAddress(address: String): Future[Seq[Address]] = {
     Future {
-      GeocodingApi.geocode(context, address).await().toList match {
-        case Nil => {
-          Nil
+      Try {
+        GeocodingApi.geocode(context, address).await().toList match {
+          case Nil => {
+            Nil
+          }
+          case results => {
+            sortAddresses(parseResults(address, results))
+          }
         }
-        case results => {
-          sortAddresses(parseResults(address, results))
+      } match {
+        case Success(result) => result
+        case Failure(e) => {
+          Logger.warn(s"Encountered the following error from the geocoding API: $e")
+          Nil
         }
       }
     }
