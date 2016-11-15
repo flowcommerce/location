@@ -1,20 +1,24 @@
 package controllers
 
+
 import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
 import utils._
 
+import scala.concurrent.{ExecutionContext, Future}
+
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
   google: Google
 ) {
-
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
-  ): Either[Seq[String], Seq[Timezone]] = {
-    getLocations(address = address, ip = ip) match {
+  )(
+    implicit ec: ExecutionContext
+  ): Future[Either[Seq[String], Seq[Timezone]]] = {
+    getLocations(address = address, ip = ip).map ( res => res match {
       case Left(_) => Left(Seq("Must specify either 'address' or 'ip'"))
       case Right(addresses) => {
         val eithers = addresses.map{ a =>
@@ -32,26 +36,30 @@ class Helpers @javax.inject.Inject() (
           case lefts => Left(lefts.map(_.left.get)) // seq of all the errors collected
         }
       }
-    }
+    })
   }
   
   def getLocations(
     country: Option[String] = None,
     address: Option[String] = None,
     ip: Option[String] = None
-  ): Either[Unit, Seq[Address]] = {
+  )(
+    implicit ec: ExecutionContext
+  ): Future[Either[Unit, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
         Countries.find(code) match {
           case None => {
-            Right(Nil)
+            Future.successful ( Right(Nil) )
           }
 
           case Some(c) => {
-            Right(
-              Seq(
-                Address(
-                  country = Some(c.iso31663)
+            Future.successful (
+              Right(
+                Seq(
+                  Address(
+                    country = Some(c.iso31663)
+                  )
                 )
               )
             )
@@ -63,31 +71,33 @@ class Helpers @javax.inject.Inject() (
         // Special case to enable specifying just a country code in the address line
         Countries.find(a) match {
           case Some(c) => {
-            Right(
-              Seq(
-                Address(
-                  country = Some(c.iso31663)
+            Future.successful (
+              Right(
+                Seq(
+                  Address(
+                    country = Some(c.iso31663)
+                  )
                 )
               )
             )
           }
 
           case None => {
-            Right(
-              google.getLocationsByAddress(a)
-            )
+            google.getLocationsByAddress(a).map { addrs =>
+              Right(addrs)
+            }
           }
         }
       }
           
       case (_, _, Some(i)) => {
         MaxMind.getByIp(i) match {
-          case Some(address) => Right(Seq(address))
-          case None => Right(Nil)
+          case Some(address) => Future.successful ( Right(Seq(address)) )
+          case None => Future.successful ( Right(Nil) )
         }
       }
 
-      case _ => Left(Unit)
+      case _ => Future.successful ( Left(Unit) )
     }
   }
 }

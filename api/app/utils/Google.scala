@@ -1,11 +1,16 @@
 package utils
 
+
+import java.util.concurrent.TimeUnit
+import akka.actor.ActorSystem
 import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
 import io.flow.reference.{Countries, Timezones}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Timezone
 import play.api.Logger
+
+import scala.concurrent.Future
 
 object Google {
 
@@ -65,9 +70,13 @@ object Google {
   */
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
-  environmentVariables: EnvironmentVariables
+  environmentVariables: EnvironmentVariables,
+  system: ActorSystem
 ) {
-  val context = new GeoApiContext().setApiKey(environmentVariables.googleApiKey)
+
+  private[this] val context = new GeoApiContext().setReadTimeout(500, TimeUnit.MILLISECONDS).setApiKey(environmentVariables.googleApiKey)
+
+  private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
   def getTimezone(lat: Double, lng: Double): Option[Timezone] = {
     // returns java.util.TimeZone, which has getID()
@@ -75,13 +84,15 @@ class Google @javax.inject.Inject() (
     Timezones.find(tz.getID())
   }
 
-  def getLocationsByAddress(address: String): Seq[Address] = {
-    GeocodingApi.geocode(context, address).await().toList match {
-      case Nil => {
-        Nil
-      }
-      case results => {
-        sortAddresses(parseResults(address, results))
+  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
+    Future {
+      GeocodingApi.geocode(context, address).await().toList match {
+        case Nil => {
+          Nil
+        }
+        case results => {
+          sortAddresses(parseResults(address, results))
+        }
       }
     }
   }
