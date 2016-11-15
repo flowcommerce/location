@@ -1,5 +1,6 @@
 package controllers
 
+import akka.actor.ActorSystem
 import io.flow.error.v0.models.json._
 import io.flow.location.v0.models
 import io.flow.location.v0.models.json._
@@ -10,14 +11,16 @@ import io.flow.reference.v0.models.Country
 import io.flow.reference.Countries
 import play.api.libs.json._
 import play.api.mvc._
+
 import scala.concurrent.Future
 
 @javax.inject.Singleton
 class CountryDefaults @javax.inject.Inject() (
-  helpers: Helpers
+  helpers: Helpers,
+  system: ActorSystem
 ) extends Controller {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  private[this] implicit val ec = system.dispatchers.lookup("country-defaults-controller-context")
 
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
   private[this] val DefaultLanguage = "en"  // Remove once every country has at least one language in reference data

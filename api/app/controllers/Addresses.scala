@@ -1,5 +1,6 @@
 package controllers
 
+import akka.actor.ActorSystem
 import play.api.libs.json._
 import play.api.mvc._
 import io.flow.play.util.Validation
@@ -7,16 +8,17 @@ import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
 import io.flow.error.v0.models.json._
 import io.flow.location.v0.models.json._
-import io.flow.reference.Countries
+
 import scala.concurrent.Future
 import utils.AddressVerifier
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
-  helpers: Helpers
+  helpers: Helpers,
+  system: ActorSystem
 ) extends Controller {
 
-  import scala.concurrent.ExecutionContext.Implicits.global
+  private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
 
   def get(
     address: Option[String],

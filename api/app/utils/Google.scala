@@ -1,11 +1,14 @@
 package utils
 
+import akka.actor.ActorSystem
 import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
 import io.flow.reference.{Countries, Timezones}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Timezone
 import play.api.Logger
+
+import scala.concurrent.ExecutionContext
 
 object Google {
 
@@ -75,7 +78,9 @@ class Google @javax.inject.Inject() (
     Timezones.find(tz.getID())
   }
 
-  def getLocationsByAddress(address: String): Seq[Address] = {
+  def getLocationsByAddress(address: String)(
+    implicit ec: ExecutionContext
+  ): Seq[Address] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
         Nil
