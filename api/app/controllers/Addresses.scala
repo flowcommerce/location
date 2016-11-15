@@ -34,7 +34,7 @@ class Addresses @javax.inject.Inject() (
     val address = request.body.as[Address]
     AddressVerifier.toText(address) match {
       case None => {
-        Future { UnprocessableEntity(Json.toJson(Validation.error("Address to verify cannot be empty"))) }
+        Future.successful ( UnprocessableEntity(Json.toJson(Validation.error("Address to verify cannot be empty"))) )
       }
 
       case Some(text) => {

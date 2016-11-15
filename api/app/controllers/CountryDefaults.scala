@@ -5,7 +5,6 @@ import io.flow.error.v0.models.json._
 import io.flow.location.v0.models
 import io.flow.location.v0.models.json._
 import io.flow.location.v0.models.json._
-import io.flow.play.util.Validation
 import io.flow.reference.data
 import io.flow.reference.v0.models.Country
 import io.flow.reference.Countries
@@ -44,14 +43,14 @@ class CountryDefaults @javax.inject.Inject() (
   def getByCountry(
     country: String
   ) = Action.async { request =>
-    Future {
+    Future.successful (
       Countries.find(country) match {
         case None => NotFound
         case Some(c) => {
           Ok(Json.toJson(countryDefaults(c)))
         }
       }
-    }
+    )
   }
 
   private[this] def countryDefaults(c: Country) = models.CountryDefaults(

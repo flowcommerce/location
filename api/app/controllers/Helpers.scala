@@ -50,11 +50,11 @@ class Helpers @javax.inject.Inject() (
       case (Some(code), _, _) => {
         Countries.find(code) match {
           case None => {
-            Future { Right(Nil) }
+            Future.successful ( Right(Nil) )
           }
 
           case Some(c) => {
-            Future {
+            Future.successful (
               Right(
                 Seq(
                   Address(
@@ -62,7 +62,7 @@ class Helpers @javax.inject.Inject() (
                   )
                 )
               )
-            }
+            )
           }
         }
       }
@@ -71,7 +71,7 @@ class Helpers @javax.inject.Inject() (
         // Special case to enable specifying just a country code in the address line
         Countries.find(a) match {
           case Some(c) => {
-            Future {
+            Future.successful (
               Right(
                 Seq(
                   Address(
@@ -79,7 +79,7 @@ class Helpers @javax.inject.Inject() (
                   )
                 )
               )
-            }
+            )
           }
 
           case None => {
@@ -92,12 +92,12 @@ class Helpers @javax.inject.Inject() (
           
       case (_, _, Some(i)) => {
         MaxMind.getByIp(i) match {
-          case Some(address) => Future { Right(Seq(address)) }
-          case None => Future { Right(Nil) }
+          case Some(address) => Future.successful ( Right(Seq(address)) )
+          case None => Future.successful ( Right(Nil) )
         }
       }
 
-      case _ => Future { Left(Unit) }
+      case _ => Future.successful ( Left(Unit) )
     }
   }
 }
