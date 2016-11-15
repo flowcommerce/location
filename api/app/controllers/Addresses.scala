@@ -24,33 +24,29 @@ class Addresses @javax.inject.Inject() (
     address: Option[String],
     ip: Option[String]
   ) = Action.async { request =>
-    Future {
-      helpers.getLocations(address = address, ip = ip) match {
-        case Left(_) => UnprocessableEntity(Json.toJson(Validation.error("Must specify either 'address' or 'ip'")))
-        case Right(locations) => Ok(Json.toJson(locations))
-      }
-    }
+    helpers.getLocations(address = address, ip = ip).map( addrs => addrs match {
+      case Left(_) => UnprocessableEntity(Json.toJson(Validation.error("Must specify either 'address' or 'ip'")))
+      case Right(locations) => Ok(Json.toJson(locations))
+    })
   }
 
   def postVerifications() = Action.async(parse.json) { request =>
-    Future {
-      val address = request.body.as[Address]
-      AddressVerifier.toText(address) match {
-        case None => {
-          UnprocessableEntity(Json.toJson(Validation.error("Address to verify cannot be empty")))
-        }
+    val address = request.body.as[Address]
+    AddressVerifier.toText(address) match {
+      case None => {
+        Future { UnprocessableEntity(Json.toJson(Validation.error("Address to verify cannot be empty"))) }
+      }
 
-        case Some(text) => {
-          helpers.getLocations(address = Some(text)) match {
-            case Left(errors) => {
-              sys.error(s"Error in address verification: $errors")
-            }
-
-            case Right(locations) => {
-              Ok(Json.toJson(AddressVerifier(address, locations)))
-            }
+      case Some(text) => {
+        helpers.getLocations(address = Some(text)).map ( addrs => addrs match {
+          case Left(errors) => {
+            sys.error(s"Error in address verification: $errors")
           }
-        }
+
+          case Right(locations) => {
+            Ok(Json.toJson(AddressVerifier(address, locations)))
+          }
+        })
       }
     }
   }
