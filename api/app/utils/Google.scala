@@ -78,10 +78,12 @@ class Google @javax.inject.Inject() (
 
   private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
-  def getTimezone(lat: Double, lng: Double): Option[Timezone] = {
-    // returns java.util.TimeZone, which has getID()
-    val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
-    Timezones.find(tz.getID())
+  def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] = {
+    Future {
+      // returns java.util.TimeZone, which has getID()
+      val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
+      Timezones.find(tz.getID())
+    }
   }
 
   def getLocationsByAddress(address: String): Future[Seq[Address]] = {
