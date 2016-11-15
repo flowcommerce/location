@@ -6,7 +6,7 @@ import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
 import utils._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
@@ -15,6 +15,8 @@ class Helpers @javax.inject.Inject() (
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
+  )(
+    implicit ec: ExecutionContext
   ): Future[Either[Seq[String], Seq[Timezone]]] = {
     getLocations(address = address, ip = ip).map ( res => res match {
       case Left(_) => Left(Seq("Must specify either 'address' or 'ip'"))
@@ -41,6 +43,8 @@ class Helpers @javax.inject.Inject() (
     country: Option[String] = None,
     address: Option[String] = None,
     ip: Option[String] = None
+  )(
+    implicit ec: ExecutionContext
   ): Future[Either[Unit, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
