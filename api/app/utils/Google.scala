@@ -78,9 +78,7 @@ class Google @javax.inject.Inject() (
     Timezones.find(tz.getID())
   }
 
-  def getLocationsByAddress(address: String)(
-    implicit ec: ExecutionContext
-  ): Seq[Address] = {
+  def getLocationsByAddress(address: String): Seq[Address] = {
     GeocodingApi.geocode(context, address).await().toList match {
       case Nil => {
         Nil

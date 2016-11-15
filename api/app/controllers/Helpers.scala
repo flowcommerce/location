@@ -1,6 +1,6 @@
 package controllers
 
-import akka.actor.ActorSystem
+
 import io.flow.common.v0.models.Address
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
@@ -8,12 +8,8 @@ import utils._
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
-  google: Google,
-  system: ActorSystem
+  google: Google
 ) {
-
-  private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
-
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
