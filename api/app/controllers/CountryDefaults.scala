@@ -30,25 +30,15 @@ class CountryDefaults @javax.inject.Inject() (
     address: Option[String],
     ip: Option[String]
   ) = Action.async { request =>
-    Future {
-      val countries = helpers.getLocations(country, address, ip) match {
-        case Left(_) => {
-          data.Countries.all
-        }
-
-        case Right(locations) => {
-          locations.flatMap(_.country).flatMap(Countries.find(_))
-        }
+    helpers.getLocations(country, address, ip).map ( addrs => addrs match {
+      case Left(_) => {
+        serializeCountriesSuccess(data.Countries.all)
       }
 
-      Ok(
-        Json.toJson(
-          countries.map { c =>
-            countryDefaults(c)
-          }
-        )
-      )
-    }
+      case Right(locations) => {
+        serializeCountriesSuccess(locations.flatMap(_.country).flatMap(Countries.find(_)))
+      }
+    })
   }
 
   def getByCountry(
@@ -69,5 +59,15 @@ class CountryDefaults @javax.inject.Inject() (
     currency = c.defaultCurrency.headOption.getOrElse(DefaultCurrency),
     language = c.languages.headOption.getOrElse(DefaultLanguage)
   )
+
+  private[this] def serializeCountriesSuccess (countries: Seq[Country]): Result = {
+    Ok(
+      Json.toJson(
+        countries.map { c =>
+          countryDefaults(c)
+        }
+      )
+    )
+  }
   
 }
