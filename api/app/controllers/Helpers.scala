@@ -18,23 +18,23 @@ class Helpers @javax.inject.Inject() (
   )(
     implicit ec: ExecutionContext
   ): Future[Either[Seq[String], Seq[Timezone]]] = {
-    getLocations(address = address, ip = ip).map ( res => res match {
-      case Left(_) => Left(Seq("Must specify either 'address' or 'ip'"))
+    getLocations(address = address, ip = ip).flatMap ( res => res match {
+      case Left(_) => Future.successful(Left(Seq("Must specify either 'address' or 'ip'")))
       case Right(addresses) => {
-        val eithers = addresses.map{ a =>
+        val eithersFuture = Future.sequence(addresses.map{ a =>
           (a.latitude, a.longitude) match {
-            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble) match {
+            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble).map { timezone => timezone match {
               case None => Left("Unable to determine timezone based on address/ip")
               case Some(tz) => Right(tz)
-            }
-            case _ => Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup")
+            }}
+            case _ => Future.successful ( Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup") )
           }
-        }
+        })
 
-        eithers.filter(_.isLeft) match {
+        eithersFuture.map( eithers => eithers.filter(_.isLeft) match {
           case Nil => Right(eithers.filter(_.isRight).map(_.right.get)) // if there are no errors, then get all the timezones
           case lefts => Left(lefts.map(_.left.get)) // seq of all the errors collected
-        }
+        })
       }
     })
   }
