@@ -1,17 +1,16 @@
 package utils
 
-import java.util.concurrent.TimeUnit
 
+import java.util.concurrent.TimeUnit
 import akka.actor.ActorSystem
-import com.google.maps.GeoApiContext.RequestHandler
-import com.google.maps.{GeoApiContext, GeocodingApi, OkHttpRequestHandler, TimeZoneApi}
+import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
 import io.flow.reference.{Countries, Timezones}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Timezone
 import play.api.Logger
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 object Google {
 
