@@ -14,7 +14,7 @@ object MaxMind {
 
   new URL("https://s3.amazonaws.com/io.flow.aws-s3-public/location/GeoLite2-City.mmdb") #> new File("GeoLite2-City.mmdb") !!
 
-  val geoIp = MaxMindIpGeo("GeoLite2-City.mmdb", 1000)
+  val geoIp = MaxMindIpGeo(dbFile = "GeoLite2-City.mmdb", lruCache = 10000, synchronized = true)
 
   def getByIp(ip: String): Option[Address] = {
     geoIp.getLocation(ip).map { ipl =>
