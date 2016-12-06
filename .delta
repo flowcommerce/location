@@ -1,4 +1,6 @@
 builds:
   - root:
+      instance.type: c4.large
       port.container: 9000
       port.host: 6191
+      memory: 3500
