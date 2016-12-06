@@ -1,6 +1,6 @@
 builds:
   - root:
-      instance.type: c4.large
+      instance.type: t2.medium
       port.container: 9000
       port.host: 6191
       memory: 3500
