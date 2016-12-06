@@ -3,6 +3,8 @@ package utils
 import com.sanoma.cda.geoip.{IpLocation, MaxMindIpGeo}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Country
+import play.api.Logger
+import scala.util.{Failure, Success, Try}
 
 private[utils] case class LatLong(latitude: String, longitude: String)
 
@@ -17,8 +19,14 @@ object MaxMind {
   val geoIp = MaxMindIpGeo(dbFile = "GeoLite2-City.mmdb", lruCache = 10000, synchronized = true)
 
   def getByIp(ip: String): Option[Address] = {
-    geoIp.getLocation(ip).map { ipl =>
-      address(ipl)
+    Try {
+      geoIp.getLocation(ip)
+    } match {
+      case Success(ipl) => ipl.map(address)
+      case Failure(ex) => {
+        Logger.error(s"Encountered an error retrieving IP location from database: [$ex]")
+        None
+      }
     }
   }
 
