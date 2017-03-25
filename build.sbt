@@ -29,7 +29,7 @@ lazy val api = project
       "io.flow" %% "lib-reference-scala" % "0.1.8",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
-      "com.google.maps" % "google-maps-services" % "0.1.17"
+      "com.google.maps" % "google-maps-services" % "0.1.18"
     )
   )
 
