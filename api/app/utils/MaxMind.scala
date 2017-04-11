@@ -14,7 +14,7 @@ object MaxMind {
   import java.io.File
   import scala.language.postfixOps
 
-  new URL("https://s3.amazonaws.com/io.flow.aws-s3-public/location/GeoLite2-City.mmdb") #> new File("GeoLite2-City.mmdb") !!
+  new URL("https://s3.amazonaws.com/io.flow.aws-s3-public/location/GeoIP2-City-20170404-N116b6K2.mmdb") #> new File("GeoLite2-City.mmdb") !!
 
   val geoIp = MaxMindIpGeo(dbFile = "GeoLite2-City.mmdb", lruCache = 10000, synchronized = true)
 
