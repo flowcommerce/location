@@ -26,7 +26,7 @@ lazy val api = project
     libraryDependencies ++= Seq(
       ws,
       "io.flow" %% "lib-play" % "0.3.15",
-      "io.flow" %% "lib-reference-scala" % "0.1.12",
+      "io.flow" %% "lib-reference-scala" % "0.1.13",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
       "com.google.maps" % "google-maps-services" % "0.1.20"
