@@ -33,6 +33,18 @@ lazy val api = project
     )
   )
 
+lazy val importer = project
+  .in(file("importer"))
+  .dependsOn(api)
+  .settings(commonSettings: _*)
+  .settings(
+    libraryDependencies ++= Seq(
+      jdbc,
+      "com.typesafe.play" %% "anorm" % "2.5.1",
+      "com.h2database" % "h2" % "1.4.195"
+    )
+  )
+
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   name <<= name("location-" + _),
   libraryDependencies ++= Seq(
