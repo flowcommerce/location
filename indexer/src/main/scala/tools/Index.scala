@@ -1,22 +1,17 @@
 package tools
 
-import java.nio.MappedByteBuffer
+import java.io.InputStream
+import java.nio.{Buffer, ByteBuffer}
 
 import utils.DigitalElementOffset
 
 import scala.collection.mutable
-
-case class Offset(start_range: Long, end_range: Long, offset: Int, length: Int)
-
-case class Record(
-  start_range: Long,
-  end_range: Long,
-
+import scala.collection.mutable.ArrayBuffer
 
 object Index {
 
-  def makeIndex(buf: MappedByteBuffer, fieldDelimiter: Char, recordDelimiter: Char): Array[DigitalElementOffset] = {
-    val builder: mutable.ArrayBuilder[DigitalElementOffset] = mutable.ArrayBuilder.make()
+  def makeIndex(buf: ByteBuffer, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementOffset] = {
+    val result = ArrayBuffer.empty[DigitalElementOffset]
     var i = 0
     var curRange = new mutable.StringBuilder()
     var curOffset = 0
@@ -30,7 +25,7 @@ object Index {
           }
         }
         case `recordDelimiter` => {
-          builder += DigitalElementOffset(curRange.toLong, curOffset, buf.position() - curOffset)
+          result += DigitalElementOffset(curRange.toLong, curOffset, buf.position() - curOffset)
           curOffset = buf.position()
           withinRange = true
           curRange.clear()
@@ -43,8 +38,7 @@ object Index {
       }
       i = i + 1
     }
-    builder.result()
+    result
   }
-
 
 }

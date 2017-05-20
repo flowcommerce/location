@@ -28,20 +28,22 @@ lazy val api = project
       "io.flow" %% "lib-play" % "0.3.19",
       "io.flow" %% "lib-reference-scala" % "0.1.22",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
       "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
       "com.google.maps" % "google-maps-services" % "0.1.20"
     )
   )
 
-lazy val importer = project
-  .in(file("importer"))
+lazy val indexer = project
+  .in(file("indexer"))
   .dependsOn(api)
   .settings(commonSettings: _*)
   .settings(
     libraryDependencies ++= Seq(
       jdbc,
       "com.typesafe.play" %% "anorm" % "2.5.1",
-      "com.h2database" % "h2" % "1.4.195"
+      "com.h2database" % "h2" % "1.4.195",
+      "org.scalatest" %% "scalatest" % "3.0.1" % "test"
     )
   )
 
