@@ -3,6 +3,7 @@ import java.nio.MappedByteBuffer
 import java.nio.charset.StandardCharsets
 
 import scala.collection.mutable
+import scala.util.Try
 
 case class DigitalElementOffset(
   ipRangeStart: Long,
@@ -10,7 +11,6 @@ case class DigitalElementOffset(
   length: Int) extends Ordered[DigitalElementOffset] {
 
   override def compare(that: DigitalElementOffset): Int = (this.ipRangeStart - that.ipRangeStart).toInt
-
 }
 
 case class EdgeRecord(
@@ -31,7 +31,27 @@ case class EdgeRecord(
   inDst: Boolean
 )
 
+
 object DigitalElement {
+
+  def ipToDecimal(ip:String): Try[Long] = Try {
+    ip.split("\\.").map(Integer.parseInt) match {
+      case(Array(a, b, c, d)) => {
+        a * scala.math.pow(256, 3).toLong +
+          b * scala.math.pow(256, 2).toLong +
+          c * scala.math.pow(256, 1).toLong +
+          d * scala.math.pow(256, 0).toLong
+      }
+      case _ => throw new IllegalArgumentException("Unable to parse ip address")
+    }
+
+  }
+
+  def lookup(ipString: String, index: Array[EdgeRecord]): Try[Option[EdgeRecord]] = {
+    ipToDecimal(ipString) map { ip =>
+      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
+    }
+  }
 
   def makeIndex(buf: MappedByteBuffer, fieldDelimiter: Char, recordDelimiter: Char): Array[DigitalElementOffset] = {
     val builder: mutable.ArrayBuilder[DigitalElementOffset] = mutable.ArrayBuilder.make()
@@ -63,5 +83,6 @@ object DigitalElement {
     }
     builder.result()
   }
+
 
 }
