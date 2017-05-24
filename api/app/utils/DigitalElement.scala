@@ -29,7 +29,9 @@ case class EdgeRecord(
   twoLetterCountry: Int,
   gmtOffset: String,
   inDst: Boolean
-)
+) extends Ordered[EdgeRecord] {
+  override def compare(that: EdgeRecord): Int = (this.rangeStart - that.rangeStart).toInt
+}
 
 
 object DigitalElement {
