@@ -26,7 +26,7 @@ case class EdgeRecord(
   regionCode: Int,
   cityCode: Int,
   continentCode: Int,
-  twoLetterCountry: Int,
+  twoLetterCountry: String,
   gmtOffset: String,
   inDst: Boolean
 ) extends Ordered[EdgeRecord] {
@@ -49,11 +49,15 @@ object DigitalElement {
 
   }
 
-  def lookup(ipString: String, index: Array[EdgeRecord]): Try[Option[EdgeRecord]] = {
-    ipToDecimal(ipString) map { ip =>
-      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
-    }
-  }
+
+//  def lookup(ipString: String, index: Array[EdgeRecord]): Try[Option[EdgeRecord]] = {
+//    ipToDecimal(ipString) map { ip =>
+//      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b) filter (ip <= _.rangeEnd)
+//    }
+//  }
+
+  def lookup(ip: Long, index: IndexedSeq[EdgeRecord]) =
+      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b) filter (ip <= _.rangeEnd)
 
   def makeIndex(buf: MappedByteBuffer, fieldDelimiter: Char, recordDelimiter: Char): Array[DigitalElementOffset] = {
     val builder: mutable.ArrayBuilder[DigitalElementOffset] = mutable.ArrayBuilder.make()
