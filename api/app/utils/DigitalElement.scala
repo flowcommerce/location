@@ -1,13 +1,14 @@
 package utils
-import java.io.{BufferedReader, InputStream}
-import java.nio.MappedByteBuffer
-import java.nio.charset.StandardCharsets
+import java.io.InputStream
+
+import io.flow.common.v0.models.Address
 
 import scala.collection.mutable
 import scala.util.Try
 
 case class DigitalElementIndexRecord(
   rangeStart: Long,
+  rangeEnd: Long,
   fieldDelimiter: Char,
   bytes: Array[Byte]) extends Ordered[DigitalElementIndexRecord] {
 
@@ -55,6 +56,10 @@ case class EdgeRecord(
 }
 
 object EdgeRecord {
+
+  def fromIndexRecord(r: DigitalElementIndexRecord): EdgeRecord =
+    fromByteArray(r.bytes, r.fieldDelimiter)
+
   def fromByteArray(b: Array[Byte], fieldDelimiter: Char): EdgeRecord = {
     val fields = new String(b).split(fieldDelimiter)
     EdgeRecord(
@@ -82,6 +87,18 @@ object EdgeRecord {
 
 object DigitalElement {
 
+  def toAddress(ir: DigitalElementIndexRecord): Address = {
+    val fields = new String(ir.bytes).split(ir.fieldDelimiter)
+    Address(
+      city = Some(fields(4)),
+      province = Some(fields(3)),
+      postal = Some(fields(7)),
+      country = io.flow.reference.Countries.find(fields(2)).map(_.iso31663),
+      latitude = Some(fields(5)),
+      longitude = Some(fields(6))
+      )
+  }
+
   def ipToDecimal(ip:String): Try[Long] = Try {
     ip.split("\\.").map(Integer.parseInt) match {
       case(Array(a, b, c, d)) => {
@@ -95,44 +112,44 @@ object DigitalElement {
 
   }
 
-  def lookup(ip: Long, index: IndexedSeq[EdgeRecord]) =
+  def lookup(ip: Long, index: IndexedSeq[DigitalElementIndexRecord]): Option[DigitalElementIndexRecord] =
       Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
         .filter(ip <= _.rangeEnd)
 
   def buildIndex(buf: InputStream, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementIndexRecord] = {
+    System.out.println(s"using ioStream ${buf} with ${buf.available()}")
     val rd = recordDelimiter.toByte
     val fd = fieldDelimiter.toByte
     val indexBuilder = IndexedSeq.newBuilder[DigitalElementIndexRecord]
     val recordBuilder = new mutable.ArrayBuilder.ofByte
-    val rangeStartBuilder = new mutable.ArrayBuilder.ofByte
-    var counter = 0
-    var rangeStartFound = false
+    var charCounter = -1
+    var firstFieldLimit = -1
+    var secondFieldLimit = -1
     var cur: Int = 0
     cur = buf.read()
     while(cur != -1) {
-      cur match {
+      val b = cur.toByte
+      recordBuilder += b
+      charCounter = charCounter + 1
+      b match {
+        case `fd` if (firstFieldLimit == -1) => {
+          firstFieldLimit = charCounter
+        }
+        case `fd` if (secondFieldLimit == -1) => {
+          secondFieldLimit = charCounter
+        }
         case `rd` => {
-          val rangeStart = new String(rangeStartBuilder.result()).toLong
           val bytes = recordBuilder.result()
-          val rec = DigitalElementIndexRecord(rangeStart, fieldDelimiter, bytes)
+          val rangeStart = new String(bytes.slice(0,firstFieldLimit)).toLong
+          val rangeEnd = new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)).toLong
+          val rec = DigitalElementIndexRecord(rangeStart, rangeEnd, fieldDelimiter, bytes)
           indexBuilder += rec
           recordBuilder.clear()
-          rangeStartBuilder.clear()
-          rangeStartFound = false
-          counter = counter + 1;
-          if (counter % 100000 == 0) {
-            System.out.println(s"Indexed ${counter} records")
-          }
+          charCounter = -1
+          firstFieldLimit = -1
+          secondFieldLimit = -1
         }
-        case _ => {
-          val b = cur.toByte
-          if(b == fd && !rangeStartFound) {
-            rangeStartFound = true
-          } else if (!rangeStartFound) {
-            rangeStartBuilder += b
-          }
-          recordBuilder += b
-        }
+        case _ => ()
       }
       cur = buf.read()
     }

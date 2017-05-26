@@ -18,7 +18,7 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
     val start = System.currentTimeMillis()
     System.out.println("Building index")
-    val index = DigitalElement.buildIndex(new BufferedInputStream(is, 4000000), ';', '\n')
+    val index = DigitalElement.buildIndex(new BufferedInputStream(is), ';', '\n')
     val end = System.currentTimeMillis()
     System.out.println(s"Indexed ${index.size} records in ${(end - start) / 1000} secs")
 

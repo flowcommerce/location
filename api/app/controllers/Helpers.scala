@@ -2,16 +2,21 @@ package controllers
 
 
 import io.flow.common.v0.models.Address
+import io.flow.error.v0.models.GenericError
+import io.flow.play.util.Validation
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
 import utils._
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success}
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
-  google: Google
+  google: Google,
+  digitalElementIndexProvider: DigitalElementIndexProvider
 ) {
+  val digitalElementIndex = digitalElementIndexProvider.getIndex()
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
@@ -45,7 +50,7 @@ class Helpers @javax.inject.Inject() (
     ip: Option[String] = None
   )(
     implicit ec: ExecutionContext
-  ): Future[Either[Unit, Seq[Address]]] = {
+  ): Future[Either[GenericError, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
         Countries.find(code) match {
@@ -91,13 +96,18 @@ class Helpers @javax.inject.Inject() (
       }
           
       case (_, _, Some(i)) => {
-        MaxMind.getByIp(i) match {
-          case Some(address) => Future.successful ( Right(Seq(address)) )
-          case None => Future.successful ( Right(Nil) )
+        DigitalElement.ipToDecimal(i) map { ip =>
+          DigitalElement.lookup(ip, digitalElementIndex) map DigitalElement.toAddress match {
+            case Some(address) => Seq(address)
+            case None => Nil
+          }
+        } match {
+          case Success(res) => Future.successful(Right(res))
+          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage())))
         }
       }
 
-      case _ => Future.successful ( Left(Unit) )
+      case _ => Future.successful (Left(Validation.error("Must specify either 'address' or 'ip'")) )
     }
   }
 }
