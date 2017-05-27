@@ -1,5 +1,6 @@
 package utils
 
+import io.flow.common.v0.models.Address
 import org.scalatest.{Matchers, WordSpec}
 
 import scala.util.{Failure, Success}
@@ -98,33 +99,24 @@ class DigitalElementSpec extends WordSpec with Matchers {
     }
   }
 
-  "EdgeRecord" should {
-    "properly parse an index record" in {
+  "toAdders" should {
+    "properly format anb address" in {
       val fixture = DigitalElementIndexRecord(
         rangeStart = 1153680280,
         rangeEnd = 1153680287,
         fieldDelimiter = ';',
         bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;840;31;3293;6;us;-400;y".getBytes())
 
-      val expected = EdgeRecord(
-        rangeStart = 1153680280,
-        rangeEnd = 1153680287,
-        country = "usa",
-        region = "nj",
-        city = "hoboken",
-        latitude = 40.7478,
-        longitude = -74.0339,
-        postalCode = "###",
-        countryCode = 840,
-        regionCode = 31,
-        cityCode = 3293,
-        continentCode = 6,
-        twoLetterCountry = "us",
-        gmtOffset = "-400",
-        inDst = true
+      val expected = Address(
+        city = Some("hoboken"),
+        province = Some("nj"),
+        postal = Some("###"),
+        country = Some("USA"),
+        latitude = Some("40.7478"),
+        longitude = Some("-74.0339")
       )
 
-      EdgeRecord.fromIndexRecord(fixture) should equal(expected)
+      DigitalElement.toAddress(fixture) should equal(expected)
     }
   }
 

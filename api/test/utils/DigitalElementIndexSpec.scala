@@ -12,23 +12,22 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
   "buildIndex" should {
 
-    val path = Paths.get("/Users/eric/netacuity/text_file_2/output.csv")
+    val path = Paths.get("./test/resources/digitalelement_sample.csv")
 
     val is = Files.newInputStream(path)
 
-    val start = System.currentTimeMillis()
-    System.out.println("Building index")
     val index = DigitalElement.buildIndex(new BufferedInputStream(is), ';', '\n')
-    val end = System.currentTimeMillis()
-    System.out.println(s"Indexed ${index.size} records in ${(end - start) / 1000} secs")
 
-    System.out.println(s"First record:\n\t${index(0)}")
+    "index every record" in {
+      index.length shouldBe 3368
+    }
 
-    System.out.println(s"500th record:\n\t${index(499)}")
-
-    val last = index.size - 1
-    System.out.println(s"Last record:\n\t${index(last)}")
-
+    "properly parse records" in {
+      index(1000).rangeStart should equal(1111904306)
+      index(1000).rangeEnd should equal(1111904315)
+      index(1000).fieldDelimiter should equal(';')
+      index(1000).bytes should equal("1111904306;1111904315;usa;nj;hoboken;40.7478;-74.0339;###;840;31;3293;6;us;-400;y;\n".getBytes())
+    }
 
   }
 

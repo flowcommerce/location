@@ -1,5 +1,4 @@
 import play.PlayImport.PlayKeys._
-import com.github.retronym.SbtOneJar._
 
 name := "location"
 

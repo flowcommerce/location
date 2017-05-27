@@ -15,76 +15,6 @@ case class DigitalElementIndexRecord(
   override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
 }
 
-/**
-  * Represents a record from DigitalElement's Edge database
-  * https://portal.digitalelement.com/portal/running/descriptions.html
-  *
-  * @param rangeStart
-  * @param rangeEnd
-  * @param country
-  * @param region
-  * @param city
-  * @param latitude
-  * @param longitude
-  * @param postalCode
-  * @param countryCode
-  * @param regionCode
-  * @param cityCode
-  * @param continentCode
-  * @param twoLetterCountry
-  * @param gmtOffset
-  * @param inDst
-  */
-case class EdgeRecord(
-  rangeStart: Long,
-  rangeEnd: Long,
-  country: String,
-  region: String,
-  city: String,
-  latitude: Double,
-  longitude: Double,
-  postalCode: String,
-  countryCode: Int,
-  regionCode: Int,
-  cityCode: Int,
-  continentCode: Int,
-  twoLetterCountry: String,
-  gmtOffset: String,
-  inDst: Boolean
-) extends Ordered[EdgeRecord] {
-  override def compare(that: EdgeRecord): Int = (this.rangeStart - that.rangeStart).toInt
-}
-
-object EdgeRecord {
-
-  def fromIndexRecord(r: DigitalElementIndexRecord): EdgeRecord =
-    fromByteArray(r.bytes, r.fieldDelimiter)
-
-  def fromByteArray(b: Array[Byte], fieldDelimiter: Char): EdgeRecord = {
-    val fields = new String(b).split(fieldDelimiter)
-    EdgeRecord(
-      rangeStart = fields(0).toLong,
-      rangeEnd = fields(1).toLong,
-      country = fields(2),
-      region = fields(3),
-      city = fields(4),
-      latitude = fields(5).toDouble,
-      longitude = fields(6).toDouble,
-      postalCode = fields(7),
-      countryCode = fields(8).toInt,
-      regionCode = fields(9).toInt,
-      cityCode = fields(10).toInt,
-      continentCode = fields(11).toInt,
-      twoLetterCountry = fields(12),
-      gmtOffset = fields(13),
-      inDst = fields(14) match {
-        case "y" => true
-        case _ => false
-      }
-    )
-  }
-}
-
 object DigitalElement {
 
   def toAddress(ir: DigitalElementIndexRecord): Address = {
@@ -117,7 +47,6 @@ object DigitalElement {
         .filter(ip <= _.rangeEnd)
 
   def buildIndex(buf: InputStream, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementIndexRecord] = {
-    System.out.println(s"using ioStream ${buf} with ${buf.available()}")
     val rd = recordDelimiter.toByte
     val fd = fieldDelimiter.toByte
     val indexBuilder = IndexedSeq.newBuilder[DigitalElementIndexRecord]
