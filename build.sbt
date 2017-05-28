@@ -21,6 +21,7 @@ lazy val api = project
   .enablePlugins(NewRelic)
   .settings(commonSettings: _*)
   .settings(
+    javaOptions in Test += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
