@@ -49,7 +49,15 @@ object DigitalElement {
       Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
         .filter(ip <= _.rangeEnd)
 
-  def buildIndex(buf: InputStream, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementIndexRecord] = {
+  /**
+    * Very stateful method that builds the index of DigitalElement ip records from an InputStream
+    * (mainly because AWS SDK returns an input stream from S3 getObject requests.
+    * @param is the input stream to parse
+    * @param fieldDelimiter
+    * @param recordDelimiter
+    * @return an indexed sequence of ip ranges.  Ordering is not changed from which records arrive in the input stream
+    */
+  def buildIndex(is: InputStream, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementIndexRecord] = {
     val rd = recordDelimiter.toByte
     val fd = fieldDelimiter.toByte
     val indexBuilder = IndexedSeq.newBuilder[DigitalElementIndexRecord]
@@ -58,7 +66,7 @@ object DigitalElement {
     var firstFieldLimit = -1
     var secondFieldLimit = -1
     var cur: Int = 0
-    cur = buf.read()
+    cur = is.read()
     while(cur != -1) {
       val b = cur.toByte
       recordBuilder += b
@@ -83,7 +91,7 @@ object DigitalElement {
         }
         case _ => ()
       }
-      cur = buf.read()
+      cur = is.read()
     }
     indexBuilder.result()
   }
