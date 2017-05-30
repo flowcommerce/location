@@ -99,8 +99,8 @@ class DigitalElementSpec extends WordSpec with Matchers {
     }
   }
 
-  "toAdders" should {
-    "properly format anb address" in {
+  "toAddress" should {
+    "properly format an address" in {
       val fixture = DigitalElementIndexRecord(
         rangeStart = 1153680280,
         rangeEnd = 1153680287,
@@ -109,7 +109,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
 
       val expected = Address(
         city = Some("hoboken"),
-        province = Some("nj"),
+        province = Some("NJ"),
         postal = Some("###"),
         country = Some("USA"),
         latitude = Some("40.7478"),

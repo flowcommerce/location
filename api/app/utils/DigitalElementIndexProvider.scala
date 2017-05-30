@@ -1,6 +1,6 @@
 package utils
 
-import java.io.InputStream
+import java.io.{BufferedInputStream, InputStream}
 import java.nio.file.{Files, Paths}
 
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
@@ -14,7 +14,7 @@ class DigitalElementIndexProvider @javax.inject.Inject() (environmentVariables: 
 
   def getIndex(): IndexedSeq[DigitalElementIndexRecord] = {
     val is: InputStream = environmentVariables.digitalElementFileUri match {
-      case fileUri(path) => Files.newInputStream(Paths.get(path))
+      case fileUri(path) => new BufferedInputStream(Files.newInputStream(Paths.get(path)))
       case s3Uri(bucket, key) => {
         val s3: AmazonS3 = AmazonS3ClientBuilder.standard().build()
         Logger.info(s"getting ${key} from bucket ${bucket}")
@@ -22,7 +22,7 @@ class DigitalElementIndexProvider @javax.inject.Inject() (environmentVariables: 
       }
       case _ => throw new IllegalArgumentException("Invalid digitalElementFileUri.  Must use either s3:// or file:// protocol")
     }
-    Logger.info(s"Buidling index from ${environmentVariables.digitalElementFileUri}")
+    Logger.info(s"Building index from ${environmentVariables.digitalElementFileUri}")
     val start = System.currentTimeMillis()
     val index = DigitalElement.buildIndex(is, ';', '\n')
     Logger.info(s"Indexed ${index.size} records in ${(System.currentTimeMillis() - start) / 1000} seconds")

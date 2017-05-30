@@ -2,6 +2,7 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
+import io.flow.reference.{Countries, Provinces}
 
 import scala.collection.mutable
 import scala.util.Try
@@ -19,11 +20,13 @@ object DigitalElement {
 
   def toAddress(ir: DigitalElementIndexRecord): Address = {
     val fields = new String(ir.bytes).split(ir.fieldDelimiter)
+    val country = Countries.mustFind(fields(2))
+    val province = Provinces.find(s"${country.iso31663}-${fields(3)}")
     Address(
       city = Some(fields(4)),
-      province = Some(fields(3)),
+      province = province.map(_.iso31662),
       postal = Some(fields(7)),
-      country = io.flow.reference.Countries.find(fields(2)).map(_.iso31663),
+      country = Some(country.iso31663),
       latitude = Some(fields(5)),
       longitude = Some(fields(6))
       )

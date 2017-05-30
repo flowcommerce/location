@@ -1,12 +1,10 @@
 package utils
 
-import org.scalatest.{Matchers, WordSpec}
-import org.scalacheck.Prop.{BooleanOperators, forAll}
+import org.scalacheck.Arbitrary.arbitrary
+import org.scalacheck.Gen._
+import org.scalacheck.Prop.forAll
 import org.scalacheck._
-import Gen._
-import Arbitrary.arbitrary
 import org.scalacheck.util.Buildable
-import org.scalatest.prop.Checkers._
 
 import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
