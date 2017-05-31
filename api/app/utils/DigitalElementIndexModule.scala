@@ -1,8 +1,7 @@
 package utils
 
-import java.io.{BufferedInputStream, ByteArrayInputStream, InputStream}
+import java.io.{BufferedInputStream, InputStream}
 import java.nio.file.{Files, Paths}
-import java.util.zip.GZIPInputStream
 
 import com.amazonaws.services.s3.{AmazonS3, AmazonS3ClientBuilder}
 import com.google.inject.name.Named
