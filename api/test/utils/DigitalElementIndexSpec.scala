@@ -26,7 +26,7 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
       index(1000).rangeStart should equal(1111904306)
       index(1000).rangeEnd should equal(1111904315)
       index(1000).fieldDelimiter should equal(';')
-      index(1000).bytes should equal("1111904306;1111904315;usa;nj;hoboken;40.7478;-74.0339;###;840;31;3293;6;us;-400;y;\n".getBytes())
+      index(1000).bytes should equal("1111904306;1111904315;usa;nj;hoboken;40.7478;-74.0339;###;\n".getBytes())
     }
 
   }

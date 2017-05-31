@@ -17,19 +17,12 @@ class DigitalElementSpec extends WordSpec with Matchers {
     latitude  : Double = 0.0,
     longitude: Double = 0.0,
     postalCode: String = "",
-    countryCode: Int = 0,
-    regionCode: Int = 0,
-    cityCode: Int = 0,
-    continentCode: Int = 0,
-    twoLetterCountry: String = "",
-    gmtOffset : String = "",
-    inDst     : Boolean = false,
     fieldDelimiter: Char = ';'
   ) = DigitalElementIndexRecord(
     rangeStart = rangeStart,
     rangeEnd = rangeEnd,
     fieldDelimiter = fieldDelimiter,
-    bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode, countryCode, regionCode, cityCode, continentCode, twoLetterCountry, gmtOffset, inDst)
+    bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
       .mkString(fieldDelimiter.toString)
       .getBytes()
   )
@@ -105,7 +98,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
         rangeStart = 1153680280,
         rangeEnd = 1153680287,
         fieldDelimiter = ';',
-        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;840;31;3293;6;us;-400;y".getBytes())
+        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes())
 
       val expected = Address(
         city = Some("hoboken"),
