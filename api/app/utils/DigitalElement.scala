@@ -7,6 +7,19 @@ import io.flow.reference.{Countries, Provinces}
 import scala.collection.mutable
 import scala.util.Try
 
+/**
+  * Searchable format of a DigitalElement ip range record.
+  * The expected format of the record byteststring is:
+  * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;
+  *
+  * for example:
+  * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;
+  *
+  * @param rangeStart decimal value of the ip range min
+  * @param rangeEnd decimal value of the ip range end
+  * @param fieldDelimiter character used to delimit each field
+  * @param bytes raw bytestring of the entire record
+  */
 case class DigitalElementIndexRecord(
   rangeStart: Long,
   rangeEnd: Long,
@@ -18,6 +31,10 @@ case class DigitalElementIndexRecord(
 
 object DigitalElement {
 
+  /**
+    * Constructs an Address from an index record using the format specified
+    * for the DigitalElementIndexRecord bytes value
+    */
   def toAddress(ir: DigitalElementIndexRecord): Address = {
     val fields = new String(ir.bytes).split(ir.fieldDelimiter)
     val country = Countries.mustFind(fields(2))
@@ -29,7 +46,7 @@ object DigitalElement {
       country = Some(country.iso31663),
       latitude = Some(fields(5)),
       longitude = Some(fields(6))
-      )
+    )
   }
 
   def ipToDecimal(ip:String): Try[Long] = Try {
@@ -40,7 +57,7 @@ object DigitalElement {
           c * scala.math.pow(256, 1).toLong +
           d * scala.math.pow(256, 0).toLong
       }
-      case _ => throw new IllegalArgumentException("Unable to parse ip address")
+      case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
     }
 
   }
