@@ -1,6 +1,5 @@
 package controllers
 
-
 import io.flow.common.v0.models.Address
 import io.flow.error.v0.models.GenericError
 import io.flow.play.util.Validation
@@ -14,9 +13,9 @@ import scala.util.{Failure, Success}
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
   google: Google,
-  digitalElementIndexProvider: DigitalElementIndexProvider
+  @javax.inject.Named("DigitalElementIndex")
+  digitalElementIndex: IndexedSeq[DigitalElementIndexRecord]
 ) {
-  val digitalElementIndex = digitalElementIndexProvider.getIndex()
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
