@@ -4,3 +4,4 @@ builds:
       port.container: 9000
       port.host: 6191
       memory: 3500
+      version: 1.1
