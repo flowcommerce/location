@@ -18,7 +18,7 @@ class DigitalElementIndexModule extends AbstractModule {
   @Provides
   @Named("DigitalElementIndex")
   @Singleton
-  def getIndex(@javax.inject.Inject() environmentVariables: EnvironmentVariables): IndexedSeq[DigitalElementIndexRecord] = {
+  def getIndex(@javax.inject.Inject() environmentVariables: EnvironmentVariables): DigitalElementIndex = {
     val is: InputStream = environmentVariables.digitalElementFileUri match {
       case fileUri(path) => new BufferedInputStream(Files.newInputStream(Paths.get(path)))
       case s3Uri(bucket, key) => {

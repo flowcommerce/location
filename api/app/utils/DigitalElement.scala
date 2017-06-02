@@ -27,16 +27,13 @@ case class DigitalElementIndexRecord(
   bytes: Array[Byte]) extends Ordered[DigitalElementIndexRecord] {
 
   override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
-}
-
-object DigitalElement {
 
   /**
     * Constructs an Address from an index record using the format specified
     * for the DigitalElementIndexRecord bytes value
     */
-  def toAddress(ir: DigitalElementIndexRecord): Address = {
-    val fields = new String(ir.bytes).split(ir.fieldDelimiter)
+  def toAddress(): Address = {
+    val fields = new String(this.bytes).split(this.fieldDelimiter)
     val country = Countries.mustFind(fields(2))
     val province = Provinces.find(s"${country.iso31663}-${fields(3)}")
     Address(
@@ -48,6 +45,9 @@ object DigitalElement {
       longitude = Some(fields(6))
     )
   }
+}
+
+object DigitalElement {
 
   def ipToDecimal(ip:String): Try[Long] = Try {
     ip.split("\\.").map(_.toInt) match {
@@ -62,10 +62,6 @@ object DigitalElement {
 
   }
 
-  def lookup(ip: Long, index: IndexedSeq[DigitalElementIndexRecord]): Option[DigitalElementIndexRecord] =
-      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
-        .filter(ip <= _.rangeEnd)
-
   /**
     * Very stateful method that builds the index of DigitalElement ip records from an InputStream
     * (mainly because AWS SDK returns an input stream from S3 getObject requests.
@@ -74,7 +70,7 @@ object DigitalElement {
     * @param recordDelimiter
     * @return an indexed sequence of ip ranges.  Ordering is not changed from which records arrive in the input stream
     */
-  def buildIndex(is: InputStream, fieldDelimiter: Char, recordDelimiter: Char): IndexedSeq[DigitalElementIndexRecord] = {
+  def buildIndex(is: InputStream, fieldDelimiter: Char, recordDelimiter: Char): DigitalElementIndex = {
     val rd = recordDelimiter.toByte
     val fd = fieldDelimiter.toByte
     val indexBuilder = IndexedSeq.newBuilder[DigitalElementIndexRecord]

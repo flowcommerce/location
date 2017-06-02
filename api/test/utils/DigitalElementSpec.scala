@@ -47,7 +47,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
         indexRecordFactory(rangeStart = 21, rangeEnd = 30)
       )
-      DigitalElement.lookup(15, fixture) should equal(Some(fixture(1)))
+      fixture.lookup(15) should equal(Some(fixture(1)))
     }
 
     "find the correct range when ranges overlap" in {
@@ -58,7 +58,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
         indexRecordFactory(rangeStart = 21, rangeEnd = 30)
       )
-      DigitalElement.lookup(13, fixture) should equal(Some(fixture(1)))
+      fixture.lookup(13) should equal(Some(fixture(1)))
     }
 
     "Return None when there is no matching range" in {
@@ -68,7 +68,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
         indexRecordFactory(rangeStart = 20, rangeEnd = 30),
         indexRecordFactory(rangeStart = 31, rangeEnd = 40)
       )
-      DigitalElement.lookup(17, fixture) shouldBe None
+      fixture.lookup(17) shouldBe None
     }
 
     "find the correct range (boundary cases)" in {
@@ -77,8 +77,8 @@ class DigitalElementSpec extends WordSpec with Matchers {
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
         indexRecordFactory(rangeStart = 21, rangeEnd = 30)
       )
-      DigitalElement.lookup(11, fixture) should equal(Some(fixture(1)))
-      DigitalElement.lookup(20, fixture) should equal(Some(fixture(1)))
+      fixture.lookup(11) should equal(Some(fixture(1)))
+      fixture.lookup(20) should equal(Some(fixture(1)))
     }
 
     "Return None if the input is completely out of range" in {
@@ -87,8 +87,8 @@ class DigitalElementSpec extends WordSpec with Matchers {
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
         indexRecordFactory(rangeStart = 21, rangeEnd = 30)
       )
-      DigitalElement.lookup(4, fixture) shouldBe None
-      DigitalElement.lookup(31, fixture) shouldBe None
+      fixture.lookup(4) shouldBe None
+      fixture.lookup(31) shouldBe None
     }
   }
 
@@ -109,7 +109,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
         longitude = Some("-74.0339")
       )
 
-      DigitalElement.toAddress(fixture) should equal(expected)
+      fixture.toAddress() should equal(expected)
     }
   }
 

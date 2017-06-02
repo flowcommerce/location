@@ -14,7 +14,7 @@ import scala.util.{Failure, Success}
 class Helpers @javax.inject.Inject() (
   google: Google,
   @javax.inject.Named("DigitalElementIndex")
-  digitalElementIndex: IndexedSeq[DigitalElementIndexRecord]
+  digitalElementIndex: DigitalElementIndex
 ) {
   def getTimezones(
     address: Option[String] = None,
@@ -96,7 +96,7 @@ class Helpers @javax.inject.Inject() (
           
       case (_, _, Some(i)) => {
         DigitalElement.ipToDecimal(i) map { ip =>
-          DigitalElement.lookup(ip, digitalElementIndex) map DigitalElement.toAddress match {
+          digitalElementIndex.lookup(ip) map (_.toAddress()) match {
             case Some(address) => Seq(address)
             case None => Nil
           }
