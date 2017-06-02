@@ -25,7 +25,7 @@ class Addresses @javax.inject.Inject() (
     ip: Option[String]
   ) = Action.async { request =>
     helpers.getLocations(address = address, ip = ip).map( addrs => addrs match {
-      case Left(error) => UnprocessableEntity(Json.toJson(error))
+      case Left(_) => UnprocessableEntity(Json.toJson(Validation.error("Must specify either 'address' or 'ip'")))
       case Right(locations) => Ok(Json.toJson(locations))
     })
   }
