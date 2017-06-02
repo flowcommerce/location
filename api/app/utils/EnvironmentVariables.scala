@@ -14,4 +14,6 @@ class EnvironmentVariables @javax.inject.Inject() (
     case _ => config.requiredString("google.api.key")
   }
 
+  val digitalElementFileUri = config.requiredString("digitalelement.file.uri")
+
 }
