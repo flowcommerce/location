@@ -2,6 +2,7 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
+import io.flow.reference.v0.models.Province
 import io.flow.reference.{Countries, Provinces}
 
 import scala.collection.mutable
@@ -34,13 +35,13 @@ case class DigitalElementIndexRecord(
     */
   def toAddress(): Address = {
     val fields = new String(this.bytes).split(this.fieldDelimiter)
-    val country = Countries.mustFind(fields(2))
-    val province = Provinces.find(s"${country.iso31663}-${fields(3)}")
+    val country = Countries.find(fields(2))
+    val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),
-      province = province.map(_.iso31662),
+      province = province.map(_.name),
       postal = Some(fields(7)),
-      country = Some(country.iso31663),
+      country = country.map(_.iso31663),
       latitude = Some(fields(5)),
       longitude = Some(fields(6))
     )

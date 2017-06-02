@@ -102,7 +102,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
 
       val expected = Address(
         city = Some("hoboken"),
-        province = Some("NJ"),
+        province = Some("New Jersey"),
         postal = Some("###"),
         country = Some("USA"),
         latitude = Some("40.7478"),
