@@ -50,7 +50,7 @@ object DigitalElement {
   }
 
   def ipToDecimal(ip:String): Try[Long] = Try {
-    ip.split("\\.").map(Integer.parseInt) match {
+    ip.split("\\.").map(_.toInt) match {
       case(Array(a, b, c, d)) => {
         a * scala.math.pow(256, 3).toLong +
           b * scala.math.pow(256, 2).toLong +

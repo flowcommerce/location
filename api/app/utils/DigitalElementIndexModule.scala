@@ -10,8 +10,8 @@ import play.api.Logger
 
 class DigitalElementIndexModule extends AbstractModule {
 
-  val fileUri = "^file:(.*)".r
-  val s3Uri = "^s3://([^/]+)/(.*)".r
+  private[this] val fileUri = "^file:(.*)".r
+  private[this] val s3Uri = "^s3://([^/]+)/(.*)".r
 
   override def configure(): Unit = ()
 
