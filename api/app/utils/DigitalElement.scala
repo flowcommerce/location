@@ -50,13 +50,29 @@ case class DigitalElementIndexRecord(
 
 object DigitalElement {
 
+  private[this] val ipv4 = "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
+  // digitalelement separates the network and interface portions of ipv6
+  // so we only care about the first 4 groups
+  private[this] val ipv6 = "([a-f0-9]*):([a-f0-9]*):([a-f0-9]*):([a-f0-9]*):[a-f0-9]*:[a-f0-9]*:[a-f0-9]*:[a-f0-9]*".r
+
+  private[this] def z(s: String) = s match {
+    case "" => "0"
+    case _ => s
+  }
+
   def ipToDecimal(ip:String): Try[Long] = Try {
-    ip.split("\\.").map(_.toInt) match {
-      case(Array(a, b, c, d)) => {
-        a * scala.math.pow(256, 3).toLong +
-          b * scala.math.pow(256, 2).toLong +
-          c * scala.math.pow(256, 1).toLong +
-          d * scala.math.pow(256, 0).toLong
+    ip match {
+      case ipv4(a, b, c, d) => {
+        a.toInt * scala.math.pow(256, 3).toLong +
+          b.toInt * scala.math.pow(256, 2).toLong +
+          c.toInt * scala.math.pow(256, 1).toLong +
+          d.toInt * scala.math.pow(256, 0).toLong
+      }
+      case ipv6(a, b, c, d) => {
+        Integer.parseInt(z(a), 16) * scala.math.pow(65536, 3).toLong +
+          Integer.parseInt(z(b), 16) * scala.math.pow(65536, 2).toLong +
+          Integer.parseInt(z(c), 16) * scala.math.pow(65536, 1).toLong +
+          Integer.parseInt(z(d), 16) * scala.math.pow(65536, 0).toLong
       }
       case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
     }
