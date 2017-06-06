@@ -13,14 +13,25 @@ Main geolocation data is pulled from (GeoLite2-City.mmdb)
 Ip address -> location data is from DigitalElement's Edge database:  https://portal.digitalelement.com/portal/availableDatabases/index.html
 (creds in LastPass)
 
-Their data is packaged in a proprietary, binary multifile format.  They do, however, provide a "Text File Creator" [tool](https://portal.digitalelement.com/portal/tools/index.html) to export it to CSV format.
+Their data is packaged in a proprietary, binary multifile format.  To create a usable text version, do teh following:
 
-Until this process is automated, an export can be created like so:
+1. Download their "Text File Creator" [tool](https://portal.digitalelement.com/portal/tools/index.html) to export it to CSV format.
+2. Download the latest version of the database https://portal.digitalelement.com/portal/availableDatabases/index.html
+3. Extract the database into its own directory (it contains multiple files)
+4. Create a text file version of the db:
 ```bash
-netacuity-textfile-creator.sh --db_path=<path_to_extracted_edge_database> --db=4 --numeric --fields=edge-country,edge-region,edge-city,edge-latitude,edge-longitude,edge-postal-code --output_file=./<version_number>.csv
+$ netacuity-textfile-creator.sh --db_path=<path_to_extracted_edge_database> --db=4 --numeric --fields=edge-country,edge-region,edge-city,edge-latitude,edge-longitude,edge-postal-code --output_file=./<version_number>.csv
 ```
-
-The resulting file should then be uploaded to `s3://io-flow-location/digitalelement/edge/` and the `digitalelement.file.uri` property of the config should be updated accordingly
+5. Create a text file version of the sb with ipv6 addresses:
+```bash
+$ netacuity-textfile-creator.sh --db_path=<path_to_extracted_edge_database> --db=4 --ipv6 --numeric --fields=edge-country,edge-region,edge-city,edge-latitude,edge-longitude,edge-postal-code --output_file=./<version_number>_ipv6.csv
+```
+6. DigitalElement separates the network and interface groups of the address, and thus, has two extra fields that we must remove before we append them to the original file:
+```bash
+$ cut -f 1,3,5,6,7,8,9,10,11 -d ';' ./<version_number>_ipv6.csv >> ./<version_number>.csv  
+```
+7. Upload the file to: `s3://io-flow-location/digitalelement/edge/`
+8. Update the `digitalelement.file.uri` property of the `application.production.conf` to point to this new file.
 
 The default value of the property points to a truncated version of the file at `s3://io-flow-location/digitalelement/edge/0508_mini.csv`.  If you want to use a local file you can override the property with the `DIGITALELEMENT_FILE_URI` environment variable using a `file://` uri.
 
