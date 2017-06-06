@@ -22,8 +22,8 @@ import scala.util.Try
   * @param bytes raw bytestring of the entire record
   */
 case class DigitalElementIndexRecord(
-  rangeStart: Long,
-  rangeEnd: Long,
+  rangeStart: BigInt,
+  rangeEnd: BigInt,
   fieldDelimiter: Char,
   bytes: Array[Byte]) extends Ordered[DigitalElementIndexRecord] {
 
@@ -60,7 +60,7 @@ object DigitalElement {
     case _ => s
   }
 
-  def ipToDecimal(ip:String): Try[Long] = Try {
+  def ipToDecimal(ip:String): Try[BigInt] = Try {
     ip match {
       case ipv4(a, b, c, d) => {
         a.toInt * scala.math.pow(256, 3).toLong +
@@ -110,8 +110,8 @@ object DigitalElement {
         }
         case `rd` => {
           val bytes = recordBuilder.result()
-          val rangeStart = new String(bytes.slice(0,firstFieldLimit)).toLong
-          val rangeEnd = new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)).toLong
+          val rangeStart = BigInt(new String(bytes.slice(0,firstFieldLimit)))
+          val rangeEnd = BigInt(new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)))
           val rec = DigitalElementIndexRecord(rangeStart, rangeEnd, fieldDelimiter, bytes)
           indexBuilder += rec
           recordBuilder.clear()
