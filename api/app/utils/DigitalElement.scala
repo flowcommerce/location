@@ -53,8 +53,13 @@ object DigitalElement {
   private[this] val ipv4 = "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
   // digitalelement separates the network and interface portions of ipv6
   // so we only care about the first 4 groups
-  private[this] val ipv6 = "([a-f0-9]*):([a-f0-9]*):([a-f0-9]*):([a-f0-9]*):[a-f0-9]*:[a-f0-9]*:[a-f0-9]*:[a-f0-9]*".r
+  private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*){4})".r
 
+  /**
+    * Handle fully-collapsed ipv6 groups ("z" for "zero" ;) )
+    * @param s
+    * @return "0" if it was an empty string, identity otherwise
+    */
   private[this] def z(s: String) = s match {
     case "" => "0"
     case _ => s
@@ -68,7 +73,7 @@ object DigitalElement {
           c.toInt * scala.math.pow(256, 1).toLong +
           d.toInt * scala.math.pow(256, 0).toLong
       }
-      case ipv6(a, b, c, d) => {
+      case ipv6(a, b, c, d, _*) => {
         Integer.parseInt(z(a), 16) * scala.math.pow(65536, 3).toLong +
           Integer.parseInt(z(b), 16) * scala.math.pow(65536, 2).toLong +
           Integer.parseInt(z(c), 16) * scala.math.pow(65536, 1).toLong +
