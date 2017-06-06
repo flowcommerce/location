@@ -22,8 +22,8 @@ import scala.util.Try
   * @param bytes raw bytestring of the entire record
   */
 case class DigitalElementIndexRecord(
-  rangeStart: Long,
-  rangeEnd: Long,
+  rangeStart: BigInt,
+  rangeEnd: BigInt,
   fieldDelimiter: Char,
   bytes: Array[Byte]) extends Ordered[DigitalElementIndexRecord] {
 
@@ -50,13 +50,34 @@ case class DigitalElementIndexRecord(
 
 object DigitalElement {
 
-  def ipToDecimal(ip:String): Try[Long] = Try {
-    ip.split("\\.").map(_.toInt) match {
-      case(Array(a, b, c, d)) => {
-        a * scala.math.pow(256, 3).toLong +
-          b * scala.math.pow(256, 2).toLong +
-          c * scala.math.pow(256, 1).toLong +
-          d * scala.math.pow(256, 0).toLong
+  private[this] val ipv4 = "(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
+  // digitalelement separates the network and interface portions of ipv6
+  // so we only care about the first 4 groups
+  private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*){4})".r
+
+  /**
+    * Handle fully-collapsed ipv6 groups ("z" for "zero" ;) )
+    * @param s
+    * @return "0" if it was an empty string, identity otherwise
+    */
+  private[this] def z(s: String) = s match {
+    case "" => "0"
+    case _ => s
+  }
+
+  def ipToDecimal(ip:String): Try[BigInt] = Try {
+    ip match {
+      case ipv4(a, b, c, d) => {
+        a.toInt * scala.math.pow(256, 3).toLong +
+          b.toInt * scala.math.pow(256, 2).toLong +
+          c.toInt * scala.math.pow(256, 1).toLong +
+          d.toInt * scala.math.pow(256, 0).toLong
+      }
+      case ipv6(a, b, c, d, _*) => {
+        Integer.parseInt(z(a), 16) * scala.math.pow(65536, 3).toLong +
+          Integer.parseInt(z(b), 16) * scala.math.pow(65536, 2).toLong +
+          Integer.parseInt(z(c), 16) * scala.math.pow(65536, 1).toLong +
+          Integer.parseInt(z(d), 16) * scala.math.pow(65536, 0).toLong
       }
       case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
     }
@@ -94,8 +115,8 @@ object DigitalElement {
         }
         case `rd` => {
           val bytes = recordBuilder.result()
-          val rangeStart = new String(bytes.slice(0,firstFieldLimit)).toLong
-          val rangeEnd = new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)).toLong
+          val rangeStart = BigInt(new String(bytes.slice(0,firstFieldLimit)))
+          val rangeEnd = BigInt(new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)))
           val rec = DigitalElementIndexRecord(rangeStart, rangeEnd, fieldDelimiter, bytes)
           indexBuilder += rec
           recordBuilder.clear()

@@ -9,8 +9,8 @@ class DigitalElementSpec extends WordSpec with Matchers {
 
   // convenience to build DigitalElementIndexRecord fixtures with defaults
   def indexRecordFactory(
-    rangeStart: Long = Long.MinValue,
-    rangeEnd: Long = Long.MaxValue,
+    rangeStart: BigInt = Long.MinValue,
+    rangeEnd: BigInt = Long.MaxValue,
     country   : String = "",
     region: String = "",
     city: String = "",
@@ -28,15 +28,23 @@ class DigitalElementSpec extends WordSpec with Matchers {
   )
 
   "ip2decimal" should {
-    "correctly Convert ip addresses" in {
-      DigitalElement.ipToDecimal("0.0.0.0") should be(Success(0L))
-      DigitalElement.ipToDecimal("192.168.1.1") should be(Success(3232235777L))
-      DigitalElement.ipToDecimal("255.255.255.255") should be(Success(4294967295L))
+    "correctly Convert ip4 addresses" in {
+      DigitalElement.ipToDecimal("0.0.0.0") should be(Success(BigInt("0")))
+      DigitalElement.ipToDecimal("192.168.1.1") should be(Success(BigInt("3232235777")))
+      DigitalElement.ipToDecimal("255.255.255.255") should be(Success(BigInt("4294967295")))
+    }
+
+    "correctly Convert ip6 addresses" in {
+      DigitalElement.ipToDecimal("2001:0:0:0:0:0:0:0") should be(Success(BigInt("2306124484190404608")))
+      DigitalElement.ipToDecimal("2001::0:0::0:0:0") should be(Success(BigInt("2306124484190404608")))
+      DigitalElement.ipToDecimal("2404:440c:1463:0:0:0:0:0") should be(Success(BigInt("2595274103944577024")))
     }
 
     "fail" in {
       DigitalElement.ipToDecimal("00.0.0") shouldBe a[Failure[_]]
       DigitalElement.ipToDecimal("0.x.0.0") shouldBe a[Failure[_]]
+      DigitalElement.ipToDecimal("2001:0:0:0:0:0:0") shouldBe a[Failure[_]]
+      DigitalElement.ipToDecimal("2001:0:0:g:0:0:0:0") shouldBe a[Failure[_]]
     }
   }
 
