@@ -29,10 +29,10 @@ lazy val api = project
       "io.flow" %% "lib-play" % "0.3.19",
       "io.flow" %% "lib-reference-scala" % "0.1.22",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.12.5" % "test",
+      "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
       "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
       "com.google.maps" % "google-maps-services" % "0.1.20",
-      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.135"
+      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.141"
     )
   )
 
