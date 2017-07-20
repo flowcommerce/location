@@ -32,6 +32,7 @@ class DigitalElementSpec extends WordSpec with Matchers {
       DigitalElement.ipToDecimal("0.0.0.0") should be(Success(BigInt("0")))
       DigitalElement.ipToDecimal("192.168.1.1") should be(Success(BigInt("3232235777")))
       DigitalElement.ipToDecimal("255.255.255.255") should be(Success(BigInt("4294967295")))
+      DigitalElement.ipToDecimal("::ffff:255.255.255.255") should be(Success(BigInt("4294967295")))
     }
 
     "correctly Convert ip6 addresses" in {
