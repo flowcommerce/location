@@ -75,9 +75,10 @@ class Google @javax.inject.Inject() (
   system: ActorSystem
 ) {
 
-  private[this] val context = new GeoApiContext().
-    setReadTimeout(1000, TimeUnit.MILLISECONDS).
-    setApiKey(environmentVariables.googleApiKey)
+  private[this] val context = new GeoApiContext.Builder()
+    .readTimeout(1000, TimeUnit.MILLISECONDS)
+    .apiKey(environmentVariables.googleApiKey)
+    .build()
 
   private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
