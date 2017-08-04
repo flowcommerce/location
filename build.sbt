@@ -2,7 +2,7 @@ import play.PlayImport.PlayKeys._
 
 name := "location"
 
-scalaVersion in ThisBuild := "2.11.8"
+scalaVersion in ThisBuild := "2.11.11"
 
 lazy val generated = project
   .in(file("generated"))
