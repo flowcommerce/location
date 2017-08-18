@@ -3,4 +3,5 @@ builds:
       instance.type: t2.large
       port.container: 9000
       port.host: 6191
+      memory: 7500
       version: 1.2
