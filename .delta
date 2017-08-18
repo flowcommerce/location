@@ -1,7 +1,6 @@
 builds:
   - root:
-      instance.type: t2.large
+      instance.type: m4.xlarge
       port.container: 9000
       port.host: 6191
-      memory: 7500
       version: 1.2
