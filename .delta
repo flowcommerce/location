@@ -3,4 +3,4 @@ builds:
       instance.type: m4.xlarge
       port.container: 9000
       port.host: 6191
-      version: 1.2
+      version: 1.3
