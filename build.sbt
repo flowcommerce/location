@@ -26,7 +26,7 @@ lazy val api = project
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       ws,
-      "io.flow" %% "lib-play" % "0.4.4",
+      "io.flow" %% "lib-play" % "0.4.5",
       "io.flow" %% "lib-reference-scala" % "0.1.31",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
