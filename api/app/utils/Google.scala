@@ -2,12 +2,14 @@ package utils
 
 
 import java.util.concurrent.TimeUnit
+
 import akka.actor.ActorSystem
 import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
 import io.flow.reference.{Countries, Timezones}
 import io.flow.common.v0.models.Address
 import io.flow.reference.v0.models.Timezone
+import org.apache.commons.lang3.exception.ExceptionUtils
 import play.api.Logger
 
 import scala.concurrent.Future
@@ -92,7 +94,7 @@ class Google @javax.inject.Inject() (
       } match {
         case Success(result) => result
         case Failure(e) => {
-          Logger.warn(s"Encountered the following error from the timezone API: $e")
+          Logger.warn(s"Encountered the following error from the timezone API: ${ExceptionUtils.getStackTrace(e)}")
           None
         }
       }
