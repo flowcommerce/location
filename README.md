@@ -15,7 +15,7 @@ Ip address -> location data is from DigitalElement's Edge database:  https://por
 
 Their data is packaged in a proprietary, binary multifile format.  To create a usable text version, do the following:
 
-1. Download their "Text File Creator" [tool](https://portal.digitalelement.com/portal/tools/index.html) to export it to CSV format.
+1. Download their "Text File Creator" [tool](https://portal.digitalelement.com/portal/tools/index.html), used to convert the binary database to CSV format.
 2. Download the latest version of the database https://portal.digitalelement.com/portal/availableDatabases/index.html
 3. Extract the database into its own directory (it contains multiple files)
 4. Create a text file version of the db:
