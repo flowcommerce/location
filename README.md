@@ -13,7 +13,7 @@ Main geolocation data is pulled from (GeoLite2-City.mmdb)
 Ip address -> location data is from DigitalElement's Edge database:  https://portal.digitalelement.com/portal/availableDatabases/index.html
 (creds in LastPass)
 
-Their data is packaged in a proprietary, binary multifile format.  To create a usable text version, do teh following:
+Their data is packaged in a proprietary, binary multifile format.  To create a usable text version, do the following:
 
 1. Download their "Text File Creator" [tool](https://portal.digitalelement.com/portal/tools/index.html) to export it to CSV format.
 2. Download the latest version of the database https://portal.digitalelement.com/portal/availableDatabases/index.html
@@ -22,7 +22,7 @@ Their data is packaged in a proprietary, binary multifile format.  To create a u
 ```bash
 $ netacuity-textfile-creator.sh --db_path=<path_to_extracted_edge_database> --db=4 --numeric --fields=edge-country,edge-region,edge-city,edge-latitude,edge-longitude,edge-postal-code --output_file=./<version_number>.csv
 ```
-5. Create a text file version of the sb with ipv6 addresses:
+5. Create a text file version of the db with ipv6 addresses:
 ```bash
 $ netacuity-textfile-creator.sh --db_path=<path_to_extracted_edge_database> --db=4 --ipv6 --numeric --fields=edge-country,edge-region,edge-city,edge-latitude,edge-longitude,edge-postal-code --output_file=./<version_number>_ipv6.csv
 ```
