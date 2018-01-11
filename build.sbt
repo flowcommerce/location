@@ -24,6 +24,8 @@ lazy val api = project
   .settings(
     javaAgents += "org.aspectj" % "aspectjweaver" % "1.8.13",
     javaOptions in Universal += "-Dorg.aspectj.tracing.factory=default",
+    javaOptions in Test += "-Dkamon.modules.kamon-system-metrics.auto-start=false",
+    javaOptions in Test += "-Dkamon.show-aspectj-missing-warning=no",
     javaOptions in Test += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
