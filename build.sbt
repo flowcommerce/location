@@ -19,14 +19,18 @@ lazy val api = project
   .aggregate(generated)
   .enablePlugins(PlayScala)
   .enablePlugins(NewRelic)
+  .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
+    javaAgents += "org.aspectj" % "aspectjweaver" % "1.8.13",
+    javaOptions in Universal += "-Dorg.aspectj.tracing.factory=default",
     javaOptions in Test += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       ws,
       "io.flow" %% "lib-play" % "0.4.15",
+      "io.flow" %% "lib-play-graphite" % "0.0.5",
       "io.flow" %% "lib-reference-scala" % "0.1.48",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
