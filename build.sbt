@@ -1,4 +1,4 @@
-
+import play.PlayImport.PlayKeys._
 
 name := "location"
 
