@@ -32,7 +32,7 @@ lazy val api = project
     libraryDependencies ++= Seq(
       ws,
       "io.flow" %% "lib-play" % "0.4.20",
-      "io.flow" %% "lib-play-graphite" % "0.0.6",
+      "io.flow" %% "lib-play-graphite" % "0.0.7",
       "io.flow" %% "lib-reference-scala" % "0.1.48",
       "org.scalatestplus" %% "play" % "1.4.0" % "test",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
