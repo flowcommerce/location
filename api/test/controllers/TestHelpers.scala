@@ -16,12 +16,15 @@ trait TestHelpers {
     Try(
       Await.result(f, DefaultDuration)
     ) match {
-      case Success(response) => {
+      case Success(_) => {
         org.specs2.execute.Failure(s"Expected HTTP[$code] but got HTTP 2xx")
       }
       case Failure(ex) => ex match {
-        case UnitResponse(code) => {
+        case UnitResponse(c) if c == code => {
           org.specs2.execute.Success()
+        }
+        case UnitResponse(c) => {
+          org.specs2.execute.Failure(s"Expected code[$code] but got[$c]")
         }
         case e => {
           org.specs2.execute.Failure(s"Unexpected error: $e")

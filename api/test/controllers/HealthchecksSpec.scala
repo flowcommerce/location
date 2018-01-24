@@ -2,20 +2,20 @@ package controllers
 
 import io.flow.healthcheck.v0.Client
 import io.flow.healthcheck.v0.models.Healthcheck
-import play.api.test._
-import play.api.test.Helpers._
-import org.scalatestplus.play._
+import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import play.api.test.{DefaultAwaitTimeout, FutureAwaits}
 
-class HealthchecksSpec extends PlaySpec with OneServerPerSuite {
+class HealthchecksSpec extends PlaySpec
+  with OneServerPerSuite
+  with FutureAwaits
+  with DefaultAwaitTimeout
+{
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  implicit override lazy val port = 9010
-  implicit override lazy val app: FakeApplication = FakeApplication()
+  def client = new Client(s"http://localhost:$port")
 
-  lazy val client = new Client(s"http://localhost:$port")
-
-  "GET /_internal_/healthcheck" in new WithServer {
+  "GET /_internal_/healthcheck" in {
     await(
       client.healthchecks.getHealthcheck()
     ) must equal(
