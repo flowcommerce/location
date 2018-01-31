@@ -1,15 +1,15 @@
 package controllers
 
 import io.flow.location.v0.models
-import play.api.test.Helpers._
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import io.flow.location.v0.Client
+import io.flow.test.utils.FlowPlaySpec
 
-class CountryDefaultsSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
+class CountryDefaultsSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHelpers {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  lazy val client = new Client(s"http://localhost:$port")
+  lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   val can = models.CountryDefaults("CAN", "CAD", "en")
   val fra = models.CountryDefaults("FRA", "EUR", "fr")

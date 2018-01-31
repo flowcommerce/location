@@ -8,7 +8,8 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @javax.inject.Singleton
 class Healthchecks @javax.inject.Inject() (
-  environmentVariables: utils.EnvironmentVariables, addresses: Addresses
+  environmentVariables: utils.EnvironmentVariables,
+  addresses: Addresses
 ) extends Controller {
 
   def getHealthcheck() = Action.async { request =>

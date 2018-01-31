@@ -1,4 +1,4 @@
-import play.PlayImport.PlayKeys._
+import play.sbt.PlayScala._
 
 name := "location"
 
@@ -7,11 +7,7 @@ scalaVersion in ThisBuild := "2.11.12"
 lazy val generated = project
   .in(file("generated"))
   .enablePlugins(PlayScala)
-  .settings(
-    libraryDependencies ++= Seq(
-      ws
-    )
-  )
+  .settings(commonSettings: _*)
 
 lazy val api = project
   .in(file("api"))
@@ -30,22 +26,24 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      ws,
-      "io.flow" %% "lib-play" % "0.4.35",
-      "io.flow" %% "lib-play-graphite" % "0.0.10",
+      "io.flow" %% "lib-play-play26" % "0.4.35",
+      "io.flow" %% "lib-play-graphite-play26" % "0.0.10",
       "io.flow" %% "lib-reference-scala" % "0.1.48",
-      "org.scalatestplus" %% "play" % "1.4.0" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-      "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1",
+      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.271",
       "com.google.maps" % "google-maps-services" % "0.2.6",
-      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.271"
+      "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1", // Not yet available for scala 2.12
+      "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
+      "io.flow" %% "lib-test-utils" % "0.0.4" % Test
     )
   )
 
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   name ~= ("location-" + _),
   libraryDependencies ++= Seq(
-    specs2 % Test
+    guice,
+    ws,
+    "com.typesafe.play" %% "play-json-joda" % "2.6.8",
+    "com.typesafe.play" %% "play-json" % "2.6.8"
   ),
   scalacOptions += "-feature",
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
@@ -57,4 +55,3 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     System.getenv("ARTIFACTORY_PASSWORD")
   )
 )
-version := "0.2.53"
