@@ -29,11 +29,10 @@ lazy val api = project
       "io.flow" %% "lib-play-play26" % "0.4.35",
       "io.flow" %% "lib-play-graphite-play26" % "0.0.10",
       "io.flow" %% "lib-reference-scala" % "0.1.48",
-      "org.scalatestplus" %% "play" % "1.4.0" % "test",
-      "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-      "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1", // Not yet available for scala 2.12
-      "com.google.maps" % "google-maps-services" % "0.2.6",
       "com.amazonaws" % "aws-java-sdk-s3" % "1.11.271",
+      "com.google.maps" % "google-maps-services" % "0.2.6",
+      "com.sanoma.cda" %% "maxmind-geoip2-scala" % "1.5.1", // Not yet available for scala 2.12
+      "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
       "io.flow" %% "lib-test-utils" % "0.0.4" % Test
     )
   )
@@ -56,4 +55,3 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     System.getenv("ARTIFACTORY_PASSWORD")
   )
 )
-
