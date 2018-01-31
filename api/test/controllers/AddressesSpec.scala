@@ -3,13 +3,15 @@ package controllers
 import io.flow.common.v0.models.Address
 import play.api.libs.json.{JsError, JsSuccess, Json}
 import play.api.test.Helpers._
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+
 import io.flow.location.v0.Client
 import io.flow.common.v0.models.json._
 
 import scala.concurrent.Await
 
-class AddressesSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
+class AddressesSpec extends PlaySpec with GuiceOneServerPerSuite with TestHelpers {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 

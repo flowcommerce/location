@@ -2,10 +2,12 @@ package controllers
 
 import io.flow.location.v0.models
 import play.api.test.Helpers._
-import org.scalatestplus.play.{OneServerPerSuite, PlaySpec}
+import org.scalatestplus.play.PlaySpec
+import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+
 import io.flow.location.v0.Client
 
-class CountryDefaultsSpec extends PlaySpec with OneServerPerSuite with TestHelpers {
+class CountryDefaultsSpec extends PlaySpec with GuiceOneServerPerSuite with TestHelpers {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
