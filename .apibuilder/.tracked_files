@@ -2,20 +2,20 @@
 flow:
   common:
     play_2_x_json:
-    - "/web/location/generated/app/FlowCommonV0Models.scala"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/generated/app/FlowCommonV0Models.scala"
   error:
     play_2_x_json:
-    - "/web/location/generated/app/FlowErrorV0Models.scala"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/generated/app/FlowErrorV0Models.scala"
   healthcheck:
     play_2_6_client:
-    - "/web/location/generated/app/FlowHealthcheckV0Client.scala"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/generated/app/FlowHealthcheckV0Client.scala"
     play_2_x_routes:
-    - "/web/location/api/conf/healthcheck.routes"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/api/conf/healthcheck.routes"
   location:
     play_2_x_routes:
-    - "/web/location/api/conf/location.routes"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/api/conf/location.routes"
     play_2_6_client:
-    - "/web/location/generated/app/FlowLocationV0Client.scala"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/generated/app/FlowLocationV0Client.scala"
   reference:
     play_2_6_client:
-    - "/web/location/generated/app/FlowReferenceV0Client.scala"
+    - "/Users/m3/work/src/github.com/flowcommerce/gitcheckouts_for_upgrade/flowcommerce/location/generated/app/FlowReferenceV0Client.scala"
