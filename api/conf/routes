@@ -1,3 +1,4 @@
 -> / healthcheck.Routes
 -> / location.Routes
 
+-> / usage.Routes

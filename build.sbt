@@ -32,7 +32,8 @@ lazy val api = project
       "com.amazonaws" % "aws-java-sdk-s3" % "1.11.289",
       "com.google.maps" % "google-maps-services" % "0.2.6",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
-      "io.flow" %% "lib-test-utils" % "0.0.6" % Test
+      "io.flow" %% "lib-test-utils" % "0.0.6" % Test,
+      "io.flow" %% "lib-usage" % "0.0.3"
     )
   )
 
