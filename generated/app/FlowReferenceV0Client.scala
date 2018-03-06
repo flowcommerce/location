@@ -772,11 +772,11 @@ package io.flow.reference.v0 {
     import Models._
 
     object Core {
-      implicit val pathBindableDateTimeIso8601: PathBindable[_root_.org.joda.time.DateTime] = ApibuilderPathBindable(ApibuilderTypes.dateTimeIso8601)
-      implicit val queryStringBindableDateTimeIso8601: QueryStringBindable[_root_.org.joda.time.DateTime] = ApibuilderQueryStringBindable(ApibuilderTypes.dateTimeIso8601)
+      implicit def pathBindableDateTimeIso8601(implicit stringBinder: QueryStringBindable[String]): PathBindable[_root_.org.joda.time.DateTime] = ApibuilderPathBindable(ApibuilderTypes.dateTimeIso8601)
+      implicit def queryStringBindableDateTimeIso8601(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[_root_.org.joda.time.DateTime] = ApibuilderQueryStringBindable(ApibuilderTypes.dateTimeIso8601)
 
-      implicit val pathBindableDateIso8601: PathBindable[_root_.org.joda.time.LocalDate] = ApibuilderPathBindable(ApibuilderTypes.dateIso8601)
-      implicit val queryStringBindableDateIso8601: QueryStringBindable[_root_.org.joda.time.LocalDate] = ApibuilderQueryStringBindable(ApibuilderTypes.dateIso8601)
+      implicit def pathBindableDateIso8601(implicit stringBinder: QueryStringBindable[String]): PathBindable[_root_.org.joda.time.LocalDate] = ApibuilderPathBindable(ApibuilderTypes.dateIso8601)
+      implicit def queryStringBindableDateIso8601(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[_root_.org.joda.time.LocalDate] = ApibuilderQueryStringBindable(ApibuilderTypes.dateIso8601)
     }
 
     object Models {
@@ -788,8 +788,8 @@ package io.flow.reference.v0 {
         override def example: io.flow.reference.v0.models.PaymentMethodType = io.flow.reference.v0.models.PaymentMethodType.Card
         override def validValues: Seq[io.flow.reference.v0.models.PaymentMethodType] = io.flow.reference.v0.models.PaymentMethodType.all
       }
-      implicit val pathBindablePaymentMethodType: PathBindable[io.flow.reference.v0.models.PaymentMethodType] = ApibuilderPathBindable(paymentMethodTypeConverter)
-      implicit val queryStringBindablePaymentMethodType: QueryStringBindable[io.flow.reference.v0.models.PaymentMethodType] = ApibuilderQueryStringBindable(paymentMethodTypeConverter)
+      implicit def pathBindablePaymentMethodType(implicit stringBinder: QueryStringBindable[String]): PathBindable[io.flow.reference.v0.models.PaymentMethodType] = ApibuilderPathBindable(paymentMethodTypeConverter)
+      implicit def queryStringBindablePaymentMethodType(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[io.flow.reference.v0.models.PaymentMethodType] = ApibuilderQueryStringBindable(paymentMethodTypeConverter)
 
       val provinceTypeConverter: ApibuilderTypeConverter[io.flow.reference.v0.models.ProvinceType] = new ApibuilderTypeConverter[io.flow.reference.v0.models.ProvinceType] {
         override def convert(value: String): io.flow.reference.v0.models.ProvinceType = io.flow.reference.v0.models.ProvinceType(value)
@@ -797,8 +797,8 @@ package io.flow.reference.v0 {
         override def example: io.flow.reference.v0.models.ProvinceType = io.flow.reference.v0.models.ProvinceType.City
         override def validValues: Seq[io.flow.reference.v0.models.ProvinceType] = io.flow.reference.v0.models.ProvinceType.all
       }
-      implicit val pathBindableProvinceType: PathBindable[io.flow.reference.v0.models.ProvinceType] = ApibuilderPathBindable(provinceTypeConverter)
-      implicit val queryStringBindableProvinceType: QueryStringBindable[io.flow.reference.v0.models.ProvinceType] = ApibuilderQueryStringBindable(provinceTypeConverter)
+      implicit def pathBindableProvinceType(implicit stringBinder: QueryStringBindable[String]): PathBindable[io.flow.reference.v0.models.ProvinceType] = ApibuilderPathBindable(provinceTypeConverter)
+      implicit def queryStringBindableProvinceType(implicit stringBinder: QueryStringBindable[String]): QueryStringBindable[io.flow.reference.v0.models.ProvinceType] = ApibuilderQueryStringBindable(provinceTypeConverter)
     }
 
     trait ApibuilderTypeConverter[T] {
