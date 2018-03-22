@@ -29,7 +29,7 @@ lazy val api = project
       "io.flow" %% "lib-play-play26" % "0.4.59",
       "io.flow" %% "lib-play-graphite-play26" % "0.0.13",
       "io.flow" %% "lib-reference-scala" % "0.1.61",
-      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.296",
+      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.299",
       "com.google.maps" % "google-maps-services" % "0.2.6",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
       "io.flow" %% "lib-test-utils" % "0.0.6" % Test,
@@ -42,7 +42,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     guice,
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.6.8",
+    "com.typesafe.play" %% "play-json-joda" % "2.6.9",
     "com.typesafe.play" %% "play-json" % "2.6.9"
   ),
   scalacOptions += "-feature",
