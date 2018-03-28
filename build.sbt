@@ -2,7 +2,7 @@ import play.sbt.PlayScala._
 
 name := "location"
 
-scalaVersion in ThisBuild := "2.12.4"
+scalaVersion in ThisBuild := "2.12.5"
 
 lazy val generated = project
   .in(file("generated"))
