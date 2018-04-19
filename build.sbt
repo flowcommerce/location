@@ -29,7 +29,7 @@ lazy val api = project
       "io.flow" %% "lib-play-play26" % "0.4.64",
       "io.flow" %% "lib-play-graphite-play26" % "0.0.18",
       "io.flow" %% "lib-reference-scala" % "0.1.63",
-      "com.amazonaws" % "aws-java-sdk-s3" % "1.11.313",
+      "io.flow" %% "lib-s3-play26" % "0.1.63",
       "com.google.maps" % "google-maps-services" % "0.2.7",
       "org.scalacheck" %% "scalacheck" % "1.13.5" % "test",
       "io.flow" %% "lib-test-utils" % "0.0.7" % Test,
