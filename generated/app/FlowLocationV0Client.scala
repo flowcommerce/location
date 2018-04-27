@@ -17,7 +17,7 @@ package io.flow.location.v0.models {
    * @param postal True if the postal is updated; false otherwise
    * @param country True if the country is updated; false otherwise
    */
-  case class AddressSuggestion(
+  final case class AddressSuggestion(
     address: io.flow.common.v0.models.Address,
     streets: Boolean,
     city: Boolean,
@@ -38,7 +38,7 @@ package io.flow.location.v0.models {
    *        suggestion contains both the suggested address as well as the specific fields
    *        that are different
    */
-  case class AddressVerification(
+  final case class AddressVerification(
     address: io.flow.common.v0.models.Address,
     valid: Boolean,
     suggestions: Seq[io.flow.location.v0.models.AddressSuggestion] = Nil
@@ -54,7 +54,7 @@ package io.flow.location.v0.models {
    * @param language The default language for this country as a ISO 639 2 language code as defined in
    *        https://api.flow.io/reference/languages
    */
-  case class CountryDefaults(
+  final case class CountryDefaults(
     country: String,
     currency: String,
     language: String
@@ -107,14 +107,14 @@ package io.flow.location.v0.models {
     }
 
     implicit def jsonReadsLocationAddressSuggestion: play.api.libs.json.Reads[AddressSuggestion] = {
-      (
-        (__ \ "address").read[io.flow.common.v0.models.Address] and
-        (__ \ "streets").read[Boolean] and
-        (__ \ "city").read[Boolean] and
-        (__ \ "province").read[Boolean] and
-        (__ \ "postal").read[Boolean] and
-        (__ \ "country").read[Boolean]
-      )(AddressSuggestion.apply _)
+      for {
+        address <- (__ \ "address").read[io.flow.common.v0.models.Address]
+        streets <- (__ \ "streets").read[Boolean]
+        city <- (__ \ "city").read[Boolean]
+        province <- (__ \ "province").read[Boolean]
+        postal <- (__ \ "postal").read[Boolean]
+        country <- (__ \ "country").read[Boolean]
+      } yield AddressSuggestion(address, streets, city, province, postal, country)
     }
 
     def jsObjectAddressSuggestion(obj: io.flow.location.v0.models.AddressSuggestion): play.api.libs.json.JsObject = {
@@ -137,11 +137,11 @@ package io.flow.location.v0.models {
     }
 
     implicit def jsonReadsLocationAddressVerification: play.api.libs.json.Reads[AddressVerification] = {
-      (
-        (__ \ "address").read[io.flow.common.v0.models.Address] and
-        (__ \ "valid").read[Boolean] and
-        (__ \ "suggestions").read[Seq[io.flow.location.v0.models.AddressSuggestion]]
-      )(AddressVerification.apply _)
+      for {
+        address <- (__ \ "address").read[io.flow.common.v0.models.Address]
+        valid <- (__ \ "valid").read[Boolean]
+        suggestions <- (__ \ "suggestions").read[Seq[io.flow.location.v0.models.AddressSuggestion]]
+      } yield AddressVerification(address, valid, suggestions)
     }
 
     def jsObjectAddressVerification(obj: io.flow.location.v0.models.AddressVerification): play.api.libs.json.JsObject = {
@@ -161,11 +161,11 @@ package io.flow.location.v0.models {
     }
 
     implicit def jsonReadsLocationCountryDefaults: play.api.libs.json.Reads[CountryDefaults] = {
-      (
-        (__ \ "country").read[String] and
-        (__ \ "currency").read[String] and
-        (__ \ "language").read[String]
-      )(CountryDefaults.apply _)
+      for {
+        country <- (__ \ "country").read[String]
+        currency <- (__ \ "currency").read[String]
+        language <- (__ \ "language").read[String]
+      } yield CountryDefaults(country, currency, language)
     }
 
     def jsObjectCountryDefaults(obj: io.flow.location.v0.models.CountryDefaults): play.api.libs.json.JsObject = {
@@ -239,7 +239,7 @@ package io.flow.location.v0 {
 
     }
 
-    case class ApibuilderQueryStringBindable[T](
+    final case class ApibuilderQueryStringBindable[T](
       converters: ApibuilderTypeConverter[T]
     ) extends QueryStringBindable[T] {
 
@@ -262,7 +262,7 @@ package io.flow.location.v0 {
       }
     }
 
-    case class ApibuilderPathBindable[T](
+    final case class ApibuilderPathBindable[T](
       converters: ApibuilderTypeConverter[T]
     ) extends PathBindable[T] {
 
@@ -507,7 +507,7 @@ package io.flow.location.v0 {
 
   sealed trait Authorization extends _root_.scala.Product with _root_.scala.Serializable
   object Authorization {
-    case class Basic(username: String, password: Option[String] = None) extends Authorization
+    final case class Basic(username: String, password: Option[String] = None) extends Authorization
   }
 
   package interfaces {
@@ -578,16 +578,16 @@ package io.flow.location.v0 {
     import io.flow.location.v0.models.json._
     import io.flow.reference.v0.models.json._
 
-    case class GenericErrorResponse(
+    final case class GenericErrorResponse(
       response: play.api.libs.ws.WSResponse,
       message: Option[String] = None
     ) extends Exception(message.getOrElse(response.status + ": " + response.body)){
       lazy val genericError = _root_.io.flow.location.v0.Client.parseJson("io.flow.error.v0.models.GenericError", response, _.validate[io.flow.error.v0.models.GenericError])
     }
 
-    case class UnitResponse(status: Int) extends Exception(s"HTTP $status")
+    final case class UnitResponse(status: Int) extends Exception(s"HTTP $status")
 
-    case class FailedRequest(responseCode: Int, message: String, requestUri: Option[_root_.java.net.URI] = None) extends _root_.java.lang.Exception(s"HTTP $responseCode: $message")
+    final case class FailedRequest(responseCode: Int, message: String, requestUri: Option[_root_.java.net.URI] = None) extends _root_.java.lang.Exception(s"HTTP $responseCode: $message")
 
   }
 
