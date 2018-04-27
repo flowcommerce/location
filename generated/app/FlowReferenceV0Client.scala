@@ -9,7 +9,7 @@ package io.flow.reference.v0.models {
    * Partner that actually takes a shipment between places (ex: FedEx, DHL, SF
    * Express)
    */
-  case class Carrier(
+  final case class Carrier(
     id: String,
     name: String,
     trackingUrl: String
@@ -19,7 +19,7 @@ package io.flow.reference.v0.models {
    * Specific service rendered by the carrier (fedex ground saturday, ups overnight
    * weekend, etc)
    */
-  case class CarrierService(
+  final case class CarrierService(
     id: String,
     carrier: io.flow.reference.v0.models.Carrier,
     name: String
@@ -39,7 +39,7 @@ package io.flow.reference.v0.models {
    * @param defaultDeliveredDuty Default delivered duty value. See https://en.wikipedia.org/wiki/Incoterms for
    *        more information
    */
-  case class Country(
+  final case class Country(
     name: String,
     iso31662: String,
     iso31663: String,
@@ -57,7 +57,7 @@ package io.flow.reference.v0.models {
    *        decimals while JPY has 0.
    * @param defaultLocale The locale id of the default locale to use when rendering this currency
    */
-  case class Currency(
+  final case class Currency(
     name: String,
     iso42173: String,
     numberDecimals: Int,
@@ -68,7 +68,7 @@ package io.flow.reference.v0.models {
   /**
    * Defines one or more symbols representing this currency
    */
-  case class CurrencySymbols(
+  final case class CurrencySymbols(
     primary: String,
     narrow: _root_.scala.Option[String] = None
   )
@@ -76,7 +76,7 @@ package io.flow.reference.v0.models {
   /**
    * ISO 639 2-character language code. See https://api.flow.io/reference/languages
    */
-  case class Language(
+  final case class Language(
     name: String,
     iso6392: String
   )
@@ -88,7 +88,7 @@ package io.flow.reference.v0.models {
    * @param country ISO 3166 3 country code
    * @param language ISO 639 2 language code
    */
-  case class Locale(
+  final case class Locale(
     id: String,
     name: String,
     country: String,
@@ -102,7 +102,7 @@ package io.flow.reference.v0.models {
    * @param decimal Decimal separator
    * @param group Group separator (e.g. 1,000 have a group separator of ',')
    */
-  case class LocaleNumbers(
+  final case class LocaleNumbers(
     decimal: String,
     group: String
   )
@@ -112,7 +112,7 @@ package io.flow.reference.v0.models {
    * 
    * @param name Text translated to the appropriate locale
    */
-  case class LocalizedTranslation(
+  final case class LocalizedTranslation(
     locale: io.flow.reference.v0.models.Locale,
     name: String
   )
@@ -123,7 +123,7 @@ package io.flow.reference.v0.models {
    * 
    * @param regions List of region ids in which this payment method is available
    */
-  case class PaymentMethod(
+  final case class PaymentMethod(
     id: String,
     `type`: io.flow.reference.v0.models.PaymentMethodType,
     name: String,
@@ -131,13 +131,13 @@ package io.flow.reference.v0.models {
     regions: Seq[String]
   )
 
-  case class PaymentMethodImage(
+  final case class PaymentMethodImage(
     url: String,
     width: Int,
     height: Int
   )
 
-  case class PaymentMethodImages(
+  final case class PaymentMethodImages(
     small: io.flow.reference.v0.models.PaymentMethodImage,
     medium: io.flow.reference.v0.models.PaymentMethodImage,
     large: io.flow.reference.v0.models.PaymentMethodImage
@@ -149,7 +149,7 @@ package io.flow.reference.v0.models {
    * 
    * @param country ISO 3166 3 code of the country for this subdivision
    */
-  case class Province(
+  final case class Province(
     id: String,
     iso31662: String,
     name: String,
@@ -170,7 +170,7 @@ package io.flow.reference.v0.models {
    * @param timezones A list of canonical timezone IDs for the region. See
    *        http://joda-time.sourceforge.net/timezones.html
    */
-  case class Region(
+  final case class Region(
     id: String,
     name: String,
     countries: Seq[String],
@@ -186,7 +186,7 @@ package io.flow.reference.v0.models {
    * 
    * @param offset Minutes offset from GMT
    */
-  case class Timezone(
+  final case class Timezone(
     name: String,
     description: String,
     offset: Int
@@ -226,7 +226,7 @@ package io.flow.reference.v0.models {
      * We use all CAPS for the variable name to avoid collisions
      * with the camel cased values above.
      */
-    case class UNDEFINED(override val toString: String) extends PaymentMethodType
+    final case class UNDEFINED(override val toString: String) extends PaymentMethodType
 
     /**
      * all returns a list of all the valid, known values. We use
@@ -273,7 +273,7 @@ package io.flow.reference.v0.models {
      * We use all CAPS for the variable name to avoid collisions
      * with the camel cased values above.
      */
-    case class UNDEFINED(override val toString: String) extends ProvinceType
+    final case class UNDEFINED(override val toString: String) extends ProvinceType
 
     /**
      * all returns a list of all the valid, known values. We use
@@ -395,11 +395,11 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceCarrier: play.api.libs.json.Reads[Carrier] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "name").read[String] and
-        (__ \ "tracking_url").read[String]
-      )(Carrier.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        name <- (__ \ "name").read[String]
+        trackingUrl <- (__ \ "tracking_url").read[String]
+      } yield Carrier(id, name, trackingUrl)
     }
 
     def jsObjectCarrier(obj: io.flow.reference.v0.models.Carrier): play.api.libs.json.JsObject = {
@@ -419,11 +419,11 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceCarrierService: play.api.libs.json.Reads[CarrierService] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "carrier").read[io.flow.reference.v0.models.Carrier] and
-        (__ \ "name").read[String]
-      )(CarrierService.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        carrier <- (__ \ "carrier").read[io.flow.reference.v0.models.Carrier]
+        name <- (__ \ "name").read[String]
+      } yield CarrierService(id, carrier, name)
     }
 
     def jsObjectCarrierService(obj: io.flow.reference.v0.models.CarrierService): play.api.libs.json.JsObject = {
@@ -443,16 +443,16 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceCountry: play.api.libs.json.Reads[Country] = {
-      (
-        (__ \ "name").read[String] and
-        (__ \ "iso_3166_2").read[String] and
-        (__ \ "iso_3166_3").read[String] and
-        (__ \ "languages").read[Seq[String]] and
-        (__ \ "measurement_system").read[String] and
-        (__ \ "default_currency").readNullable[String] and
-        (__ \ "timezones").read[Seq[String]] and
-        (__ \ "default_delivered_duty").readNullable[String]
-      )(Country.apply _)
+      for {
+        name <- (__ \ "name").read[String]
+        iso31662 <- (__ \ "iso_3166_2").read[String]
+        iso31663 <- (__ \ "iso_3166_3").read[String]
+        languages <- (__ \ "languages").read[Seq[String]]
+        measurementSystem <- (__ \ "measurement_system").read[String]
+        defaultCurrency <- (__ \ "default_currency").readNullable[String]
+        timezones <- (__ \ "timezones").read[Seq[String]]
+        defaultDeliveredDuty <- (__ \ "default_delivered_duty").readNullable[String]
+      } yield Country(name, iso31662, iso31663, languages, measurementSystem, defaultCurrency, timezones, defaultDeliveredDuty)
     }
 
     def jsObjectCountry(obj: io.flow.reference.v0.models.Country): play.api.libs.json.JsObject = {
@@ -482,13 +482,13 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceCurrency: play.api.libs.json.Reads[Currency] = {
-      (
-        (__ \ "name").read[String] and
-        (__ \ "iso_4217_3").read[String] and
-        (__ \ "number_decimals").read[Int] and
-        (__ \ "symbols").readNullable[io.flow.reference.v0.models.CurrencySymbols] and
-        (__ \ "default_locale").readNullable[String]
-      )(Currency.apply _)
+      for {
+        name <- (__ \ "name").read[String]
+        iso42173 <- (__ \ "iso_4217_3").read[String]
+        numberDecimals <- (__ \ "number_decimals").read[Int]
+        symbols <- (__ \ "symbols").readNullable[io.flow.reference.v0.models.CurrencySymbols]
+        defaultLocale <- (__ \ "default_locale").readNullable[String]
+      } yield Currency(name, iso42173, numberDecimals, symbols, defaultLocale)
     }
 
     def jsObjectCurrency(obj: io.flow.reference.v0.models.Currency): play.api.libs.json.JsObject = {
@@ -515,10 +515,10 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceCurrencySymbols: play.api.libs.json.Reads[CurrencySymbols] = {
-      (
-        (__ \ "primary").read[String] and
-        (__ \ "narrow").readNullable[String]
-      )(CurrencySymbols.apply _)
+      for {
+        primary <- (__ \ "primary").read[String]
+        narrow <- (__ \ "narrow").readNullable[String]
+      } yield CurrencySymbols(primary, narrow)
     }
 
     def jsObjectCurrencySymbols(obj: io.flow.reference.v0.models.CurrencySymbols): play.api.libs.json.JsObject = {
@@ -539,10 +539,10 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceLanguage: play.api.libs.json.Reads[Language] = {
-      (
-        (__ \ "name").read[String] and
-        (__ \ "iso_639_2").read[String]
-      )(Language.apply _)
+      for {
+        name <- (__ \ "name").read[String]
+        iso6392 <- (__ \ "iso_639_2").read[String]
+      } yield Language(name, iso6392)
     }
 
     def jsObjectLanguage(obj: io.flow.reference.v0.models.Language): play.api.libs.json.JsObject = {
@@ -561,13 +561,13 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceLocale: play.api.libs.json.Reads[Locale] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "name").read[String] and
-        (__ \ "country").read[String] and
-        (__ \ "language").read[String] and
-        (__ \ "numbers").read[io.flow.reference.v0.models.LocaleNumbers]
-      )(Locale.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        name <- (__ \ "name").read[String]
+        country <- (__ \ "country").read[String]
+        language <- (__ \ "language").read[String]
+        numbers <- (__ \ "numbers").read[io.flow.reference.v0.models.LocaleNumbers]
+      } yield Locale(id, name, country, language, numbers)
     }
 
     def jsObjectLocale(obj: io.flow.reference.v0.models.Locale): play.api.libs.json.JsObject = {
@@ -589,10 +589,10 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceLocaleNumbers: play.api.libs.json.Reads[LocaleNumbers] = {
-      (
-        (__ \ "decimal").read[String] and
-        (__ \ "group").read[String]
-      )(LocaleNumbers.apply _)
+      for {
+        decimal <- (__ \ "decimal").read[String]
+        group <- (__ \ "group").read[String]
+      } yield LocaleNumbers(decimal, group)
     }
 
     def jsObjectLocaleNumbers(obj: io.flow.reference.v0.models.LocaleNumbers): play.api.libs.json.JsObject = {
@@ -611,10 +611,10 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceLocalizedTranslation: play.api.libs.json.Reads[LocalizedTranslation] = {
-      (
-        (__ \ "locale").read[io.flow.reference.v0.models.Locale] and
-        (__ \ "name").read[String]
-      )(LocalizedTranslation.apply _)
+      for {
+        locale <- (__ \ "locale").read[io.flow.reference.v0.models.Locale]
+        name <- (__ \ "name").read[String]
+      } yield LocalizedTranslation(locale, name)
     }
 
     def jsObjectLocalizedTranslation(obj: io.flow.reference.v0.models.LocalizedTranslation): play.api.libs.json.JsObject = {
@@ -633,13 +633,13 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferencePaymentMethod: play.api.libs.json.Reads[PaymentMethod] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "type").read[io.flow.reference.v0.models.PaymentMethodType] and
-        (__ \ "name").read[String] and
-        (__ \ "images").read[io.flow.reference.v0.models.PaymentMethodImages] and
-        (__ \ "regions").read[Seq[String]]
-      )(PaymentMethod.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        `type` <- (__ \ "type").read[io.flow.reference.v0.models.PaymentMethodType]
+        name <- (__ \ "name").read[String]
+        images <- (__ \ "images").read[io.flow.reference.v0.models.PaymentMethodImages]
+        regions <- (__ \ "regions").read[Seq[String]]
+      } yield PaymentMethod(id, `type`, name, images, regions)
     }
 
     def jsObjectPaymentMethod(obj: io.flow.reference.v0.models.PaymentMethod): play.api.libs.json.JsObject = {
@@ -661,11 +661,11 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferencePaymentMethodImage: play.api.libs.json.Reads[PaymentMethodImage] = {
-      (
-        (__ \ "url").read[String] and
-        (__ \ "width").read[Int] and
-        (__ \ "height").read[Int]
-      )(PaymentMethodImage.apply _)
+      for {
+        url <- (__ \ "url").read[String]
+        width <- (__ \ "width").read[Int]
+        height <- (__ \ "height").read[Int]
+      } yield PaymentMethodImage(url, width, height)
     }
 
     def jsObjectPaymentMethodImage(obj: io.flow.reference.v0.models.PaymentMethodImage): play.api.libs.json.JsObject = {
@@ -685,11 +685,11 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferencePaymentMethodImages: play.api.libs.json.Reads[PaymentMethodImages] = {
-      (
-        (__ \ "small").read[io.flow.reference.v0.models.PaymentMethodImage] and
-        (__ \ "medium").read[io.flow.reference.v0.models.PaymentMethodImage] and
-        (__ \ "large").read[io.flow.reference.v0.models.PaymentMethodImage]
-      )(PaymentMethodImages.apply _)
+      for {
+        small <- (__ \ "small").read[io.flow.reference.v0.models.PaymentMethodImage]
+        medium <- (__ \ "medium").read[io.flow.reference.v0.models.PaymentMethodImage]
+        large <- (__ \ "large").read[io.flow.reference.v0.models.PaymentMethodImage]
+      } yield PaymentMethodImages(small, medium, large)
     }
 
     def jsObjectPaymentMethodImages(obj: io.flow.reference.v0.models.PaymentMethodImages): play.api.libs.json.JsObject = {
@@ -709,14 +709,14 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceProvince: play.api.libs.json.Reads[Province] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "iso_3166_2").read[String] and
-        (__ \ "name").read[String] and
-        (__ \ "country").read[String] and
-        (__ \ "province_type").read[io.flow.reference.v0.models.ProvinceType] and
-        (__ \ "translations").readNullable[Seq[io.flow.reference.v0.models.LocalizedTranslation]]
-      )(Province.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        iso31662 <- (__ \ "iso_3166_2").read[String]
+        name <- (__ \ "name").read[String]
+        country <- (__ \ "country").read[String]
+        provinceType <- (__ \ "province_type").read[io.flow.reference.v0.models.ProvinceType]
+        translations <- (__ \ "translations").readNullable[Seq[io.flow.reference.v0.models.LocalizedTranslation]]
+      } yield Province(id, iso31662, name, country, provinceType, translations)
     }
 
     def jsObjectProvince(obj: io.flow.reference.v0.models.Province): play.api.libs.json.JsObject = {
@@ -741,15 +741,15 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceRegion: play.api.libs.json.Reads[Region] = {
-      (
-        (__ \ "id").read[String] and
-        (__ \ "name").read[String] and
-        (__ \ "countries").read[Seq[String]] and
-        (__ \ "currencies").read[Seq[String]] and
-        (__ \ "languages").read[Seq[String]] and
-        (__ \ "measurement_systems").read[Seq[String]] and
-        (__ \ "timezones").read[Seq[String]]
-      )(Region.apply _)
+      for {
+        id <- (__ \ "id").read[String]
+        name <- (__ \ "name").read[String]
+        countries <- (__ \ "countries").read[Seq[String]]
+        currencies <- (__ \ "currencies").read[Seq[String]]
+        languages <- (__ \ "languages").read[Seq[String]]
+        measurementSystems <- (__ \ "measurement_systems").read[Seq[String]]
+        timezones <- (__ \ "timezones").read[Seq[String]]
+      } yield Region(id, name, countries, currencies, languages, measurementSystems, timezones)
     }
 
     def jsObjectRegion(obj: io.flow.reference.v0.models.Region): play.api.libs.json.JsObject = {
@@ -773,11 +773,11 @@ package io.flow.reference.v0.models {
     }
 
     implicit def jsonReadsReferenceTimezone: play.api.libs.json.Reads[Timezone] = {
-      (
-        (__ \ "name").read[String] and
-        (__ \ "description").read[String] and
-        (__ \ "offset").read[Int]
-      )(Timezone.apply _)
+      for {
+        name <- (__ \ "name").read[String]
+        description <- (__ \ "description").read[String]
+        offset <- (__ \ "offset").read[Int]
+      } yield Timezone(name, description, offset)
     }
 
     def jsObjectTimezone(obj: io.flow.reference.v0.models.Timezone): play.api.libs.json.JsObject = {
@@ -874,7 +874,7 @@ package io.flow.reference.v0 {
 
     }
 
-    case class ApibuilderQueryStringBindable[T](
+    final case class ApibuilderQueryStringBindable[T](
       converters: ApibuilderTypeConverter[T]
     ) extends QueryStringBindable[T] {
 
@@ -897,7 +897,7 @@ package io.flow.reference.v0 {
       }
     }
 
-    case class ApibuilderPathBindable[T](
+    final case class ApibuilderPathBindable[T](
       converters: ApibuilderTypeConverter[T]
     ) extends PathBindable[T] {
 
@@ -1232,7 +1232,7 @@ package io.flow.reference.v0 {
 
   sealed trait Authorization extends _root_.scala.Product with _root_.scala.Serializable
   object Authorization {
-    case class Basic(username: String, password: Option[String] = None) extends Authorization
+    final case class Basic(username: String, password: Option[String] = None) extends Authorization
   }
 
   package interfaces {
@@ -1380,9 +1380,9 @@ package io.flow.reference.v0 {
 
     import io.flow.reference.v0.models.json._
 
-    case class UnitResponse(status: Int) extends Exception(s"HTTP $status")
+    final case class UnitResponse(status: Int) extends Exception(s"HTTP $status")
 
-    case class FailedRequest(responseCode: Int, message: String, requestUri: Option[_root_.java.net.URI] = None) extends _root_.java.lang.Exception(s"HTTP $responseCode: $message")
+    final case class FailedRequest(responseCode: Int, message: String, requestUri: Option[_root_.java.net.URI] = None) extends _root_.java.lang.Exception(s"HTTP $responseCode: $message")
 
   }
 
