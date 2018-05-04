@@ -88,8 +88,6 @@ object DigitalElement {
     * Very stateful method that builds the index of DigitalElement ip records from an InputStream
     * (mainly because AWS SDK returns an input stream from S3 getObject requests.
     * @param is the input stream to parse
-    * @param fieldDelimiter
-    * @param recordDelimiter
     * @return an indexed sequence of ip ranges.  Ordering is not changed from which records arrive in the input stream
     */
   def buildIndex(is: InputStream, fieldDelimiter: Char, recordDelimiter: Char): DigitalElementIndex = {
