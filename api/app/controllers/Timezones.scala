@@ -40,7 +40,7 @@ class Timezones @javax.inject.Inject() (
           }
 
           case Some(tz) => {
-            Ok(Json.toJson(tz))
+            Ok(Json.toJson(Seq(tz)))
           }
         }
       }
