@@ -2,12 +2,11 @@ package controllers
 
 import io.flow.common.v0.models.Address
 import play.api.libs.json.{JsError, JsSuccess, Json}
-import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import io.flow.location.v0.Client
 import io.flow.common.v0.models.json._
 import io.flow.test.utils.FlowPlaySpec
 
-class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHelpers {
+class AddressesSpec extends FlowPlaySpec with TestHelpers {
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
