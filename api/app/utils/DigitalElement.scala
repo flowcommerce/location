@@ -2,7 +2,7 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
-import io.flow.reference.v0.models.Province
+import io.flow.reference.v0.models.{Country, Province}
 import io.flow.reference.{Countries, Provinces}
 
 import scala.collection.mutable
@@ -29,13 +29,10 @@ case class DigitalElementIndexRecord(
 
   override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
 
-  /**
-    * Constructs an Address from an index record using the format specified
-    * for the DigitalElementIndexRecord bytes value
-    */
+  private[this] val fields: Array[String] = new String(this.bytes).split(this.fieldDelimiter)
+
   def toAddress(): Address = {
-    val fields = new String(this.bytes).split(this.fieldDelimiter)
-    val country = Countries.find(fields(2))
+    val country: Option[Country] = Countries.find(fields(2))
     val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),

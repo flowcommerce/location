@@ -16,9 +16,9 @@ class Timezones @javax.inject.Inject() (
   private[this] implicit val ec = system.dispatchers.lookup("timezones-controller-context")
 
   def get(
-    address: Option[String],
     ip: Option[String]
   ) = Action { _ =>
+    // TODO: Update netacuity file format and fetch timezone from the ip db
     UnprocessableEntity(Json.toJson(Validation.error("timezone lookup not available")))
   }
 
