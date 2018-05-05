@@ -4,7 +4,6 @@ import io.flow.common.v0.models.Address
 import io.flow.error.v0.models.GenericError
 import io.flow.play.util.Validation
 import io.flow.reference.Countries
-import io.flow.reference.v0.models.Timezone
 import utils._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -44,13 +43,13 @@ class Helpers @javax.inject.Inject() (
 
       case (_, Some(i)) => {
         DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip) map (_.toAddress()) match {
+          digitalElementIndex.lookup(ip) map (_.toAddress) match {
             case Some(address) => Seq(address)
             case None => Nil
           }
         } match {
           case Success(res) => Future.successful(Right(res))
-          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage())))
+          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage)))
         }
       }
 

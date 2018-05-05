@@ -2,7 +2,7 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
-import io.flow.reference.v0.models.{Country, Province}
+import io.flow.reference.v0.models.{Country, Province, Timezone}
 import io.flow.reference.{Countries, Provinces}
 
 import scala.collection.mutable
@@ -11,7 +11,7 @@ import scala.util.Try
 /**
   * Searchable format of a DigitalElement ip range record.
   * The expected format of the record byteststring is:
-  * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;
+  * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;timezone;
   *
   * for example:
   * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;
@@ -31,13 +31,20 @@ case class DigitalElementIndexRecord(
 
   private[this] val fields: Array[String] = new String(this.bytes).split(this.fieldDelimiter)
 
-  def toAddress(): Address = {
+  def timezone: Option[Timezone] = {
+    fields.zipWithIndex.foreach { case (f, i) =>
+      println(s" - $i: $f")
+    }
+    None
+  }
+
+  def toAddress: Address = {
     val country: Option[Country] = Countries.find(fields(2))
     val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),
       province = province.map(_.name),
-      postal = Some(fields(7)),
+      postal = Some(fields(7)).filter { code => code != DigitalElement.PlaceholderPostal },
       country = country.map(_.iso31663),
       latitude = Some(fields(5)),
       longitude = Some(fields(6))
@@ -46,6 +53,8 @@ case class DigitalElementIndexRecord(
 }
 
 object DigitalElement {
+
+  val PlaceholderPostal = "###"
 
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
   // digitalelement separates the network and interface portions of ipv6
