@@ -3,7 +3,9 @@ package utils
 import java.io._
 import java.nio.file.{Files, Paths}
 
+import io.flow.reference.data.Timezones
 import org.scalatest.{Matchers, WordSpec}
+
 import scala.util.{Failure, Success}
 
 class DigitalElementIndexSpec extends WordSpec with Matchers {
@@ -29,10 +31,10 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
     "timezone" in {
       val data = Map(
-        "37.187.99.146" -> "France",
-        "23.16.0.0" -> "Canada",
-        "185.236.200.99" -> "LA",
-        "173.63.71.187" -> "NJ"
+        "37.187.99.146" -> Timezones.EuropeParis,
+        "23.16.0.0" -> Timezones.AmericaEdmonton,
+        "185.236.200.99" -> Timezones.AmericaLosAngeles,
+        "173.63.71.187" -> Timezones.AmericaNewYork
       )
 
       val invalid = data.keys.toSeq.flatMap { ip =>
@@ -44,14 +46,15 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
         val element = index.lookup(ipInt).getOrElse {
           sys.error(s"ip '$ip' missing with intvalue '$ipInt'")
         }
+
         val tz = element.timezone.getOrElse {
           sys.error(s"ip '$ip' missing timezone")
         }
 
-        if (tz.name == data(ip)) {
+        if (tz == data(ip)) {
           None
         } else {
-          Some(s"IP '$ip' expected timezone[${data(ip)}] but got '$tz'")
+          Some(s"IP '$ip' expected timezone[${data(ip).name}] but got '${tz.name}'")
         }
       }
       invalid should equal(Nil)
