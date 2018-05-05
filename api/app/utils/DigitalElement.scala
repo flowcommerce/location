@@ -2,8 +2,8 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
-import io.flow.reference.v0.models.{Country, Province, Timezone}
-import io.flow.reference.{Countries, Provinces}
+import io.flow.reference.v0.models.{Country, Timezone}
+import io.flow.reference.{Countries, Provinces, Timezones}
 
 import scala.collection.mutable
 import scala.util.Try
@@ -30,16 +30,11 @@ case class DigitalElementIndexRecord(
   override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
 
   private[this] val fields: Array[String] = new String(this.bytes).split(this.fieldDelimiter)
+  private[this] val country: Option[Country] = Countries.find(fields(2))
 
-  def timezone: Option[Timezone] = {
-    fields.zipWithIndex.foreach { case (f, i) =>
-      println(s" - $i: $f")
-    }
-    None
-  }
+  def timezone: Option[Timezone] = Timezones.find(fields(8))
 
   def toAddress: Address = {
-    val country: Option[Country] = Countries.find(fields(2))
     val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),

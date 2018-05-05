@@ -35,7 +35,7 @@ class Timezones @javax.inject.Inject() (
         digitalElementIndex.lookup(validatedIp.right.get).flatMap (_.timezone) match {
           case None => {
             UnprocessableEntity(Json.toJson(Validation.error(
-              s"Timezone information not available for ip '$ip'"
+              s"Timezone information not available for ip '${ip.get.trim}'"
             )))
           }
 
