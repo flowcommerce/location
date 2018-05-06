@@ -323,10 +323,12 @@ package io.flow.location.v0 {
 
     object Addresses extends Addresses {
       override def get(
+        address: _root_.scala.Option[String] = None,
         ip: _root_.scala.Option[String] = None,
         requestHeaders: Seq[(String, String)] = Nil
       )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.common.v0.models.Address]] = {
         val queryParameters = Seq(
+          address.map("address" -> _),
           ip.map("ip" -> _)
         ).flatten
 
@@ -521,6 +523,7 @@ package io.flow.location.v0 {
      * potential matching addresses.
      */
     def get(
+      address: _root_.scala.Option[String] = None,
       ip: _root_.scala.Option[String] = None,
       requestHeaders: Seq[(String, String)] = Nil
     )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.common.v0.models.Address]]

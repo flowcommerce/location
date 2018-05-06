@@ -50,7 +50,6 @@ class Helpers @javax.inject.Inject() (
   )(
     implicit ec: ExecutionContext
   ): Future[Either[GenericError, Seq[Address]]] = {
-    println(s"getLocations country[$country] address[$address] ip[$ip]")
     (country, address, ip) match {
       case (Some(code), _, _) => {
         Countries.find(code) match {

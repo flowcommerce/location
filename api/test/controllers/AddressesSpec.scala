@@ -17,7 +17,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     expectErrors(
       client.addresses.get(ip = None)
     ).genericError.messages must be(
-      Seq("Must specify 'ip' parameter")
+      Seq("Must specify either 'address' or 'ip'")
     )
   }
 
@@ -28,7 +28,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
     Json.toJson(locations).validate[Seq[Address]] match {
-      case JsSuccess(c,_) => assert(true)
+      case JsSuccess(_,_) => assert(true)
       case JsError(_) => assert(false)
     }
   }

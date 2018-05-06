@@ -22,23 +22,12 @@ class Addresses @javax.inject.Inject() (
   private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
 
   def get(
+    address: Option[String],
     ip: Option[String]
   ) = Action.async { _ =>
-    val validatedIp: Either[Seq[String], String] = ip match {
-      case None => Left(Seq("Must specify 'ip' parameter"))
-      case Some(v) => Right(v)
-    }
-
-    validatedIp.left.getOrElse(Nil).toList match {
-      case Nil => {
-        helpers.getLocations(address = None, ip = ip).map {
-          case Left(error) => UnprocessableEntity(Json.toJson(error))
-          case Right(locations) => Ok(Json.toJson(locations))
-        }
-      }
-      case errors => Future.successful(
-        UnprocessableEntity(Json.toJson(Validation.errors(errors)))
-      )
+    helpers.getLocations(address = address, ip = ip).map {
+      case Left(error) => UnprocessableEntity(Json.toJson(error))
+      case Right(locations) => Ok(Json.toJson(locations))
     }
   }
 
