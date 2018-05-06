@@ -14,7 +14,7 @@ import scala.util.Try
   * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;timezone;
   *
   * for example:
-  * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;
+  * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;america/edmonton;
   *
   * @param rangeStart decimal value of the ip range min
   * @param rangeEnd decimal value of the ip range end
