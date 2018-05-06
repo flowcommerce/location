@@ -96,7 +96,7 @@ class Helpers @javax.inject.Inject() (
           
       case (_, _, Some(i)) => {
         DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip) map (_.toAddress()) match {
+          digitalElementIndex.lookup(ip) map (_.toAddress) match {
             case Some(address) => Seq(address)
             case None => Nil
           }

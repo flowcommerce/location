@@ -389,12 +389,10 @@ package io.flow.location.v0 {
 
     object Timezones extends Timezones {
       override def get(
-        address: _root_.scala.Option[String] = None,
         ip: _root_.scala.Option[String] = None,
         requestHeaders: Seq[(String, String)] = Nil
       )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.reference.v0.models.Timezone]] = {
         val queryParameters = Seq(
-          address.map("address" -> _),
           ip.map("ip" -> _)
         ).flatten
 
@@ -559,7 +557,6 @@ package io.flow.location.v0 {
      * Provides timezone based on address or geolocated IP.
      */
     def get(
-      address: _root_.scala.Option[String] = None,
       ip: _root_.scala.Option[String] = None,
       requestHeaders: Seq[(String, String)] = Nil
     )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.reference.v0.models.Timezone]]

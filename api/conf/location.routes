@@ -6,4 +6,4 @@ GET      /geolocation/defaults              controllers.CountryDefaults.get(coun
 GET      /geolocation/defaults/:country     controllers.CountryDefaults.getByCountry(country: String)
 GET      /addresses                         controllers.Addresses.get(ip: _root_.scala.Option[String])
 POST     /addresses/verifications           controllers.Addresses.postVerifications()
-GET      /geolocation/timezones             controllers.Timezones.get(address: _root_.scala.Option[String], ip: _root_.scala.Option[String])
+GET      /geolocation/timezones             controllers.Timezones.get(ip: _root_.scala.Option[String])

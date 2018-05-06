@@ -11,18 +11,14 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  lazy val client = new Client(wsClient, s"http://localhost:$port")
+  private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
-  "GET /addresses" in {
-    expectStatus(422) {
-      client.addresses.get()
-    }
-  }
-
-  "GET /addresses?address=sample" in {
-    expectStatus(422) {
-      client.addresses.get(address = Some("sample"))
-    }
+  "GET /addresses without an IP returns a proper message" in {
+    expectErrors(
+      client.addresses.get(ip = None)
+    ).genericError.messages must be(
+      Seq("Must specify 'ip' parameter")
+    )
   }
 
   "GET /addresses?ip=23.16.0.0" in {
