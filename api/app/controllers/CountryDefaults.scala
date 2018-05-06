@@ -27,14 +27,17 @@ class CountryDefaults @javax.inject.Inject() (
     country: Option[String],
     ip: Option[String]
   ) = Action.async { _ =>
-    helpers.getLocations(country, ip).map {
-      case Left(_) => {
-        serializeCountriesSuccess(data.Countries.all)
-      }
-
-      case Right(locations) => {
-        serializeCountriesSuccess(locations.flatMap(_.country).flatMap(Countries.find))
-      }
+    helpers.getLocations(country= country, ip = ip).map {
+      case Left(_) => data.Countries.all
+      case Right(locations) => locations.flatMap(_.country).flatMap(Countries.find)
+    }.map { countries =>
+      Ok(
+        Json.toJson(
+          countries.map { c =>
+            countryDefaults(c)
+          }
+        )
+      )
     }
   }
 
@@ -57,14 +60,4 @@ class CountryDefaults @javax.inject.Inject() (
     language = c.languages.headOption.getOrElse(DefaultLanguage)
   )
 
-  private[this] def serializeCountriesSuccess (countries: Seq[Country]): Result = {
-    Ok(
-      Json.toJson(
-        countries.map { c =>
-          countryDefaults(c)
-        }
-      )
-    )
-  }
-  
 }
