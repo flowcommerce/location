@@ -8,12 +8,13 @@ import play.api.libs.concurrent.Execution.Implicits.defaultContext
 
 @javax.inject.Singleton
 class Healthchecks @javax.inject.Inject() (
+  override val controllerComponents: ControllerComponents,
   environmentVariables: utils.EnvironmentVariables,
   addresses: Addresses
-) extends Controller {
+) extends BaseController {
 
   def getHealthcheck() = Action.async { request =>
-    addresses.get(None, Some("0.0.0.0"))(request) map { _ =>
+    addresses.get(ip = Some("0.0.0.0"))(request) map { _ =>
       Ok(Json.toJson(Healthcheck("healthy")))
     }
   }
