@@ -4,25 +4,44 @@ import akka.actor.ActorSystem
 import play.api.libs.json._
 import play.api.mvc._
 import io.flow.play.util.Validation
-import io.flow.reference.v0.models.json._
 import io.flow.error.v0.models.json._
+import io.flow.reference.v0.models.json._
+import utils.DigitalElementIndex
 
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
-  helpers: Helpers,
-  system: ActorSystem
-) extends Controller {
+  override val controllerComponents: ControllerComponents,
+  @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
+  system: ActorSystem,
+  helpers: Helpers
+) extends BaseController {
 
   private[this] implicit val ec = system.dispatchers.lookup("timezones-controller-context")
 
   def get(
-    address: Option[String],
     ip: Option[String]
-  ) = Action.async { request =>
-    helpers.getTimezones(address = address, ip = ip).map( tz => tz match {
-      case Left(errors) => UnprocessableEntity(Json.toJson(Validation.errors(errors)))
-      case Right(timezones) => Ok(Json.toJson(timezones))
-    })
+  ) = Action { _ =>
+    val validatedIp = helpers.validateRequiredIp(ip)
+
+    validatedIp.left.getOrElse(Nil).toList match {
+      case Nil => {
+        digitalElementIndex.lookup(validatedIp.right.get).flatMap (_.timezone) match {
+          case None => {
+            UnprocessableEntity(Json.toJson(Validation.error(
+              s"Timezone information not available for ip '${ip.get.trim}'"
+            )))
+          }
+
+          case Some(tz) => {
+            Ok(Json.toJson(Seq(tz)))
+          }
+        }
+      }
+
+      case errors => {
+        UnprocessableEntity(Json.toJson(Validation.errors(errors)))
+      }
+    }
   }
 
 }

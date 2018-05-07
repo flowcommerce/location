@@ -11,18 +11,14 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   import scala.concurrent.ExecutionContext.Implicits.global
 
-  lazy val client = new Client(wsClient, s"http://localhost:$port")
+  private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
-  "GET /addresses" in {
-    expectStatus(422) {
-      client.addresses.get()
-    }
-  }
-
-  "GET /addresses?address=sample" in {
-    expectStatus(422) {
-      client.addresses.get(address = Some("sample"))
-    }
+  "GET /addresses without an IP returns a proper message" in {
+    expectErrors(
+      client.addresses.get(ip = None)
+    ).genericError.messages must be(
+      Seq("Must specify either 'address' or 'ip'")
+    )
   }
 
   "GET /addresses?ip=23.16.0.0" in {
@@ -32,7 +28,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
     Json.toJson(locations).validate[Seq[Address]] match {
-      case JsSuccess(c,_) => assert(true)
+      case JsSuccess(_,_) => assert(true)
       case JsError(_) => assert(false)
     }
   }

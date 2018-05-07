@@ -96,17 +96,33 @@ class Helpers @javax.inject.Inject() (
           
       case (_, _, Some(i)) => {
         DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip) map (_.toAddress()) match {
-            case Some(address) => Seq(address)
+          digitalElementIndex.lookup(ip) map (_.toAddress) match {
+            case Some(addr) => Seq(addr)
             case None => Nil
           }
         } match {
           case Success(res) => Future.successful(Right(res))
-          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage())))
+          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage)))
         }
       }
 
       case _ => Future.successful (Left(Validation.error("Must specify either 'address' or 'ip'")) )
+    }
+  }
+
+  def validateIp(ip: Option[String]): Either[Seq[String], Option[DigitalElement.ValidatedIpAddress]] = {
+    DigitalElement.validateIp(ip)
+  }
+
+  def validateRequiredIp(ip: Option[String]): Either[Seq[String], DigitalElement.ValidatedIpAddress] = {
+    DigitalElement.validateIp(ip) match {
+      case Left(errors) => Left(errors)
+      case Right(opt) => {
+        opt match {
+          case None => Left(Seq("Must specify 'ip' parameter"))
+          case Some(v) => Right(v)
+        }
+      }
     }
   }
 }

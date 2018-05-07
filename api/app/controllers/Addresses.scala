@@ -14,20 +14,21 @@ import utils.AddressVerifier
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
+  override val controllerComponents: ControllerComponents,
   helpers: Helpers,
   system: ActorSystem
-) extends Controller {
+) extends BaseController {
 
   private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
 
   def get(
     address: Option[String],
     ip: Option[String]
-  ) = Action.async { request =>
-    helpers.getLocations(address = address, ip = ip).map( addrs => addrs match {
+  ) = Action.async { _ =>
+    helpers.getLocations(address = address, ip = ip).map {
       case Left(error) => UnprocessableEntity(Json.toJson(error))
       case Right(locations) => Ok(Json.toJson(locations))
-    })
+    }
   }
 
   def postVerifications() = Action.async(parse.json) { request =>
@@ -38,7 +39,7 @@ class Addresses @javax.inject.Inject() (
       }
 
       case Some(text) => {
-        helpers.getLocations(address = Some(text)).map ( addrs => addrs match {
+        helpers.getLocations(address = Some(text)).map {
           case Left(errors) => {
             sys.error(s"Error in address verification: $errors")
           }
@@ -46,7 +47,7 @@ class Addresses @javax.inject.Inject() (
           case Right(locations) => {
             Ok(Json.toJson(AddressVerifier(address, locations)))
           }
-        })
+        }
       }
     }
   }

@@ -112,13 +112,13 @@ class DigitalElementSpec extends WordSpec with Matchers {
       val expected = Address(
         city = Some("hoboken"),
         province = Some("New Jersey"),
-        postal = Some("###"),
+        postal = None,
         country = Some("USA"),
         latitude = Some("40.7478"),
         longitude = Some("-74.0339")
       )
 
-      fixture.toAddress() should equal(expected)
+      fixture.toAddress should equal(expected)
     }
   }
 
