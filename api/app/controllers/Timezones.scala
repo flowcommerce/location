@@ -6,15 +6,14 @@ import play.api.mvc._
 import io.flow.play.util.Validation
 import io.flow.error.v0.models.json._
 import io.flow.reference.v0.models.json._
-import utils.{DigitalElement, DigitalElementIndex}
-
-import scala.util.{Failure, Success}
+import utils.DigitalElementIndex
 
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
-  system: ActorSystem
+  system: ActorSystem,
+  helpers: Helpers
 ) extends BaseController {
 
   private[this] implicit val ec = system.dispatchers.lookup("timezones-controller-context")
@@ -22,13 +21,7 @@ class Timezones @javax.inject.Inject() (
   def get(
     ip: Option[String]
   ) = Action { _ =>
-    val validatedIp: Either[Seq[String], BigInt] = ip match {
-      case None => Left(Seq("Must specify 'ip' parameter"))
-      case Some(v) => DigitalElement.ipToDecimal(v) match {
-        case Success(valid) => Right(valid)
-        case Failure(_) => Left(Seq("Invalid ip address '$v'"))
-      }
-    }
+    val validatedIp = helpers.validateRequiredIp(ip)
 
     validatedIp.left.getOrElse(Nil).toList match {
       case Nil => {

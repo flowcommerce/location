@@ -6,7 +6,7 @@ import io.flow.reference.v0.models.{Country, Timezone}
 import io.flow.reference.{Countries, Provinces, Timezones}
 
 import scala.collection.mutable
-import scala.util.Try
+import scala.util.{Failure, Success, Try}
 
 /**
   * Searchable format of a DigitalElement ip range record.
@@ -48,6 +48,21 @@ case class DigitalElementIndexRecord(
 }
 
 object DigitalElement {
+
+  /**
+    * Wraps an IP address with its valid integer value
+    */
+  case class ValidatedIpAddress(ip: String, intValue: BigInt)
+
+  def validateIp(ip: Option[String]): Either[Seq[String], Option[ValidatedIpAddress]] = {
+    ip match {
+      case None => Right(None)
+      case Some(v) => DigitalElement.ipToDecimal(v) match {
+        case Success(valid) => Right(Some(ValidatedIpAddress(v.trim, valid)))
+        case Failure(_) => Left(Seq("Invalid ip address '$v'"))
+      }
+    }
+  }
 
   val PlaceholderPostal = "###"
 
