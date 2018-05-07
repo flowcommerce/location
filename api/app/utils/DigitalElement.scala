@@ -29,12 +29,14 @@ case class DigitalElementIndexRecord(
 
   override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
 
-  private[this] val fields: Array[String] = new String(this.bytes).split(this.fieldDelimiter)
-  private[this] val country: Option[Country] = Countries.find(fields(2))
+  // Don't use a val - do not want to store in memory
+  private[this] def toFields(): Array[String] = new String(this.bytes).split(this.fieldDelimiter)
 
-  def timezone: Option[Timezone] = Timezones.find(fields(8))
+  def timezone: Option[Timezone] = Timezones.find(toFields()(8))
 
   def toAddress: Address = {
+    val fields = toFields()
+    val country: Option[Country] = Countries.find(fields(2))
     val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),
