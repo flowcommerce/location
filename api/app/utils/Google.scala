@@ -12,6 +12,7 @@ import io.flow.reference.v0.models.Timezone
 import org.apache.commons.lang3.exception.ExceptionUtils
 import play.api.Logger
 import io.flow.google.places.v0.{models => Google}
+import io.flow.location.internal.v0.models.InternalAddress
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -49,7 +50,19 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
+  private def toCommonAddress(internalAddress: InternalAddress): Address = {
+    Address(
+      streets = internalAddress.streets,
+      province = internalAddress.province,
+      city = internalAddress.city,
+      postal = internalAddress.postal,
+      country = internalAddress.country,
+      latitude = internalAddress.latitude,
+      longitude = internalAddress.longitude
+    )
+  }
+
+  def getInternalLocationsByAddress(address: String): Future[Seq[InternalAddress]] = {
     Future {
       Try {
         sortAddresses(
@@ -68,21 +81,25 @@ class Google @javax.inject.Inject() (
     }
   }
 
+  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
+    getInternalLocationsByAddress(address).map(_.map(toCommonAddress))
+  }
+
   /**
     * Ensures addresses w/ countries are defined earlier in list
     */
-  private[this] def sortAddresses(addresses: Seq[Address]): Seq[Address] = {
+  private[this] def sortAddresses(addresses: Seq[InternalAddress]): Seq[InternalAddress] = {
     sortByPostalCode(addresses.filter(_.country.isDefined)) ++ sortByPostalCode(addresses.filter(_.country.isEmpty))
   }
 
   /**
     * Prefer longer postal code as that indicates more precision
     */
-  private[this] def sortByPostalCode(addresses: Seq[Address]): Seq[Address] = {
+  private[this] def sortByPostalCode(addresses: Seq[InternalAddress]): Seq[InternalAddress] = {
     addresses.sortBy { a => a.postal.map(_.length).getOrElse(0) }.reverse
   }
 
-  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {
+  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[InternalAddress] = {
     results.map { one =>
       val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
       val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
@@ -100,15 +117,9 @@ class Google @javax.inject.Inject() (
         }
 
         case Some(q) => {
-          Countries.find(q) match {
-            case None => {
-              Logger.warn(s"Country code[$q] was not valid in reference data. Skipping country")
-              None
-            }
-
-            case Some(c) => {
-              Some(c.iso31663)
-            }
+          Countries.find(q).map(_.iso31663).orElse {
+            Logger.warn(s"Country code[$q] was not valid in reference data. Skipping country")
+            None
           }
         }
       }
@@ -138,8 +149,9 @@ class Google @javax.inject.Inject() (
         }
       }
 
-      Address(
+      InternalAddress(
         streets = streets,
+        streetNumber = findAsString(one.addressComponents.toSeq, Seq(Google.AddressComponentType.StreetNumber)),
         province = province,
         city = city,
         postal = postal,

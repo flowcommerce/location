@@ -22,25 +22,25 @@ class Helpers @javax.inject.Inject() (
   )(
     implicit ec: ExecutionContext
   ): Future[Either[Seq[String], Seq[Timezone]]] = {
-    getLocations(address = address, ip = ip).flatMap ( res => res match {
+    getLocations(address = address, ip = ip).flatMap {
       case Left(_) => Future.successful(Left(Seq("Must specify either 'address' or 'ip'")))
       case Right(addresses) => {
-        val eithersFuture = Future.sequence(addresses.map{ a =>
+        val eithersFuture = Future.sequence(addresses.map { a =>
           (a.latitude, a.longitude) match {
-            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble).map { timezone => timezone match {
+            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble).map {
               case None => Left("Unable to determine timezone based on address/ip")
               case Some(tz) => Right(tz)
-            }}
-            case _ => Future.successful ( Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup") )
+            }
+            case _ => Future.successful(Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup"))
           }
         })
 
-        eithersFuture.map( eithers => eithers.filter(_.isLeft) match {
+        eithersFuture.map(eithers => eithers.filter(_.isLeft) match {
           case Nil => Right(eithers.filter(_.isRight).map(_.right.get)) // if there are no errors, then get all the timezones
           case lefts => Left(lefts.map(_.left.get)) // seq of all the errors collected
         })
       }
-    })
+    }
   }
   
   def getLocations(
@@ -94,19 +94,16 @@ class Helpers @javax.inject.Inject() (
         }
       }
           
-      case (_, _, Some(i)) => {
+      case (_, _, Some(i)) => Future.successful {
         DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip) map (_.toAddress) match {
-            case Some(addr) => Seq(addr)
-            case None => Nil
-          }
+          digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
         } match {
-          case Success(res) => Future.successful(Right(res))
-          case Failure(error) => Future.successful(Left(Validation.error(error.getMessage)))
+          case Success(res) => Right(res)
+          case Failure(error) => Left(Validation.error(error.getMessage))
         }
       }
 
-      case _ => Future.successful (Left(Validation.error("Must specify either 'address' or 'ip'")) )
+      case _ => Future.successful(Left(Validation.error("Must specify either 'address' or 'ip'")))
     }
   }
 
@@ -115,14 +112,9 @@ class Helpers @javax.inject.Inject() (
   }
 
   def validateRequiredIp(ip: Option[String]): Either[Seq[String], DigitalElement.ValidatedIpAddress] = {
-    DigitalElement.validateIp(ip) match {
-      case Left(errors) => Left(errors)
-      case Right(opt) => {
-        opt match {
-          case None => Left(Seq("Must specify 'ip' parameter"))
-          case Some(v) => Right(v)
-        }
-      }
+    DigitalElement.validateIp(ip) flatMap {
+      case None => Left(Seq("Must specify 'ip' parameter"))
+      case Some(v) => Right(v)
     }
   }
 }
