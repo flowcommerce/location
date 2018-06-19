@@ -4,18 +4,41 @@ package utils
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
-import io.flow.reference.{Countries, Timezones}
+import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import io.flow.common.v0.models.Address
+import io.flow.google.places.v0.models.AddressComponentType
+import io.flow.google.places.v0.{models => Google}
 import io.flow.reference.v0.models.Timezone
+import io.flow.reference.{Countries, Timezones}
 import org.apache.commons.lang3.exception.ExceptionUtils
 import play.api.Logger
-import io.flow.google.places.v0.{models => Google}
-import io.flow.location.internal.v0.models.InternalAddress
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
+
+object Implicits {
+  // Provides an easy way to extract address components from a geocoding result
+  implicit class RichGeocodingResult(result: GeocodingResult) {
+    def extract(types: AddressComponentType*): Option[String] = {
+      findAsString(result.addressComponents, types)
+    }
+  }
+
+  private def findAsString(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Option[String] = {
+    find(components, types) match {
+      case Nil => None
+      case one :: Nil => Some(one.longName)
+      case multiple => Some(multiple.map(_.longName).mkString(" "))
+    }
+  }
+
+  private def find(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Seq[AddressComponent] = {
+    components.filter { c =>
+      c.types.map(t => Google.AddressComponentType(t.toString)).exists(types.contains)
+    }
+  }
+}
 
 /**
   * Mostly copied from: https://github.com/flowcommerce/scrapbook/blob/master/lib/src/main/scala/geo/AddressExploration.scala
@@ -25,6 +48,7 @@ class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
   system: ActorSystem
 ) {
+  import Implicits._
 
   private[this] val context = new GeoApiContext.Builder()
     .connectTimeout(1000, TimeUnit.MILLISECONDS)
@@ -50,19 +74,7 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  private def toCommonAddress(internalAddress: InternalAddress): Address = {
-    Address(
-      streets = internalAddress.streets,
-      province = internalAddress.province,
-      city = internalAddress.city,
-      postal = internalAddress.postal,
-      country = internalAddress.country,
-      latitude = internalAddress.latitude,
-      longitude = internalAddress.longitude
-    )
-  }
-
-  def getInternalLocationsByAddress(address: String): Future[Seq[InternalAddress]] = {
+  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
     Future {
       Try {
         sortAddresses(
@@ -81,55 +93,46 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
-    getInternalLocationsByAddress(address).map(_.map(toCommonAddress))
-  }
-
   /**
     * Ensures addresses w/ countries are defined earlier in list
     */
-  private[this] def sortAddresses(addresses: Seq[InternalAddress]): Seq[InternalAddress] = {
+  private[this] def sortAddresses(addresses: Seq[Address]): Seq[Address] = {
     sortByPostalCode(addresses.filter(_.country.isDefined)) ++ sortByPostalCode(addresses.filter(_.country.isEmpty))
   }
 
   /**
     * Prefer longer postal code as that indicates more precision
     */
-  private[this] def sortByPostalCode(addresses: Seq[InternalAddress]): Seq[InternalAddress] = {
+  private[this] def sortByPostalCode(addresses: Seq[Address]): Seq[Address] = {
     addresses.sortBy { a => a.postal.map(_.length).getOrElse(0) }.reverse
   }
 
-  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[InternalAddress] = {
-    results.map { one =>
-      val streetNumber = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetNumber))
-      val streetAddress = findAsString(one.addressComponents, Seq(Google.AddressComponentType.StreetAddress, Google.AddressComponentType.Route))
-      val streets = Seq(streetNumber, streetAddress).filter(_.isDefined) match {
-        case Nil => None
-        case streets => Some(streets.flatten)
-      }
+  private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {
+    results.map { geocodingResult =>
+      val streetNumber = geocodingResult.extract(Google.AddressComponentType.StreetNumber)
+      val streetAddress = geocodingResult.extract(
+        Seq(
+          Google.AddressComponentType.StreetAddress,
+          Google.AddressComponentType.Route
+        ):_*
+      )
 
-      val postal = findAsString(one.addressComponents, Seq(Google.AddressComponentType.PostalCode))
-
-      val country = findAsString(one.addressComponents, Seq(Google.AddressComponentType.Country)) match {
-        case None => {
-          Logger.warn(s"Could not determine country for address[$address]")
+      val streets = Some(Seq(streetNumber, streetAddress).flatten).filter(_.nonEmpty)
+      val postal = geocodingResult.extract(Google.AddressComponentType.PostalCode)
+      val country = geocodingResult
+        .extract(Google.AddressComponentType.Country)
+        .flatMap(Countries.find)
+        .map(_.iso31663) orElse {
+          Logger.warn(s"Could not determine country for address[$address], or the country code was not valid.")
           None
         }
-
-        case Some(q) => {
-          Countries.find(q).map(_.iso31663).orElse {
-            Logger.warn(s"Country code[$q] was not valid in reference data. Skipping country")
-            None
-          }
-        }
-      }
 
       // best effort to find city/town name
       val city = Seq(
         Google.AddressComponentType.Locality,
         Google.AddressComponentType.Sublocality,
         Google.AddressComponentType.Neighborhood
-      ).flatMap(typ => findAsString(one.addressComponents.toSeq, Seq(typ))).headOption
+      ).flatMap(geocodingResult.extract(_)).headOption
 
       val adminAreas = Seq(
         Google.AddressComponentType.AdministrativeAreaLevel1,
@@ -137,51 +140,21 @@ class Google @javax.inject.Inject() (
         Google.AddressComponentType.AdministrativeAreaLevel3,
         Google.AddressComponentType.AdministrativeAreaLevel4,
         Google.AddressComponentType.AdministrativeAreaLevel5
-      ).flatMap(typ => findAsString(one.addressComponents.toSeq, Seq(typ)))
+      ).flatMap(geocodingResult.extract(_))
 
-      val (province, county) = adminAreas match {
-        case Nil => (None, None)
-        case a :: Nil => (Some(a), None)
-        case a :: b :: Nil => (Some(a), Some(b))
-        case a :: b :: more => {
-          // TODO: Investigate what the other pieces are
-          (Some(a), Some(b))
-        }
-      }
+      // `adminAreas` will contain province, then county, others - we just need province here
+      val province = adminAreas.headOption
 
-      InternalAddress(
+      Address(
         streets = streets,
-        streetNumber = findAsString(one.addressComponents.toSeq, Seq(Google.AddressComponentType.StreetNumber)),
+        streetNumber = streetNumber,
         province = province,
         city = city,
         postal = postal,
         country = country,
-        latitude = Some(one.geometry.location.lat.toString),
-        longitude = Some(one.geometry.location.lng.toString)
+        latitude = Some(geocodingResult.geometry.location.lat.toString),
+        longitude = Some(geocodingResult.geometry.location.lng.toString)
       )
     }
   }
-
-  private def findAsString(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Option[String] = {
-    find(components, types) match {
-      case Nil => None
-      case one :: Nil => Some(one.longName)
-      case multiple => Some(multiple.map(_.longName).mkString(" "))
-    }
-  }
-
-  private def findAsShortString(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Option[String] = {
-    find(components, types) match {
-      case Nil => None
-      case one :: Nil => Some(one.shortName)
-      case multiple => Some(multiple.map(_.shortName).mkString(" "))
-    }
-  }
-
-  private def find(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Seq[AddressComponent] = {
-    components.filter { c =>
-      c.types.map(t => Google.AddressComponentType(t.toString)).exists(types.contains)
-    }
-  }
-
 }
