@@ -6,6 +6,9 @@ flow:
   error:
     play_2_x_json:
     - generated/app/FlowErrorV0Models.scala
+  google-places:
+    play_2_6_client:
+    - generated/app/FlowGooglePlacesV0Client.scala
   healthcheck:
     play_2_6_client:
     - generated/app/FlowHealthcheckV0Client.scala
