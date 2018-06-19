@@ -53,44 +53,16 @@ class Helpers @javax.inject.Inject() (
     (country, address, ip) match {
       case (Some(code), _, _) => {
         Countries.find(code) match {
-          case None => {
-            Future.successful ( Right(Nil) )
-          }
-
-          case Some(c) => {
-            Future.successful (
-              Right(
-                Seq(
-                  Address(
-                    country = Some(c.iso31663)
-                  )
-                )
-              )
-            )
-          }
+          case None => Future.successful(Right(Nil))
+          case Some(c) => Future.successful(Right(Seq(Address(country = Some(c.iso31663)))))
         }
       }
 
       case (_, Some(a), _) => {
         // Special case to enable specifying just a country code in the address line
         Countries.find(a) match {
-          case Some(c) => {
-            Future.successful (
-              Right(
-                Seq(
-                  Address(
-                    country = Some(c.iso31663)
-                  )
-                )
-              )
-            )
-          }
-
-          case None => {
-            google.getLocationsByAddress(a).map { addrs =>
-              Right(addrs)
-            }
-          }
+          case Some(c) => Future.successful(Right(Seq(Address(country = Some(c.iso31663)))))
+          case None => google.getLocationsByAddress(a).map(Right.apply)
         }
       }
           
