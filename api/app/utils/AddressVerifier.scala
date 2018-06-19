@@ -21,7 +21,7 @@ object AddressVerifier {
         false
       }
 
-      case first :: rest => {
+      case first :: _ => {
         // For now, all we do is match on country. Later we plan to
         // add actual address verification.
         (address.country, first.country) match {
@@ -48,7 +48,7 @@ object AddressVerifier {
       case None => addresses
       case Some(prefix) => {
         addresses.map { a =>
-          a.streets.getOrElse(Nil).headOption == Some(prefix) match {
+          a.streets.getOrElse(Nil).headOption.contains(prefix) match {
             case false => a
             case true => {
               a.copy(
