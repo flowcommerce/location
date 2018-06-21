@@ -20,16 +20,34 @@ import scala.util.{Failure, Success, Try}
 object Implicits {
   // Provides an easy way to extract address components from a geocoding result
   implicit class RichGeocodingResult(result: GeocodingResult) {
-    def extract(types: AddressComponentType*): Option[String] = {
-      findAsString(result.addressComponents, types)
+    // Extracts "Ontario" instead of "ON", etc.
+    def extractLongName(types: AddressComponentType*): Option[String] = {
+      findAsString(
+        components = result.addressComponents,
+        types = types,
+        extractor = _.longName
+      )
+    }
+
+    // Extracts "ON" instead of "Ontario", etc.
+    def extractShortName(types: AddressComponentType*): Option[String] = {
+      findAsString(
+        components = result.addressComponents,
+        types = types,
+        extractor = _.shortName
+      )
     }
   }
 
-  private def findAsString(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Option[String] = {
+  private def findAsString(
+    components: Seq[AddressComponent],
+    types: Seq[Google.AddressComponentType],
+    extractor: AddressComponent => String
+  ): Option[String] = {
     find(components, types) match {
       case Nil => None
-      case one :: Nil => Some(one.longName)
-      case multiple => Some(multiple.map(_.longName).mkString(" "))
+      case one :: Nil => Some(extractor(one))
+      case multiple => Some(multiple.map(extractor).mkString(" "))
     }
   }
 
@@ -109,8 +127,8 @@ class Google @javax.inject.Inject() (
 
   private[this] def parseResults(address: String, results: Seq[GeocodingResult]): Seq[Address] = {
     results.map { geocodingResult =>
-      val streetNumber = geocodingResult.extract(Google.AddressComponentType.StreetNumber)
-      val streetAddress = geocodingResult.extract(
+      val streetNumber = geocodingResult.extractLongName(Google.AddressComponentType.StreetNumber)
+      val streetAddress = geocodingResult.extractLongName(
         Seq(
           Google.AddressComponentType.StreetAddress,
           Google.AddressComponentType.Route
@@ -118,9 +136,9 @@ class Google @javax.inject.Inject() (
       )
 
       val streets = Some(Seq(streetNumber, streetAddress).flatten).filter(_.nonEmpty)
-      val postal = geocodingResult.extract(Google.AddressComponentType.PostalCode)
+      val postal = geocodingResult.extractLongName(Google.AddressComponentType.PostalCode)
       val country = geocodingResult
-        .extract(Google.AddressComponentType.Country)
+        .extractLongName(Google.AddressComponentType.Country)
         .flatMap(Countries.find)
         .map(_.iso31663) orElse {
           Logger.warn(s"Could not determine country for address[$address], or the country code was not valid.")
@@ -132,7 +150,7 @@ class Google @javax.inject.Inject() (
         Google.AddressComponentType.Locality,
         Google.AddressComponentType.Sublocality,
         Google.AddressComponentType.Neighborhood
-      ).flatMap(geocodingResult.extract(_)).headOption
+      ).flatMap(geocodingResult.extractLongName(_)).headOption
 
       val adminAreas = Seq(
         Google.AddressComponentType.AdministrativeAreaLevel1,
@@ -140,15 +158,15 @@ class Google @javax.inject.Inject() (
         Google.AddressComponentType.AdministrativeAreaLevel3,
         Google.AddressComponentType.AdministrativeAreaLevel4,
         Google.AddressComponentType.AdministrativeAreaLevel5
-      ).flatMap(geocodingResult.extract(_))
+      ).flatMap(geocodingResult.extractShortName(_))
 
-      // `adminAreas` will contain province, then county, others - we just need province here
-      val province = adminAreas.headOption
+      // `adminAreas` will contain province or state, then county, others - we just need province here
+      val provinceOrState = adminAreas.headOption
 
       Address(
         streets = streets,
         streetNumber = streetNumber,
-        province = province,
+        province = provinceOrState,
         city = city,
         postal = postal,
         country = country,
