@@ -15,10 +15,10 @@ flow:
     play_2_x_routes:
     - api/conf/healthcheck.routes
   location:
-    play_2_x_routes:
-    - api/conf/location.routes
     play_2_6_client:
     - generated/app/FlowLocationV0Client.scala
+    play_2_x_routes:
+    - api/conf/location.routes
   reference:
     play_2_6_client:
     - generated/app/FlowReferenceV0Client.scala
