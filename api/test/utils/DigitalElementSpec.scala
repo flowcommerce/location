@@ -2,6 +2,7 @@ package utils
 
 import io.flow.common.v0.models.Address
 import org.scalatest.{Matchers, WordSpec}
+import utils.DigitalElement.ValidatedIpAddress
 
 import scala.util.{Failure, Success}
 
@@ -26,6 +27,20 @@ class DigitalElementSpec extends WordSpec with Matchers {
       .mkString(fieldDelimiter.toString)
       .getBytes()
   )
+
+  "validateIp" should {
+    "ignore empty IP" in {
+      DigitalElement.validateIp(None) should be (Right(None))
+      DigitalElement.validateIp(Some("        ")) should be (Right(None))
+      DigitalElement.validateIp(Some("  192.168.1.1  ")) should be (
+        Right(
+          Some(
+            ValidatedIpAddress("192.168.1.1", BigInt("3232235777")
+          )
+        )
+      ))
+    }
+  }
 
   "ip2decimal" should {
     "correctly Convert ip4 addresses" in {
