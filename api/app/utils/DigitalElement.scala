@@ -57,10 +57,10 @@ object DigitalElement {
   case class ValidatedIpAddress(ip: String, intValue: BigInt)
 
   def validateIp(ip: Option[String]): Either[Seq[String], Option[ValidatedIpAddress]] = {
-    ip match {
+    ip.map(_.trim).filter(_.nonEmpty) match {
       case None => Right(None)
       case Some(v) => DigitalElement.ipToDecimal(v) match {
-        case Success(valid) => Right(Some(ValidatedIpAddress(v.trim, valid)))
+        case Success(valid) => Right(Some(ValidatedIpAddress(v, valid)))
         case Failure(_) => Left(Seq("Invalid ip address '$v'"))
       }
     }
@@ -83,7 +83,7 @@ object DigitalElement {
     case _ => s
   }
 
-  def ipToDecimal(ip:String): Try[BigInt] = Try {
+  def ipToDecimal(ip: String): Try[BigInt] = Try {
     ip match {
       case ipv4(a, b, c, d) => {
         a.toInt * scala.math.pow(256, 3).toLong +
