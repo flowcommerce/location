@@ -26,14 +26,14 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play26" % "0.5.2",
-      "io.flow" %% "lib-play-graphite-play26" % "0.0.45",
-      "io.flow" %% "lib-reference-scala" % "0.2.0",
-      "io.flow" %% "lib-s3-play26" % "0.2.3",
+      "io.flow" %% "lib-play-play26" % "0.5.3",
+      "io.flow" %% "lib-play-graphite-play26" % "0.0.46",
+      "io.flow" %% "lib-reference-scala" % "0.2.4",
+      "io.flow" %% "lib-s3-play26" % "0.2.4",
       "com.google.maps" % "google-maps-services" % "0.2.11",
       "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
       "io.flow" %% "lib-test-utils" % "0.0.18" % Test,
-      "io.flow" %% "lib-usage" % "0.0.28"
+      "io.flow" %% "lib-usage" % "0.0.29"
     )
   )
 
@@ -42,7 +42,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     guice,
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.6.9",
+    "com.typesafe.play" %% "play-json-joda" % "2.6.10",
     "com.typesafe.play" %% "play-json" % "2.6.10"
   ),
   scalacOptions += "-feature",
