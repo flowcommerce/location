@@ -7,6 +7,7 @@ scalaVersion in ThisBuild := "2.12.6"
 lazy val apibuilder = project
   .in(file(".apibuilder"))
   .settings(
+    resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
     libraryDependencies ++= Seq(
       "io.flow" %% "lib-postgresql-play-play26" % "0.2.40",
     )
