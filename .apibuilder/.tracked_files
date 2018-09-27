@@ -2,23 +2,23 @@
 flow:
   common:
     play_2_x_json:
-    - generated/app/FlowCommonV0Models.scala
+    - ".apibuilder/src/main/scala/FlowCommonV0Models.scala"
   error:
     play_2_x_json:
-    - generated/app/FlowErrorV0Models.scala
+    - ".apibuilder/src/main/scala/FlowErrorV0Models.scala"
   google-places:
     play_2_6_client:
-    - generated/app/FlowGooglePlacesV0Client.scala
+    - ".apibuilder/src/main/scala/FlowGooglePlacesV0Client.scala"
   healthcheck:
     play_2_6_client:
-    - generated/app/FlowHealthcheckV0Client.scala
+    - ".apibuilder/src/main/scala/FlowHealthcheckV0Client.scala"
     play_2_x_routes:
     - api/conf/healthcheck.routes
   location:
+    play_2_6_client:
+    - ".apibuilder/src/main/scala/FlowLocationV0Client.scala"
     play_2_x_routes:
     - api/conf/location.routes
-    play_2_6_client:
-    - generated/app/FlowLocationV0Client.scala
   reference:
     play_2_6_client:
-    - generated/app/FlowReferenceV0Client.scala
+    - ".apibuilder/src/main/scala/FlowReferenceV0Client.scala"

@@ -10,7 +10,6 @@ import play.api.libs.json._
 class Healthchecks @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   system: ActorSystem,
-  environmentVariables: utils.EnvironmentVariables,
   addresses: Addresses
 ) extends BaseController {
 

@@ -1,6 +1,5 @@
 package controllers
 
-import akka.actor.ActorSystem
 import play.api.libs.json._
 import play.api.mvc._
 import io.flow.play.util.Validation
@@ -12,11 +11,8 @@ import utils.DigitalElementIndex
 class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
-  system: ActorSystem,
   helpers: Helpers
 ) extends BaseController {
-
-  private[this] implicit val ec = system.dispatchers.lookup("timezones-controller-context")
 
   def get(
     ip: Option[String]

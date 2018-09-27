@@ -4,15 +4,18 @@ name := "location"
 
 scalaVersion in ThisBuild := "2.12.6"
 
-lazy val generated = project
-  .in(file("generated"))
-  .enablePlugins(PlayScala)
-  .settings(commonSettings: _*)
+lazy val apibuilder = project
+  .in(file(".apibuilder"))
+  .settings(
+    libraryDependencies ++= Seq(
+      "io.flow" %% "lib-postgresql-play-play26" % "0.2.40",
+    )
+  )
+  .disablePlugins(TpolecatPlugin)
 
 lazy val api = project
   .in(file("api"))
-  .dependsOn(generated)
-  .aggregate(generated)
+  .dependsOn(apibuilder)
   .enablePlugins(PlayScala)
   .enablePlugins(NewRelic)
   .enablePlugins(JavaAppPackaging, JavaAgent)
@@ -26,7 +29,6 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play26" % "0.5.3",
       "io.flow" %% "lib-play-graphite-play26" % "0.0.47",
       "io.flow" %% "lib-reference-scala" % "0.2.5",
       "io.flow" %% "lib-s3-play26" % "0.2.6",
