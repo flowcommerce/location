@@ -12,7 +12,6 @@ import io.flow.google.places.v0.{models => Google}
 import io.flow.reference.v0.models.Timezone
 import io.flow.reference.{Countries, Timezones}
 import org.apache.commons.lang3.exception.ExceptionUtils
-import play.api.Logger
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
