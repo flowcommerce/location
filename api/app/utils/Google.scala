@@ -9,9 +9,9 @@ import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
 import io.flow.common.v0.models.Address
 import io.flow.google.places.v0.models.AddressComponentType
 import io.flow.google.places.v0.{models => Google}
+import io.flow.log.RollbarLogger
 import io.flow.reference.v0.models.Timezone
 import io.flow.reference.{Countries, Timezones}
-import org.apache.commons.lang3.exception.ExceptionUtils
 
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
@@ -63,7 +63,8 @@ object Implicits {
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
-  system: ActorSystem
+  system: ActorSystem,
+  logger: RollbarLogger
 ) {
   import Implicits._
 
@@ -84,7 +85,7 @@ class Google @javax.inject.Inject() (
       } match {
         case Success(result) => result
         case Failure(e) => {
-          Logger.warn(s"Encountered the following error from the timezone API: ${ExceptionUtils.getStackTrace(e)}")
+          logger.warn(s"Encountered the following error from the timezone API", e)
           None
         }
       }
@@ -103,7 +104,7 @@ class Google @javax.inject.Inject() (
       } match {
         case Success(result) => result
         case Failure(e) => {
-          Logger.warn(s"Encountered the following error from the geocoding API: $e")
+          logger.warn(s"Encountered the following error from the geocoding API", e)
           Nil
         }
       }
@@ -140,7 +141,7 @@ class Google @javax.inject.Inject() (
         .extractLongName(Google.AddressComponentType.Country)
         .flatMap(Countries.find)
         .map(_.iso31663) orElse {
-          Logger.warn(s"Could not determine country for address[$address], or the country code was not valid.")
+          logger.withKeyValue("address",address).warn(s"Could not determine country for address or the country code was not valid")
           None
         }
 
