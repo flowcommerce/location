@@ -141,7 +141,7 @@ class Google @javax.inject.Inject() (
         .extractLongName(Google.AddressComponentType.Country)
         .flatMap(Countries.find)
         .map(_.iso31663) orElse {
-          logger.withKeyValue("address",address).warn(s"Could not determine country for address or the country code was not valid")
+          logger.withKeyValue("address",address).info(s"Could not determine country for address or the country code was not valid")
           None
         }
 
