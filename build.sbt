@@ -28,13 +28,13 @@ lazy val api = project
     libraryDependencies ++= Seq(
       "io.flow" %% "lib-play-play26" % "0.5.25",
       "io.flow" %% "lib-play-graphite-play26" % "0.0.63",
-      "io.flow" %% "lib-reference-scala" % "0.2.18",
+      "io.flow" %% "lib-reference-scala" % "0.2.19",
       "io.flow" %% "lib-s3-play26" % "0.2.31",
       "com.google.maps" % "google-maps-services" % "0.9.1",
       "org.scalacheck" %% "scalacheck" % "1.14.0" % "test",
-      "io.flow" %% "lib-test-utils" % "0.0.25" % Test,
+      "io.flow" %% "lib-test-utils" % "0.0.26" % Test,
       "io.flow" %% "lib-usage" % "0.0.53",
-      "io.flow" %% "lib-log" % "0.0.51"
+      "io.flow" %% "lib-log" % "0.0.52"
     )
   )
 
@@ -44,7 +44,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     guice,
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.6.10",
-    "com.typesafe.play" %% "play-json" % "2.6.11"
+    "com.typesafe.play" %% "play-json" % "2.6.13"
   ),
   scalacOptions += "-feature",
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
