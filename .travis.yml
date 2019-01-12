@@ -12,7 +12,7 @@ services:
 before_script:
   - docker login -u="$DOCKER_USERNAME" -p="$DOCKER_PASSWORD"
 script:
-  - sbt ++$TRAVIS_SCALA_VERSION clean compile test
+  - sbt ++$TRAVIS_SCALA_VERSION clean compile test doc
   # Tricks to avoid unnecessary cache updates
   - find $HOME/.sbt -name "*.lock" | xargs rm
   - find $HOME/.ivy2 -name "ivydata-*.properties" | xargs rm
