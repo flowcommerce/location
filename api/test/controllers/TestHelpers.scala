@@ -2,6 +2,9 @@ package controllers
 
 import io.flow.location.v0.errors.{GenericErrorResponse, UnitResponse}
 import java.util.concurrent.TimeUnit
+
+import org.specs2.execute.Result
+
 import scala.concurrent.{Await, Future}
 import scala.concurrent.duration.Duration
 import scala.util.{Failure, Success, Try}
@@ -10,7 +13,7 @@ trait TestHelpers {
 
   val DefaultDuration = Duration(1, TimeUnit.SECONDS)
 
-  def expectStatus[T](code: Int)(f: => Future[T]) {
+  def expectStatus(code: Int)(f: => Future[_]): Result = {
     assert(code >= 400, s"code[$code] must be >= 400")
 
     Try(
