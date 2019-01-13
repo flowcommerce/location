@@ -17,6 +17,9 @@ class Healthchecks @javax.inject.Inject() (
   private[this] implicit val ec = system.dispatchers.lookup("healthchecks-controller-context")
 
   def getHealthcheck() = Action.async { request =>
+    // force loading of config
+    assert(environmentVariables.digitalElementFileUri.nonEmpty)
+
     addresses.get(address = None, ip = Some("0.0.0.0"))(request).map { _ =>
       Ok(Json.toJson(Healthcheck("healthy")))
     }

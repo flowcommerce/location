@@ -61,7 +61,7 @@ object DigitalElement {
       case None => Right(None)
       case Some(v) => DigitalElement.ipToDecimal(v) match {
         case Success(valid) => Right(Some(ValidatedIpAddress(v, valid)))
-        case Failure(_) => Left(Seq("Invalid ip address '$v'"))
+        case Failure(_) => Left(Seq(s"Invalid ip address '$v'"))
       }
     }
   }
