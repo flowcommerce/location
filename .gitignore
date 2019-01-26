@@ -6,5 +6,5 @@ logs/
 .ivy2
 *.swp
 *.swo
-.DS_STORE
+.DS_Store
 GeoLite2-City.mmdb
