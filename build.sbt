@@ -15,7 +15,6 @@ lazy val generated = project
 lazy val api = project
   .in(file("api"))
   .dependsOn(generated)
-  .aggregate(generated)
   .enablePlugins(PlayScala)
   .enablePlugins(NewRelic)
   .enablePlugins(JavaAppPackaging, JavaAgent)
