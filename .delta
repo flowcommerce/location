@@ -1,6 +1,6 @@
 builds:
   - root:
-      instance.type: m5.xlarge
+      instance.type: m5.xarge
       port.container: 9000
       port.host: 6191
       version: 1.3
