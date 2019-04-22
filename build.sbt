@@ -54,7 +54,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     guice,
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.6.10",
-    "com.typesafe.play" %% "play-json" % "2.7.1",
+    "com.typesafe.play" %% "play-json" % "2.6.13",
     compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.3.1"),
     "com.github.ghik" %% "silencer-lib" % "1.3.0" % Provided
   ),
