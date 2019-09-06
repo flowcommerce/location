@@ -72,7 +72,7 @@ class Helpers @javax.inject.Inject() (
 
       case _ => Future.successful(Left(
         LocationError(
-          code = LocationErrorCode.IpMissing,
+          code = LocationErrorCode.IpRequired,
           messages = Seq("Must specify either 'address' or 'ip'")
         )
       ))
@@ -88,7 +88,7 @@ class Helpers @javax.inject.Inject() (
       case Left(error) => Left(error)
       case Right(None) => Left(
         LocationError(
-          code = LocationErrorCode.IpMissing,
+          code = LocationErrorCode.IpRequired,
           messages = Seq("Must specify 'ip' parameter")
         )
       )

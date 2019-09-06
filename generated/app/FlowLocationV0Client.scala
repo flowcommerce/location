@@ -71,13 +71,17 @@ package io.flow.location.v0.models {
 
     case object GenericError extends LocationErrorCode { override def toString = "generic_error" }
     /**
+     * Indicates that a non empty address was not specified when required
+     */
+    case object AddressRequired extends LocationErrorCode { override def toString = "address_required" }
+    /**
      * Indicates the specified IP Address is invalid
      */
     case object IpInvalid extends LocationErrorCode { override def toString = "ip_invalid" }
     /**
      * Indicates that a non empty IP Address was not specified when required
      */
-    case object IpMissing extends LocationErrorCode { override def toString = "ip_missing" }
+    case object IpRequired extends LocationErrorCode { override def toString = "ip_required" }
     /**
      * Indicates that there is no timezone information available for the specified IP
      * Address
@@ -100,7 +104,7 @@ package io.flow.location.v0.models {
      * lower case to avoid collisions with the camel cased values
      * above.
      */
-    val all: scala.List[LocationErrorCode] = scala.List(GenericError, IpInvalid, IpMissing, TimezoneUnavailable)
+    val all: scala.List[LocationErrorCode] = scala.List(GenericError, AddressRequired, IpInvalid, IpRequired, TimezoneUnavailable)
 
     private[this]
     val byName: Map[String, LocationErrorCode] = all.map(x => x.toString.toLowerCase -> x).toMap
