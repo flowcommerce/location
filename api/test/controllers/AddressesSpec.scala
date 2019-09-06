@@ -15,7 +15,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses without an IP returns a proper message" in {
-    expectErrors(LocationErrorCode.IpMissing)(
+    expectErrors(LocationErrorCode.IpRequired)(
       client.addresses.get(ip = None)
     ).messages must be(
       Seq("Must specify either 'address' or 'ip'")
@@ -35,7 +35,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   }
 
   "POST /addresses/verifications" in {
-    expectErrors(LocationErrorCode.IpMissing)(
+    expectErrors(LocationErrorCode.IpRequired)(
       client.addresses.postVerifications(address = Address())
     ).messages must be(
       Seq("Address to verify cannot be empty")

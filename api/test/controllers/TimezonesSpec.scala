@@ -12,7 +12,7 @@ class TimezonesSpec extends FlowPlaySpec with TestHelpers {
   lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses" in {
-    expectErrors(LocationErrorCode.IpMissing) {
+    expectErrors(LocationErrorCode.IpRequired) {
       client.timezones.get(ip = None)
     }.messages must equal(
       Seq("Must specify 'ip' parameter")
