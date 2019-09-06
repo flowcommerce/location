@@ -1,6 +1,7 @@
 package controllers
 
 import io.flow.location.v0.Client
+import io.flow.location.v0.models.LocationErrorCode
 import io.flow.test.utils.FlowPlaySpec
 import utils.DigitalElementSampleData
 
@@ -11,17 +12,17 @@ class TimezonesSpec extends FlowPlaySpec with TestHelpers {
   lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses" in {
-    expectErrors {
+    expectErrors(LocationErrorCode.IpRequired) {
       client.timezones.get(ip = None)
-    }.genericError.messages must equal(
+    }.messages must equal(
       Seq("Must specify 'ip' parameter")
     )
   }
 
   "GET /addresses for unknown IPs" in {
-    expectErrors {
+    expectErrors(LocationErrorCode.TimezoneUnavailable) {
       client.timezones.get(ip = Some("1.2.3.4"))
-    }.genericError.messages must equal(
+    }.messages must equal(
       Seq("Timezone information not available for ip '1.2.3.4'")
     )
   }

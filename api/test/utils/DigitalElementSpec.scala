@@ -1,10 +1,9 @@
 package utils
 
 import io.flow.common.v0.models.Address
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import org.scalatest.{Matchers, WordSpec}
 import utils.DigitalElement.ValidatedIpAddress
-
-import scala.util.{Failure, Success}
 
 class DigitalElementSpec extends WordSpec with Matchers {
 
@@ -44,23 +43,28 @@ class DigitalElementSpec extends WordSpec with Matchers {
 
   "ip2decimal" should {
     "correctly Convert ip4 addresses" in {
-      DigitalElement.ipToDecimal("0.0.0.0") should be(Success(BigInt("0")))
-      DigitalElement.ipToDecimal("192.168.1.1") should be(Success(BigInt("3232235777")))
-      DigitalElement.ipToDecimal("255.255.255.255") should be(Success(BigInt("4294967295")))
-      DigitalElement.ipToDecimal("::ffff:255.255.255.255") should be(Success(BigInt("4294967295")))
+      DigitalElement.ipToDecimal("0.0.0.0") should be(Right(BigInt("0")))
+      DigitalElement.ipToDecimal("192.168.1.1") should be(Right(BigInt("3232235777")))
+      DigitalElement.ipToDecimal("255.255.255.255") should be(Right(BigInt("4294967295")))
+      DigitalElement.ipToDecimal("::ffff:255.255.255.255") should be(Right(BigInt("4294967295")))
     }
 
     "correctly Convert ip6 addresses" in {
-      DigitalElement.ipToDecimal("2001:0:0:0:0:0:0:0") should be(Success(BigInt("2306124484190404608")))
-      DigitalElement.ipToDecimal("2001::0:0::0:0:0") should be(Success(BigInt("2306124484190404608")))
-      DigitalElement.ipToDecimal("2404:440c:1463:0:0:0:0:0") should be(Success(BigInt("2595274103944577024")))
+      DigitalElement.ipToDecimal("2001:0:0:0:0:0:0:0") should be(Right(BigInt("2306124484190404608")))
+      DigitalElement.ipToDecimal("2001::0:0::0:0:0") should be(Right(BigInt("2306124484190404608")))
+      DigitalElement.ipToDecimal("2404:440c:1463:0:0:0:0:0") should be(Right(BigInt("2595274103944577024")))
     }
 
     "fail" in {
-      DigitalElement.ipToDecimal("00.0.0") shouldBe a[Failure[_]]
-      DigitalElement.ipToDecimal("0.x.0.0") shouldBe a[Failure[_]]
-      DigitalElement.ipToDecimal("2001:0:0:0:0:0:0") shouldBe a[Failure[_]]
-      DigitalElement.ipToDecimal("2001:0:0:g:0:0:0:0") shouldBe a[Failure[_]]
+      def test(ip: String) = {
+        DigitalElement.ipToDecimal(ip) shouldBe(
+          Left(LocationError(LocationErrorCode.IpInvalid, Seq(s"Unable to parse ip address $ip")))
+        )
+      }
+      test("00.0.0")
+      test("0.x.0.0")
+      test("2001:0:0:0:0:0:0")
+      test("2001:0:0:g:0:0:0:0")
     }
   }
 

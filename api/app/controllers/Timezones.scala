@@ -1,14 +1,14 @@
 package controllers
 
 import akka.actor.ActorSystem
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import play.api.libs.json._
 import play.api.mvc._
-import io.flow.play.util.Validation
-import io.flow.error.v0.models.json._
+import io.flow.location.v0.models.json._
 import io.flow.reference.v0.models.json._
 import utils.DigitalElementIndex
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
@@ -18,32 +18,33 @@ class Timezones @javax.inject.Inject() (
   helpers: Helpers
 ) extends BaseController {
 
-  private[this] implicit val ec = system.dispatchers.lookup("timezones-controller-context")
+  private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
 
   def get(
     ip: Option[String]
   ) = Action.async { _ =>
     Future {
-      val validatedIp = helpers.validateRequiredIp(ip)
-
-      validatedIp.left.getOrElse(Nil).toList match {
-        case Nil => {
-          digitalElementIndex.lookup(validatedIp.right.get).flatMap(_.timezone) match {
+      helpers.validateRequiredIp(ip) match {
+        case Left(error) => {
+          UnprocessableEntity(Json.toJson(error))
+        }
+        case Right(valid) =>
+          digitalElementIndex.lookup(valid).flatMap(_.timezone) match {
             case None => {
-              UnprocessableEntity(Json.toJson(Validation.error(
-                s"Timezone information not available for ip '${ip.get.trim}'"
-              )))
+              UnprocessableEntity(Json.toJson(
+                LocationError(
+                  code = LocationErrorCode.TimezoneUnavailable,
+                  messages = Seq(
+                    s"Timezone information not available for ip '${ip.get.trim}'"
+                  )
+                )
+              ))
             }
 
             case Some(tz) => {
               Ok(Json.toJson(Seq(tz)))
             }
           }
-        }
-
-        case errors => {
-          UnprocessableEntity(Json.toJson(Validation.errors(errors)))
-        }
       }
     }
   }

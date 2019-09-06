@@ -5,6 +5,7 @@ import play.api.libs.json.{JsError, JsSuccess, Json}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import io.flow.location.v0.Client
 import io.flow.common.v0.models.json._
+import io.flow.location.v0.models.LocationErrorCode
 import io.flow.test.utils.FlowPlaySpec
 
 class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHelpers {
@@ -14,9 +15,9 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses without an IP returns a proper message" in {
-    expectErrors(
+    expectErrors(LocationErrorCode.IpRequired)(
       client.addresses.get(ip = None)
-    ).genericError.messages must be(
+    ).messages must be(
       Seq("Must specify either 'address' or 'ip'")
     )
   }
@@ -34,9 +35,9 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   }
 
   "POST /addresses/verifications" in {
-    expectErrors(
+    expectErrors(LocationErrorCode.AddressRequired)(
       client.addresses.postVerifications(address = Address())
-    ).genericError.messages must be(
+    ).messages must be(
       Seq("Address to verify cannot be empty")
     )
   }
