@@ -35,7 +35,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   }
 
   "POST /addresses/verifications" in {
-    expectErrors(LocationErrorCode.IpRequired)(
+    expectErrors(LocationErrorCode.AddressRequired)(
       client.addresses.postVerifications(address = Address())
     ).messages must be(
       Seq("Address to verify cannot be empty")
