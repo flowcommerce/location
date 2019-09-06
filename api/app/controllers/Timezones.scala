@@ -28,7 +28,7 @@ class Timezones @javax.inject.Inject() (
         case Left(error) => {
           UnprocessableEntity(Json.toJson(error))
         }
-        case Right(valid) => {
+        case Right(valid) =>
           digitalElementIndex.lookup(valid).flatMap(_.timezone) match {
             case None => {
               UnprocessableEntity(Json.toJson(
@@ -45,8 +45,6 @@ class Timezones @javax.inject.Inject() (
               Ok(Json.toJson(Seq(tz)))
             }
           }
-
-        }
       }
     }
   }
