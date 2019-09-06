@@ -13,7 +13,7 @@ trait TestHelpers {
 
   def expectStatus(code: Int)(f: => Future[_]): Result = {
     assert(code >= 400, s"code[$code] must be >= 400")
-    await(f) match {
+    Try(await(f)) match {
       case Success(_) => {
         org.specs2.execute.Failure(s"Expected HTTP[$code] but got HTTP 2xx")
       }
