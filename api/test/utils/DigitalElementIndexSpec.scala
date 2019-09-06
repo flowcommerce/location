@@ -4,8 +4,6 @@ import java.io._
 import java.nio.file.{Files, Paths}
 import org.scalatest.{Matchers, WordSpec}
 
-import scala.util.{Failure, Success}
-
 class DigitalElementIndexSpec extends WordSpec with Matchers {
 
   "buildIndex" should {
@@ -29,9 +27,8 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
     "timezone" in {
       val invalid = DigitalElementSampleData.IpTimezones.keys.toSeq.flatMap { ip =>
-        val ipInt = DigitalElement.ipToDecimal(ip) match {
-          case Failure(_) => sys.error(s"Missing ip '$ip'")
-          case Success(v) => v
+        val ipInt = DigitalElement.ipToDecimal(ip).right.getOrElse {
+          sys.error(s"Missing ip '$ip'")
         }
 
         val element = index.lookup(ipInt).getOrElse {

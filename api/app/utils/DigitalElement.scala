@@ -2,6 +2,7 @@ package utils
 import java.io.InputStream
 
 import io.flow.common.v0.models.Address
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.v0.models.{Country, Timezone}
 import io.flow.reference.{Countries, Provinces, Timezones}
 
@@ -56,12 +57,11 @@ object DigitalElement {
     */
   case class ValidatedIpAddress(ip: String, intValue: BigInt)
 
-  def validateIp(ip: Option[String]): Either[Seq[String], Option[ValidatedIpAddress]] = {
+  def validateIp(ip: Option[String]): Either[LocationError, Option[ValidatedIpAddress]] = {
     ip.map(_.trim).filter(_.nonEmpty) match {
       case None => Right(None)
-      case Some(v) => DigitalElement.ipToDecimal(v) match {
-        case Success(valid) => Right(Some(ValidatedIpAddress(v, valid)))
-        case Failure(_) => Left(Seq(s"Invalid ip address '$v'"))
+      case Some(v) => DigitalElement.ipToDecimal(v).right.map { valid =>
+        Some(ValidatedIpAddress(v, valid))
       }
     }
   }
@@ -75,7 +75,6 @@ object DigitalElement {
 
   /**
     * Handle fully-collapsed ipv6 groups ("z" for "zero" ;) )
-    * @param s
     * @return "0" if it was an empty string, identity otherwise
     */
   private[this] def z(s: String) = s match {
@@ -83,23 +82,32 @@ object DigitalElement {
     case _ => s
   }
 
-  def ipToDecimal(ip: String): Try[BigInt] = Try {
-    ip match {
-      case ipv4(a, b, c, d) => {
-        a.toInt * scala.math.pow(256, 3).toLong +
-          b.toInt * scala.math.pow(256, 2).toLong +
-          c.toInt * scala.math.pow(256, 1).toLong +
-          d.toInt * scala.math.pow(256, 0).toLong
+  def ipToDecimal(ip: String): Either[LocationError, BigInt] = {
+    Try {
+      ip match {
+        case ipv4(a, b, c, d) => {
+          a.toInt * scala.math.pow(256, 3).toLong +
+            b.toInt * scala.math.pow(256, 2).toLong +
+            c.toInt * scala.math.pow(256, 1).toLong +
+            d.toInt * scala.math.pow(256, 0).toLong
+        }
+        case ipv6(a, b, c, d, _*) => {
+          Integer.parseInt(z(a), 16) * scala.math.pow(65536, 3).toLong +
+            Integer.parseInt(z(b), 16) * scala.math.pow(65536, 2).toLong +
+            Integer.parseInt(z(c), 16) * scala.math.pow(65536, 1).toLong +
+            Integer.parseInt(z(d), 16) * scala.math.pow(65536, 0).toLong
+        }
+        case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
       }
-      case ipv6(a, b, c, d, _*) => {
-        Integer.parseInt(z(a), 16) * scala.math.pow(65536, 3).toLong +
-          Integer.parseInt(z(b), 16) * scala.math.pow(65536, 2).toLong +
-          Integer.parseInt(z(c), 16) * scala.math.pow(65536, 1).toLong +
-          Integer.parseInt(z(d), 16) * scala.math.pow(65536, 0).toLong
-      }
-      case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
+    } match {
+      case Success(r) => Right(r)
+      case Failure(_) => Left(
+        LocationError(
+          code = LocationErrorCode.IpInvalid,
+          messages = Seq(s"Unable to parse ip address ${ip}")
+        )
+      )
     }
-
   }
 
   /**

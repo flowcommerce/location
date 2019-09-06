@@ -1,14 +1,12 @@
 package controllers
 
 import io.flow.common.v0.models.Address
-import io.flow.error.v0.models.GenericError
-import io.flow.play.util.Validation
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
-import utils._
+import utils.{DigitalElement, DigitalElementIndex, Google}
 
 import scala.concurrent.{ExecutionContext, Future}
-import scala.util.{Failure, Success}
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
@@ -49,7 +47,7 @@ class Helpers @javax.inject.Inject() (
     ip: Option[String] = None
   )(
     implicit ec: ExecutionContext
-  ): Future[Either[GenericError, Seq[Address]]] = {
+  ): Future[Either[LocationError, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
         Countries.find(code) match {
@@ -69,24 +67,32 @@ class Helpers @javax.inject.Inject() (
       case (_, _, Some(i)) => Future.successful {
         DigitalElement.ipToDecimal(i) map { ip =>
           digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
-        } match {
-          case Success(res) => Right(res)
-          case Failure(error) => Left(Validation.error(error.getMessage))
         }
       }
 
-      case _ => Future.successful(Left(Validation.error("Must specify either 'address' or 'ip'")))
+      case _ => Future.successful(Left(
+        LocationError(
+          code = LocationErrorCode.IpMissing,
+          messages = Seq("Must specify either 'address' or 'ip'")
+        )
+      ))
     }
   }
 
-  def validateIp(ip: Option[String]): Either[Seq[String], Option[DigitalElement.ValidatedIpAddress]] = {
+  def validateIp(ip: Option[String]): Either[LocationError, Option[DigitalElement.ValidatedIpAddress]] = {
     DigitalElement.validateIp(ip)
   }
 
-  def validateRequiredIp(ip: Option[String]): Either[Seq[String], DigitalElement.ValidatedIpAddress] = {
-    DigitalElement.validateIp(ip) flatMap {
-      case None => Left(Seq("Must specify 'ip' parameter"))
-      case Some(v) => Right(v)
+  def validateRequiredIp(ip: Option[String]): Either[LocationError, DigitalElement.ValidatedIpAddress] = {
+    DigitalElement.validateIp(ip) match {
+      case Left(error) => Left(error)
+      case Right(None) => Left(
+        LocationError(
+          code = LocationErrorCode.IpMissing,
+          messages = Seq("Must specify 'ip' parameter")
+        )
+      )
+      case Right(Some(v)) => Right(v)
     }
   }
 }
