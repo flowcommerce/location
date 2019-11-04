@@ -19,9 +19,6 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
     }
 
     "properly parse records" in {
-//      index(1000).rangeStart should equal(1111906570)
-//      index(1000).rangeEnd should equal(1111906659)
-//      index(1000).fieldDelimiter should equal(';')
       index.get(1111906570).bytes should equal("1111906570;1111906659;usa;nj;hoboken;40.7478;-74.0339;###;\n".getBytes())
     }
 
