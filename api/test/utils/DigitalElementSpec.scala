@@ -73,8 +73,8 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
       fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
       fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
 
-      println(fixture.lookup(15).value.toAddress)
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      println(fixture.lookup(15).value.address)
+      fixture.lookup(15).value.address.country.value shouldBe Countries.Fra.iso31663
     }
 
     "find the correct range when ranges overlap" in {
@@ -85,7 +85,7 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
       fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
       fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
 
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      fixture.lookup(15).value.address.country.value shouldBe Countries.Fra.iso31663
     }
 
     "Return None when there is no matching range" in {
@@ -104,8 +104,8 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
       fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
       fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
 
-      fixture.lookup(11).value.toAddress.country.value shouldBe Countries.Fra.iso31663
-      fixture.lookup(20).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      fixture.lookup(11).value.address.country.value shouldBe Countries.Fra.iso31663
+      fixture.lookup(20).value.address.country.value shouldBe Countries.Fra.iso31663
     }
 
     "Return None if the input is completely out of range" in {
@@ -115,7 +115,7 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
       fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
 
       fixture.lookup(4) shouldBe None
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      fixture.lookup(15).value.address.country.value shouldBe Countries.Fra.iso31663
       fixture.lookup(31) shouldBe None
     }
   }
@@ -136,7 +136,7 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
         longitude = Some("-74.0339")
       )
 
-      fixture.lookup(1153680280).value.toAddress should equal(expected)
+      fixture.lookup(1153680280).value.address should equal(expected)
     }
   }
 

@@ -66,7 +66,7 @@ class Helpers @javax.inject.Inject() (
           
       case (_, _, Some(i)) => Future.successful {
         DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
+          digitalElementIndex.lookup(ip).map(_.address).toSeq
         }
       }
 

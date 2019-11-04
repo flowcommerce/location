@@ -2,9 +2,11 @@ package utils
 
 import java.io._
 import java.nio.file.{Files, Paths}
-import org.scalatest.{Matchers, WordSpec}
 
-class DigitalElementIndexSpec extends WordSpec with Matchers {
+import io.flow.reference.data.{Countries, Provinces}
+import org.scalatest.{Matchers, OptionValues, WordSpec}
+
+class DigitalElementIndexSpec extends WordSpec with Matchers with OptionValues {
 
   "buildIndex" should {
 
@@ -19,7 +21,15 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
     }
 
     "properly parse records" in {
-      index.get(1111906570).bytes should equal("1111906570;1111906659;usa;nj;hoboken;40.7478;-74.0339;###;\n".getBytes())
+      // "1111906570;1111906659;usa;nj;hoboken;40.7478;-74.0339;###;"
+      val address = index.get(1111906570).address
+      address.country.value shouldBe Countries.Usa.iso31663
+      address.province.value shouldBe Provinces.UsaNj.iso31662
+      address.city.value shouldBe "hoboken"
+      address.latitude.value shouldBe "40.7478"
+      address.longitude.value shouldBe "-74.0339"
+      address.postal shouldBe None
+
     }
 
     "timezone" in {

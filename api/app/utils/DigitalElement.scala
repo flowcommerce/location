@@ -6,30 +6,41 @@ import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.v0.models.{Country, Timezone}
 import io.flow.reference.{Countries, Provinces, Timezones}
+import utils.DigitalElement.FieldDelimiter
 
 import scala.collection.mutable
 import scala.util.{Failure, Success, Try}
 
-/**
-  * Searchable format of a DigitalElement ip range record.
-  * The expected format of the record byteststring is:
-  * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;timezone;
-  *
-  * for example:
-  * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;america/edmonton;
-  *
-  * @param bytes raw bytestring of the entire record
-  */
-case class DigitalElementIndexRecord(bytes: Array[Byte]) {
-  import DigitalElement._
 
-  // Don't use a val - do not want to store in memory
-  private[this] def toFields(): Array[String] = new String(this.bytes).split(FieldDelimiter)
+case class DigitalElementIndexRecord(address: Address, timezone: Option[Timezone])
 
-  def timezone: Option[Timezone] = Timezones.find(toFields()(8))
+object DigitalElementIndexRecord {
 
-  def toAddress: Address = {
-    val fields = toFields()
+  /**
+    * Searchable format of a DigitalElement ip range record.
+    * The expected format of the record byteststring is:
+    * ip_range_start;ip_range_end;3_letter_country_code;region;city;latitude;longitude;postal_code;timezone;
+    *
+    * for example:
+    * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;america/edmonton;
+    *
+    * @param bytes raw bytestring of the entire record
+    */
+  def apply(bytes: Array[Byte]): DigitalElementIndexRecord = {
+    val fields = toFields(bytes)
+    val address = toAddress(fields)
+    val timezone = toTimezone(fields)
+    DigitalElementIndexRecord(address, timezone)
+  }
+
+  @inline
+  private[this] def toFields(bytes: Array[Byte]): Array[String] = new String(bytes).split(FieldDelimiter)
+
+  @inline
+  private def toTimezone(fields: Array[String]): Option[Timezone] = Timezones.find(fields(8))
+
+  @inline
+  private def toAddress(fields: Array[String]): Address = {
     val country: Option[Country] = Countries.find(fields(2))
     val province = country.flatMap(c => Provinces.find(s"${c.iso31663}-${fields(3)}"))
     Address(
@@ -41,6 +52,7 @@ case class DigitalElementIndexRecord(bytes: Array[Byte]) {
       longitude = Some(fields(6))
     )
   }
+
 }
 
 object DigitalElement {
