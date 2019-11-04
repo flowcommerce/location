@@ -1,28 +1,29 @@
 package utils
 
-import com.google.common.collect.{TreeRangeMap, Range => GuavaRange}
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
-import io.flow.reference.data.Countries
-import io.flow.reference.v0.models.Country
-import org.scalatest.{EitherValues, Matchers, OptionValues, WordSpec}
+import org.scalatest.{Matchers, WordSpec}
 import utils.DigitalElement.ValidatedIpAddress
 
-class DigitalElementSpec extends WordSpec with Matchers with OptionValues with EitherValues {
+class DigitalElementSpec extends WordSpec with Matchers {
 
   // convenience to build DigitalElementIndexRecord fixtures with defaults
-  private def indexRecordFactory(
+  def indexRecordFactory(
     rangeStart: BigInt = Long.MinValue,
     rangeEnd: BigInt = Long.MaxValue,
-    country: Country,
+    country   : String = "",
     region: String = "",
     city: String = "",
-    latitude: Double = 0.0,
+    latitude  : Double = 0.0,
     longitude: Double = 0.0,
-    postalCode: String = DigitalElement.PlaceholderPostal
+    postalCode: String = "",
+    fieldDelimiter: Char = ';'
   ) = DigitalElementIndexRecord(
-    bytes = Seq(rangeStart, rangeEnd, country.iso31663, region, city, latitude, longitude, postalCode)
-      .mkString(DigitalElement.FieldDelimiter.toString)
+    rangeStart = rangeStart,
+    rangeEnd = rangeEnd,
+    fieldDelimiter = fieldDelimiter,
+    bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
+      .mkString(fieldDelimiter.toString)
       .getBytes()
   )
 
@@ -56,8 +57,9 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
 
     "fail" in {
       def test(ip: String) = {
-        DigitalElement.ipToDecimal(ip).left.value shouldBe
-          LocationError(LocationErrorCode.IpInvalid, Seq(s"Unable to parse ip address $ip"))
+        DigitalElement.ipToDecimal(ip) shouldBe(
+          Left(LocationError(LocationErrorCode.IpInvalid, Seq(s"Unable to parse ip address $ip")))
+        )
       }
       test("00.0.0")
       test("0.x.0.0")
@@ -68,64 +70,63 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
 
   "lookup" should {
     "find the correct range" in {
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      fixture.put(GuavaRange.closed(0, 10), indexRecordFactory(country = Countries.Usa))
-      fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
-      fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
-
-      println(fixture.lookup(15).value.toAddress)
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      val fixture = IndexedSeq(
+        indexRecordFactory(rangeStart = 0, rangeEnd = 10),
+        indexRecordFactory(rangeStart = 11, rangeEnd = 20),
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+      )
+      fixture.lookup(15) should equal(Some(fixture(1)))
     }
 
     "find the correct range when ranges overlap" in {
       // even though this should never happen with real DE data,
       // test is provided for predictability
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      fixture.put(GuavaRange.closed(0, 15), indexRecordFactory(country = Countries.Usa))
-      fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
-      fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
-
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      val fixture = IndexedSeq(
+        indexRecordFactory(rangeStart = 0, rangeEnd = 15),
+        indexRecordFactory(rangeStart = 11, rangeEnd = 20),
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+      )
+      fixture.lookup(13) should equal(Some(fixture(1)))
     }
 
     "Return None when there is no matching range" in {
       // also should never happen with real DE data as ip ranges are contiguous
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      fixture.put(GuavaRange.closed(0, 15), indexRecordFactory(country = Countries.Usa))
-      fixture.put(GuavaRange.closed(20, 30), indexRecordFactory(country = Countries.Fra))
-      fixture.put(GuavaRange.closed(31, 40), indexRecordFactory(country = Countries.Can))
-
+      val fixture = IndexedSeq(
+        indexRecordFactory(rangeStart = 0, rangeEnd = 15),
+        indexRecordFactory(rangeStart = 20, rangeEnd = 30),
+        indexRecordFactory(rangeStart = 31, rangeEnd = 40)
+      )
       fixture.lookup(17) shouldBe None
     }
 
     "find the correct range (boundary cases)" in {
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      fixture.put(GuavaRange.closed(0, 10), indexRecordFactory(country = Countries.Usa))
-      fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
-      fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
-
-      fixture.lookup(11).value.toAddress.country.value shouldBe Countries.Fra.iso31663
-      fixture.lookup(20).value.toAddress.country.value shouldBe Countries.Fra.iso31663
+      val fixture = IndexedSeq(
+        indexRecordFactory(rangeStart = 0, rangeEnd = 10),
+        indexRecordFactory(rangeStart = 11, rangeEnd = 20),
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+      )
+      fixture.lookup(11) should equal(Some(fixture(1)))
+      fixture.lookup(20) should equal(Some(fixture(1)))
     }
 
     "Return None if the input is completely out of range" in {
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      fixture.put(GuavaRange.closed(5, 10), indexRecordFactory(country = Countries.Usa))
-      fixture.put(GuavaRange.closed(11, 20), indexRecordFactory(country = Countries.Fra))
-      fixture.put(GuavaRange.closed(21, 30), indexRecordFactory(country = Countries.Can))
-
+      val fixture = IndexedSeq(
+        indexRecordFactory(rangeStart = 5, rangeEnd = 10),
+        indexRecordFactory(rangeStart = 11, rangeEnd = 20),
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+      )
       fixture.lookup(4) shouldBe None
-      fixture.lookup(15).value.toAddress.country.value shouldBe Countries.Fra.iso31663
       fixture.lookup(31) shouldBe None
     }
   }
 
   "toAddress" should {
     "properly format an address" in {
-      val fixture: DigitalElementIndex = TreeRangeMap.create()
-      val record =
-        DigitalElementIndexRecord(bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes())
-      fixture.put(GuavaRange.closed(1153680280, 1153680287), record)
+      val fixture = DigitalElementIndexRecord(
+        rangeStart = 1153680280,
+        rangeEnd = 1153680287,
+        fieldDelimiter = ';',
+        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes())
 
       val expected = Address(
         city = Some("hoboken"),
@@ -136,7 +137,7 @@ class DigitalElementSpec extends WordSpec with Matchers with OptionValues with E
         longitude = Some("-74.0339")
       )
 
-      fixture.lookup(1153680280).value.toAddress should equal(expected)
+      fixture.toAddress should equal(expected)
     }
   }
 

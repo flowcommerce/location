@@ -1,7 +1,6 @@
 package utils
 import java.io.InputStream
 
-import com.google.common.collect.{TreeRangeMap, Range => GuavaRange}
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.v0.models.{Country, Timezone}
@@ -18,24 +17,32 @@ import scala.util.{Failure, Success, Try}
   * for example:
   * 4264702208;4264702463;usa;wa;seattle;47.6834;-122.291;###;america/edmonton;
   *
+  * @param rangeStart decimal value of the ip range min
+  * @param rangeEnd decimal value of the ip range end
+  * @param fieldDelimiter character used to delimit each field
   * @param bytes raw bytestring of the entire record
   */
-case class DigitalElementIndexRecord(bytes: Array[Byte]) {
-  import DigitalElement._
+case class DigitalElementIndexRecord(
+  rangeStart: BigInt,
+  rangeEnd: BigInt,
+  fieldDelimiter: Char,
+  bytes: Array[Byte]) extends Ordered[DigitalElementIndexRecord] {
+
+  override def compare(that: DigitalElementIndexRecord): Int = (this.rangeStart - that.rangeStart).toInt
 
   // Don't use a val - do not want to store in memory
-  private[this] def toFields(): Array[String] = new String(this.bytes).split(FieldDelimiter)
+  private[this] def toFields(): Array[String] = new String(this.bytes).split(this.fieldDelimiter)
 
   def timezone: Option[Timezone] = Timezones.find(toFields()(8))
 
   def toAddress: Address = {
     val fields = toFields()
     val country: Option[Country] = Countries.find(fields(2))
-    val province = country.flatMap(c => Provinces.find(s"${c.iso31663}-${fields(3)}"))
+    val province = country.flatMap (c => { Provinces.find(s"${c.iso31663}-${fields(3)}") })
     Address(
       city = Some(fields(4)),
       province = province.map(_.name),
-      postal = Some(fields(7)).filter(_ != DigitalElement.PlaceholderPostal),
+      postal = Some(fields(7)).filter { code => code != DigitalElement.PlaceholderPostal },
       country = country.map(_.iso31663),
       latitude = Some(fields(5)),
       longitude = Some(fields(6))
@@ -60,7 +67,6 @@ object DigitalElement {
   }
 
   val PlaceholderPostal = "###"
-  val FieldDelimiter = ';'
 
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
   // digitalelement separates the network and interface portions of ipv6
@@ -110,11 +116,10 @@ object DigitalElement {
     * @param is the input stream to parse
     * @return an indexed sequence of ip ranges.  Ordering is not changed from which records arrive in the input stream
     */
-  def buildIndex(is: InputStream, recordDelimiter: Char): DigitalElementIndex = {
-    val m = TreeRangeMap.create[BigInt, DigitalElementIndexRecord]()
-
+  def buildIndex(is: InputStream, fieldDelimiter: Char, recordDelimiter: Char): DigitalElementIndex = {
     val rd = recordDelimiter.toByte
-    val fd = FieldDelimiter.toByte
+    val fd = fieldDelimiter.toByte
+    val indexBuilder = IndexedSeq.newBuilder[DigitalElementIndexRecord]
     val recordBuilder = new mutable.ArrayBuilder.ofByte
     var charCounter = -1
     var firstFieldLimit = -1
@@ -136,8 +141,8 @@ object DigitalElement {
           val bytes = recordBuilder.result()
           val rangeStart = BigInt(new String(bytes.slice(0,firstFieldLimit)))
           val rangeEnd = BigInt(new String(bytes.slice(firstFieldLimit+1,secondFieldLimit)))
-          val rec = DigitalElementIndexRecord(bytes)
-          m.put(GuavaRange.closed(rangeStart, rangeEnd), rec)
+          val rec = DigitalElementIndexRecord(rangeStart, rangeEnd, fieldDelimiter, bytes)
+          indexBuilder += rec
           recordBuilder.clear()
           charCounter = -1
           firstFieldLimit = -1
@@ -147,7 +152,7 @@ object DigitalElement {
       }
       cur = is.read()
     }
-    m
+    indexBuilder.result()
   }
 
 
