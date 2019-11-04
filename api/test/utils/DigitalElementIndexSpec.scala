@@ -12,17 +12,14 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
     val is = Files.newInputStream(path)
 
-    val index = DigitalElement.buildIndex(new BufferedInputStream(is), ';', '\n')
+    val index = DigitalElement.buildIndex(new BufferedInputStream(is), '\n')
 
     "index every record" in {
-      index.length shouldBe 3254
+      index.asMapOfRanges().size() shouldBe 3254
     }
 
     "properly parse records" in {
-      index(1000).rangeStart should equal(1111906570)
-      index(1000).rangeEnd should equal(1111906659)
-      index(1000).fieldDelimiter should equal(';')
-      index(1000).bytes should equal("1111906570;1111906659;usa;nj;hoboken;40.7478;-74.0339;###;\n".getBytes())
+      index.get(1111906570).bytes should equal("1111906570;1111906659;usa;nj;hoboken;40.7478;-74.0339;###;\n".getBytes())
     }
 
     "timezone" in {

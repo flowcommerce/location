@@ -1,12 +1,11 @@
+import com.google.common.collect.RangeMap
+
 package object utils {
 
-  type DigitalElementIndex = IndexedSeq[DigitalElementIndexRecord]
+  type DigitalElementIndex = RangeMap[BigInt, DigitalElementIndexRecord]
 
-  implicit class DigitalElementIndexWithLookup(index: DigitalElementIndex) {
-    def lookup(ip: BigInt): Option[DigitalElementIndexRecord] =
-      Collections.searchWithBoundary(index, ip)((a,b) => a.rangeStart <= b)
-        .filter(ip <= _.rangeEnd)
-
+  implicit class DigitalElementIndexWithLookup(val index: DigitalElementIndex) extends AnyVal {
+    def lookup(ip: BigInt): Option[DigitalElementIndexRecord] = Option(index.get(ip))
     def lookup(ip: DigitalElement.ValidatedIpAddress): Option[DigitalElementIndexRecord] = lookup(ip.intValue)
   }
 
