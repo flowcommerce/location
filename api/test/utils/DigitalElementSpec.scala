@@ -55,7 +55,6 @@ class DigitalElementSpec extends WordSpec with Matchers {
       DigitalElement.ipToDecimal("2404:440c:1463:0:0:0:0:0") should be(Right(BigInt("2595274103944577024")))
       DigitalElement.ipToDecimal("2001:0:0:0:0:0:0") should be(Right(BigInt("2306124484190404608")))
 
-
       DigitalElement.ipToDecimal("2600:3:8:f::b4") should be(Right(BigInt("2738188586326687759")))
       DigitalElement.ipToDecimal("2a03:28:ff:f::face:b00c") should be(Right(BigInt("3027263546338508815")))
       DigitalElement.ipToDecimal("2a03:28:ff:f") should be(Right(BigInt("3027263546338508815")))
