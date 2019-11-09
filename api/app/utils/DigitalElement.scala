@@ -71,7 +71,7 @@ object DigitalElement {
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
   // digitalelement separates the network and interface portions of ipv6
   // so we only care about the first 4 groups
-  private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*){4})".r
+  private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*)*)".r
 
   /**
     * Handle fully-collapsed ipv6 groups ("z" for "zero" ;) )
