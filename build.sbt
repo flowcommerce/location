@@ -22,16 +22,13 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "org.aspectj" % "aspectjweaver" % "1.9.2",
-    javaOptions in Universal += "-Dorg.aspectj.tracing.factory=default",
-    javaOptions in Test += "-Dkamon.modules.kamon-system-metrics.auto-start=false",
-    javaOptions in Test += "-Dkamon.show-aspectj-missing-warning=no",
+    javaAgents += "io.kamon" % "kanela-agent" % "1.0.2",
     javaOptions in Test += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       "io.flow" %% "lib-play-play26" % "0.5.69",
-      "io.flow" %% "lib-play-graphite-play26" % "0.1.0",
+      "io.flow" %% "lib-play-graphite-play26" % "0.1.18",
       "io.flow" %% "lib-reference-scala" % "0.2.31",
       "io.flow" %% "lib-s3-play26" % "0.2.67",
       "com.google.maps" % "google-maps-services" % "0.9.1",
