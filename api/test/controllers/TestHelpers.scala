@@ -1,35 +1,13 @@
 package controllers
 
-import io.flow.location.v0.errors.{LocationErrorResponse, UnitResponse}
+import io.flow.location.v0.errors.LocationErrorResponse
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.test.utils.FlowPlaySpec
-import org.specs2.execute.Result
-
 import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 trait TestHelpers {
   self: FlowPlaySpec =>
-
-  def expectStatus(code: Int)(f: => Future[_]): Result = {
-    assert(code >= 400, s"code[$code] must be >= 400")
-    Try(await(f)) match {
-      case Success(_) => {
-        org.specs2.execute.Failure(s"Expected HTTP[$code] but got HTTP 2xx")
-      }
-      case Failure(ex) => ex match {
-        case UnitResponse(c) if c == code => {
-          org.specs2.execute.Success()
-        }
-        case UnitResponse(c) => {
-          org.specs2.execute.Failure(s"Expected code[$code] but got[$c]")
-        }
-        case e => {
-          org.specs2.execute.Failure(s"Unexpected error: $e")
-        }
-      }
-    }
-  }
 
   def expectErrors[T](code: LocationErrorCode)(
     f: => Future[T]
