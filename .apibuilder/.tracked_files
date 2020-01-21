@@ -12,11 +12,15 @@ flow:
   healthcheck:
     play_2_6_client:
     - generated/app/FlowHealthcheckV0Client.scala
+    play_2_6_controllers:
+    - generated/app/HealthcheckControllers.scala
     play_2_x_routes:
     - api/conf/healthcheck.routes
   location:
     play_2_6_client:
     - generated/app/FlowLocationV0Client.scala
+    play_2_6_controllers:
+    - generated/app/LocationControllers.scala
     play_2_x_routes:
     - api/conf/location.routes
   reference:
