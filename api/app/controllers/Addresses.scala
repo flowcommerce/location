@@ -23,40 +23,37 @@ class Addresses @Inject() (
 
   private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
 
-  def get(
-    req: Request[AnyContent],
-    address: Option[String],
-    ip: Option[String]
-  ) = helpers.getLocations(address = address, ip = ip)
-        .map {
-          case Left(error) => Get.HTTP422(error)
-          case Right(locations) => Get.HTTP200(locations)
-      }
+  def get(req: Request[AnyContent], address: Option[String], ip: Option[String]) =
+    helpers.getLocations(address = address, ip = ip)
+      .map(_.fold(Get.HTTP422, Get.HTTP200))
 
   def postVerifications(req: Request[Address], body: Address) =
-    AddressVerifier.toText(body) match {
-      case None =>
-        val error = LocationError(
-            code = LocationErrorCode.AddressRequired,
-            messages = Seq("Address to verify cannot be empty")
-          )
-
-        Future.successful(PostVerifications.HTTP422(error))
-
-      case Some(text) =>
+    AddressVerifier.toText(body)
+      .fold(Future.successful(postVerificationsEmptyAddress)) { text =>
         helpers.getLocations(address = Some(text)).map {
-          case Left(error) =>
-            logger
-              .withKeyValue("address", text)
-              .withKeyValue("error_code", error.code)
-              .withKeyValue("error_messages", error.messages)
-              .error("Error in address verification")
+          _.fold(
+            postVerificationsBadAddress(text, _),
+            locations => PostVerifications.HTTP200(AddressVerifier(body, locations)))
+        }
+      }
 
-            sys.error(s"Error in address verification: $error")
+  private lazy val postVerificationsEmptyAddress: PostVerifications = {
+    val error = LocationError(
+      code = LocationErrorCode.AddressRequired,
+      messages = Seq("Address to verify cannot be empty")
+    )
 
+    PostVerifications.HTTP422(error)
+  }
 
-          case Right(locations) =>
-            PostVerifications.HTTP200(AddressVerifier(body, locations))
-          }
-    }
+  private def postVerificationsBadAddress(text: String, error: LocationError): PostVerifications = {
+    logger
+      .withKeyValue("address", text)
+      .withKeyValue("error_code", error.code)
+      .withKeyValue("error_messages", error.messages)
+      .error("Error in address verification")
+
+    PostVerifications.Undocumented(InternalServerError(s"Error in address verification: $error"))
+  }
+
 }

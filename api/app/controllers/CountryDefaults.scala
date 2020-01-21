@@ -24,11 +24,11 @@ class CountryDefaults @Inject() (
 
   def get(req: Request[AnyContent], country: Option[String], ip: Option[String]) =
     helpers.getLocations(country= country, ip = ip)
-      .map {
-        case Left(_) => data.Countries.all
-        case Right(locations) => locations.flatMap(_.country).flatMap(Countries.find)
-      }
-      .map { countries =>
+      .map { eitherErrorOrLocation =>
+        val countries = eitherErrorOrLocation.fold(
+          _ => data.Countries.all,
+          _.flatMap(_.country).flatMap(Countries.find))
+
         val countriesWithDefaults = countries.map(countryDefaults)
         Get.HTTP200(countriesWithDefaults)
       }

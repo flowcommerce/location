@@ -20,19 +20,23 @@ class Timezones @Inject() (
   private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
 
   def get(req: Request[AnyContent], ip: Option[String]) = Future {
-    val locationError = LocationError(
-      code = LocationErrorCode.TimezoneUnavailable,
-      messages = ip.map(ip => s"Timezone information not available for ip '${ip.trim}'").toList
-    )
-
     helpers.validateRequiredIp(ip)
       .fold(
-        error => Get.HTTP422(error),
+        Get.HTTP422,
         valid =>
           digitalElementIndex.lookup(valid)
             .flatMap(_.timezone)
-            .fold[Get](Get.HTTP422(locationError))(tz => Get.HTTP200(Seq(tz)))
+            .fold(getTimezoneUnavailable(ip.getOrElse("")))(tz => Get.HTTP200(Seq(tz)))
       )
+  }
+
+  private def getTimezoneUnavailable(ip: String): Get = {
+    val error = LocationError(
+      code = LocationErrorCode.TimezoneUnavailable,
+      messages = Seq(s"Timezone information not available for ip '${ip.trim}'")
+    )
+
+    Get.HTTP422(error)
   }
 
 }

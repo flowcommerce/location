@@ -21,9 +21,8 @@ class Healthchecks @Inject() (
     // force loading of config
     assert(environmentVariables.digitalElementFileUri.nonEmpty)
 
-    addresses.get(req, address = None, ip = Some("0.0.0.0")).map { _ =>
-      GetHealthcheck.HTTP200(Healthcheck("healthy"))
-    }
+    addresses.get(req, address = None, ip = Some("0.0.0.0"))
+      .map(_ => GetHealthcheck.HTTP200(Healthcheck("healthy")))
   }
 
 }
