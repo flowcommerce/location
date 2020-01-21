@@ -1,27 +1,28 @@
 package controllers
 
 import akka.actor.ActorSystem
-import io.flow.healthcheck.v0.models.Healthcheck
-import io.flow.healthcheck.v0.models.json._
-import play.api.mvc._
-import play.api.libs.json._
+import javax.inject.{Inject, Singleton}
+import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 
-@javax.inject.Singleton
-class Healthchecks @javax.inject.Inject() (
-  override val controllerComponents: ControllerComponents,
+import io.flow.healthcheck.v0.models.Healthcheck
+import io.flow.healthcheck.v0.controllers.HealthchecksController
+
+@Singleton
+class Healthchecks @Inject() (
   system: ActorSystem,
   environmentVariables: utils.EnvironmentVariables,
-  addresses: Addresses
-) extends BaseController {
+  addresses: Addresses,
+  cc: ControllerComponents,
+) extends AbstractController(cc) with HealthchecksController {
 
   private[this] implicit val ec = system.dispatchers.lookup("healthchecks-controller-context")
 
-  def getHealthcheck() = Action.async { request =>
+  def getHealthcheck(req: Request[AnyContent]) = {
     // force loading of config
     assert(environmentVariables.digitalElementFileUri.nonEmpty)
 
-    addresses.get(address = None, ip = Some("0.0.0.0"))(request).map { _ =>
-      Ok(Json.toJson(Healthcheck("healthy")))
+    addresses.get(req, address = None, ip = Some("0.0.0.0")).map { _ =>
+      GetHealthcheck.HTTP200(Healthcheck("healthy"))
     }
   }
 

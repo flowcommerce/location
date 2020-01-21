@@ -1,52 +1,38 @@
 package controllers
 
 import akka.actor.ActorSystem
-import io.flow.location.v0.models.{LocationError, LocationErrorCode}
-import play.api.libs.json._
-import play.api.mvc._
-import io.flow.location.v0.models.json._
-import io.flow.reference.v0.models.json._
-import utils.DigitalElementIndex
-
+import javax.inject.{Inject, Named, Singleton}
+import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
 import scala.concurrent.{ExecutionContext, Future}
 
-@javax.inject.Singleton
-class Timezones @javax.inject.Inject() (
-  override val controllerComponents: ControllerComponents,
-  @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
+import io.flow.location.v0.controllers.TimezonesController
+import utils.DigitalElementIndex
+
+@Singleton
+class Timezones @Inject() (
+  @Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
   system: ActorSystem,
-  helpers: Helpers
-) extends BaseController {
+  helpers: Helpers,
+  cc: ControllerComponents,
+) extends AbstractController(cc) with TimezonesController {
 
   private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
 
-  def get(
-    ip: Option[String]
-  ) = Action.async { _ =>
-    Future {
-      helpers.validateRequiredIp(ip) match {
-        case Left(error) => {
-          UnprocessableEntity(Json.toJson(error))
-        }
-        case Right(valid) =>
-          digitalElementIndex.lookup(valid).flatMap(_.timezone) match {
-            case None => {
-              UnprocessableEntity(Json.toJson(
-                LocationError(
-                  code = LocationErrorCode.TimezoneUnavailable,
-                  messages = Seq(
-                    s"Timezone information not available for ip '${ip.get.trim}'"
-                  )
-                )
-              ))
-            }
+  def get(req: Request[AnyContent], ip: Option[String]) = Future {
+    val locationError = LocationError(
+      code = LocationErrorCode.TimezoneUnavailable,
+      messages = ip.map(ip => s"Timezone information not available for ip '${ip.trim}'").toList
+    )
 
-            case Some(tz) => {
-              Ok(Json.toJson(Seq(tz)))
-            }
-          }
-      }
-    }
+    helpers.validateRequiredIp(ip)
+      .fold(
+        error => Get.HTTP422(error),
+        valid =>
+          digitalElementIndex.lookup(valid)
+            .flatMap(_.timezone)
+            .fold[Get](Get.HTTP422(locationError))(tz => Get.HTTP200(Seq(tz)))
+      )
   }
 
 }
