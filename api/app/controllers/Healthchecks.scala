@@ -2,7 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{AnyContent, ControllerComponents, Request}
 
 import io.flow.healthcheck.v0.models.Healthcheck
 import io.flow.healthcheck.v0.controllers.HealthchecksController
@@ -12,8 +12,8 @@ class Healthchecks @Inject() (
   system: ActorSystem,
   environmentVariables: utils.EnvironmentVariables,
   addresses: Addresses,
-  cc: ControllerComponents,
-) extends AbstractController(cc) with HealthchecksController {
+  val controllerComponents: ControllerComponents,
+) extends HealthchecksController {
 
   private[this] implicit val ec = system.dispatchers.lookup("healthchecks-controller-context")
 

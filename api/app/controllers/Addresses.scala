@@ -2,7 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.Future
 
 import io.flow.common.v0.models.Address
@@ -18,8 +18,8 @@ class Addresses @Inject() (
   logger: RollbarLogger,
   helpers: Helpers,
   system: ActorSystem,
-  cc: ControllerComponents,
-) extends AbstractController(cc) with AddressesController {
+  val controllerComponents: ControllerComponents,
+) extends AddressesController {
 
   private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
 

@@ -2,7 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Named, Singleton}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.{ExecutionContext, Future}
 
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
@@ -14,8 +14,8 @@ class Timezones @Inject() (
   @Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
   system: ActorSystem,
   helpers: Helpers,
-  cc: ControllerComponents,
-) extends AbstractController(cc) with TimezonesController {
+  val controllerComponents: ControllerComponents,
+) extends TimezonesController {
 
   private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
 

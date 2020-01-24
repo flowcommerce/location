@@ -2,7 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
-import play.api.mvc.{AbstractController, AnyContent, ControllerComponents, Request}
+import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.Future
 
 import io.flow.location.v0.models
@@ -14,8 +14,8 @@ import io.flow.reference.v0.models.Country
 class CountryDefaults @Inject() (
   helpers: Helpers,
   system: ActorSystem,
-  cc: ControllerComponents,
-) extends AbstractController(cc) with CountryDefaultsController {
+  val controllerComponents: ControllerComponents,
+) extends CountryDefaultsController {
 
   private[this] implicit val ec = system.dispatchers.lookup("country-defaults-controller-context")
 
