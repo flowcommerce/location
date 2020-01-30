@@ -2,20 +2,22 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
+import play.api.libs.concurrent.CustomExecutionContext
 import play.api.mvc.{AnyContent, ControllerComponents, Request}
 
 import io.flow.healthcheck.v0.models.Healthcheck
 import io.flow.healthcheck.v0.controllers.HealthchecksController
 
 @Singleton
+class HealthchecksEC @Inject() (system: ActorSystem)
+   extends CustomExecutionContext(system, "healthchecks-controller-context")
+
+@Singleton
 class Healthchecks @Inject() (
-  system: ActorSystem,
   environmentVariables: utils.EnvironmentVariables,
   addresses: Addresses,
   val controllerComponents: ControllerComponents,
-) extends HealthchecksController {
-
-  private[this] implicit val ec = system.dispatchers.lookup("healthchecks-controller-context")
+)(implicit ec: HealthchecksEC) extends HealthchecksController {
 
   def getHealthcheck(req: Request[AnyContent]) = {
     // force loading of config

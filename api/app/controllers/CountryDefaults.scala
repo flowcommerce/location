@@ -2,6 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
+import play.api.libs.concurrent.CustomExecutionContext
 import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.Future
 
@@ -11,13 +12,14 @@ import io.flow.reference.{data, Countries}
 import io.flow.reference.v0.models.Country
 
 @Singleton
+class CountryDefaultsEC @Inject() (system: ActorSystem)
+   extends CustomExecutionContext(system, "country-defaults-controller-context")
+
+@Singleton
 class CountryDefaults @Inject() (
   helpers: Helpers,
-  system: ActorSystem,
   val controllerComponents: ControllerComponents,
-) extends CountryDefaultsController {
-
-  private[this] implicit val ec = system.dispatchers.lookup("country-defaults-controller-context")
+)(implicit ec: CountryDefaultsEC) extends CountryDefaultsController {
 
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
   private[this] val DefaultLanguage = "en"  // Remove once every country has at least one language in reference data

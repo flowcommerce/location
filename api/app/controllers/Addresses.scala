@@ -2,6 +2,7 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Singleton}
+import play.api.libs.concurrent.CustomExecutionContext
 import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.Future
 
@@ -14,14 +15,15 @@ import io.flow.log.RollbarLogger
 import utils.AddressVerifier
 
 @Singleton
+class AddressesEC @Inject() (system: ActorSystem)
+   extends CustomExecutionContext(system, "addresses-controller-context")
+
+@Singleton
 class Addresses @Inject() (
   logger: RollbarLogger,
   helpers: Helpers,
-  system: ActorSystem,
   val controllerComponents: ControllerComponents,
-) extends AddressesController {
-
-  private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
+)(implicit ec: AddressesEC) extends AddressesController {
 
   def get(req: Request[AnyContent], address: Option[String], ip: Option[String]) =
     helpers.getLocations(address = address, ip = ip)

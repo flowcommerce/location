@@ -2,22 +2,24 @@ package controllers
 
 import akka.actor.ActorSystem
 import javax.inject.{Inject, Named, Singleton}
+import play.api.libs.concurrent.CustomExecutionContext
 import play.api.mvc.{AnyContent, ControllerComponents, Request}
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.location.v0.controllers.TimezonesController
 import utils.DigitalElementIndex
 
 @Singleton
+class TimezonesEC @Inject() (system: ActorSystem)
+   extends CustomExecutionContext(system, "timezones-controller-context")
+
+@Singleton
 class Timezones @Inject() (
   @Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
-  system: ActorSystem,
   helpers: Helpers,
   val controllerComponents: ControllerComponents,
-) extends TimezonesController {
-
-  private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
+)(implicit ec: TimezonesEC) extends TimezonesController {
 
   def get(req: Request[AnyContent], ip: Option[String]) = Future {
     helpers.validateRequiredIp(ip)
