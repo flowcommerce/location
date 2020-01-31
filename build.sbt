@@ -31,7 +31,7 @@ lazy val api = project
       "io.flow" %% "lib-play-graphite-play26" % "0.1.36",
       "io.flow" %% "lib-reference-scala" % "0.2.36",
       "io.flow" %% "lib-s3-play26" % "0.2.81",
-      "com.google.maps" % "google-maps-services" % "0.11.0",
+      "com.google.maps" % "google-maps-services" % "0.10.2",
       "org.scalacheck" %% "scalacheck" % "1.14.3" % "test",
       "io.flow" %% "lib-test-utils" % "0.0.81" % Test,
       "io.flow" %% "lib-usage" % "0.1.15",
@@ -50,8 +50,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     guice,
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.8.1",
-    "com.typesafe.play" %% "play-json" % "2.8.1",
+    "com.typesafe.play" %% "play-json-joda" % "2.7.4",
+    "com.typesafe.play" %% "play-json" % "2.7.4",
     compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.4.2"),
     "com.github.ghik" %% "silencer-lib" % "1.4.2" % Provided
   ),
