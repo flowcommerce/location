@@ -34,8 +34,8 @@ class Helpers @javax.inject.Inject() (
         })
 
         eithersFuture.map(eithers => eithers.filter(_.isLeft) match {
-          case Nil => Right(eithers.filter(_.isRight).map(_.right.get)) // if there are no errors, then get all the timezones
-          case lefts => Left(lefts.map(_.left.get)) // seq of all the errors collected
+          case Nil => Right(eithers.collect { case Right(timezone) => timezone }) // if there are no errors, then get all the timezones
+          case errors => Left(errors.collect { case Left(error) => error })
         })
       }
     }
