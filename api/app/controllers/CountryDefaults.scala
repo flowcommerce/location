@@ -1,57 +1,45 @@
 package controllers
 
 import akka.actor.ActorSystem
-import io.flow.location.v0.models
-import io.flow.location.v0.models.json._
-import io.flow.reference.data
-import io.flow.reference.v0.models.Country
-import io.flow.reference.Countries
-import play.api.libs.json._
-import play.api.mvc._
-
+import javax.inject.{Inject, Singleton}
+import play.api.libs.concurrent.CustomExecutionContext
+import play.api.mvc.{AnyContent, ControllerComponents, Request}
 import scala.concurrent.Future
 
-@javax.inject.Singleton
-class CountryDefaults @javax.inject.Inject() (
-  override val controllerComponents: ControllerComponents,
-  helpers: Helpers,
-  system: ActorSystem
-) extends BaseController {
+import io.flow.location.v0.models
+import io.flow.location.v0.controllers.CountryDefaultsController
+import io.flow.reference.{data, Countries}
+import io.flow.reference.v0.models.Country
 
-  private[this] implicit val ec = system.dispatchers.lookup("country-defaults-controller-context")
+@Singleton
+class CountryDefaultsEC @Inject() (system: ActorSystem)
+   extends CustomExecutionContext(system, "country-defaults-controller-context")
+
+@Singleton
+class CountryDefaults @Inject() (
+  helpers: Helpers,
+  val controllerComponents: ControllerComponents,
+)(implicit ec: CountryDefaultsEC) extends CountryDefaultsController {
 
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
   private[this] val DefaultLanguage = "en"  // Remove once every country has at least one language in reference data
 
-  def get(
-    country: Option[String],
-    ip: Option[String]
-  ) = Action.async { _ =>
-    helpers.getLocations(country= country, ip = ip).map {
-      case Left(_) => data.Countries.all
-      case Right(locations) => locations.flatMap(_.country).flatMap(Countries.find)
-    }.map { countries =>
-      Ok(
-        Json.toJson(
-          countries.map { c =>
-            countryDefaults(c)
-          }
-        )
-      )
-    }
-  }
+  def get(req: Request[AnyContent], country: Option[String], ip: Option[String]) =
+    helpers.getLocations(country= country, ip = ip)
+      .map { eitherErrorOrLocation =>
+        val countries = eitherErrorOrLocation.fold(
+          _ => data.Countries.all,
+          _.flatMap(_.country).flatMap(Countries.find))
 
-  def getByCountry(
-    country: String
-  ) = Action.async { _ =>
-    Future.successful (
-      Countries.find(country) match {
-        case None => NotFound
-        case Some(c) => {
-          Ok(Json.toJson(countryDefaults(c)))
-        }
+        val countriesWithDefaults = countries.map(countryDefaults)
+        Get.HTTP200(countriesWithDefaults)
       }
-    )
+
+  def getByCountry(req: Request[AnyContent], country: String) = Future.successful {
+    Countries.find(country).fold[GetByCountry](GetByCountry.HTTP404) { country =>
+      val countryWithDefaults = countryDefaults(country)
+      GetByCountry.HTTP200(countryWithDefaults)
+    }
   }
 
   private[this] def countryDefaults(c: Country) = models.CountryDefaults(
