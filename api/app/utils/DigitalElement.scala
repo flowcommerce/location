@@ -60,7 +60,7 @@ object DigitalElement {
   def validateIp(ip: Option[String]): Either[LocationError, Option[ValidatedIpAddress]] = {
     ip.map(_.trim).filter(_.nonEmpty) match {
       case None => Right(None)
-      case Some(v) => DigitalElement.ipToDecimal(v).map { valid =>
+      case Some(v) => DigitalElement.ipToDecimal(v).right.map { valid =>
         Some(ValidatedIpAddress(v, valid))
       }
     }

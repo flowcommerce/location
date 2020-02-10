@@ -27,7 +27,7 @@ class DigitalElementIndexSpec extends WordSpec with Matchers {
 
     "timezone" in {
       val invalid = DigitalElementSampleData.IpTimezones.keys.toSeq.flatMap { ip =>
-        val ipInt = DigitalElement.ipToDecimal(ip).getOrElse {
+        val ipInt = DigitalElement.ipToDecimal(ip).right.getOrElse {
           sys.error(s"Missing ip '$ip'")
         }
 

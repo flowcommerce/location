@@ -22,7 +22,7 @@ object Implicits {
     // Extracts "Ontario" instead of "ON", etc.
     def extractLongName(types: AddressComponentType*): Option[String] = {
       findAsString(
-        components = result.addressComponents.toIndexedSeq,
+        components = result.addressComponents,
         types = types,
         extractor = _.longName
       )
@@ -31,7 +31,7 @@ object Implicits {
     // Extracts "ON" instead of "Ontario", etc.
     def extractShortName(types: AddressComponentType*): Option[String] = {
       findAsString(
-        components = result.addressComponents.toIndexedSeq,
+        components = result.addressComponents,
         types = types,
         extractor = _.shortName
       )
