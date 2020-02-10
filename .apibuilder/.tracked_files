@@ -7,18 +7,18 @@ flow:
     play_2_x_json:
     - generated/app/FlowErrorV0Models.scala
   google-places:
-    play_2_8_client:
+    play_2_6_client:
     - generated/app/FlowGooglePlacesV0Client.scala
   healthcheck:
-    play_2_8_client:
+    play_2_6_client:
     - generated/app/FlowHealthcheckV0Client.scala
     play_2_x_routes:
     - api/conf/healthcheck.routes
   location:
-    play_2_8_client:
+    play_2_6_client:
     - generated/app/FlowLocationV0Client.scala
     play_2_x_routes:
     - api/conf/location.routes
   reference:
-    play_2_8_client:
+    play_2_6_client:
     - generated/app/FlowReferenceV0Client.scala
