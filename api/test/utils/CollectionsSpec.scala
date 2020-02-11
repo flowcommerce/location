@@ -17,12 +17,12 @@ object SearchWithBoundaryProperties extends Properties("SearchWithBoundaries") {
   implicit def buildableIndexedSeq[T : Ordering] = new Buildable[T,IndexedSeq[T]] {
     def builder = new mutable.Builder[T,IndexedSeq[T]] {
       val ab = new ArrayBuffer[T]()
-      def +=(x: T) = {
+      override def addOne(x: T) = {
         ab.append(x)
         this
       }
       def clear() = ab.clear()
-      def result() = ab.sorted
+      def result() = ab.sorted.toIndexedSeq
     }
   }
 
