@@ -1,0 +1,4 @@
+apiVersion: v1
+appVersion: Manual Deploy
+name: location
+version: 0.0.1

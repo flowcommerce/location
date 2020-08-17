@@ -1,0 +1,61 @@
+nameOverride: ""
+fullnameOverride: ""
+
+service:
+  port: 9000
+  metricsEndpoint:
+    enabled: false
+
+iamRole: arn:aws:iam::479720515435:role/ecsInstanceRole
+image:
+  repository: flowcommerce/location
+  pullPolicy: IfNotPresent
+resources:
+  limits:
+    memory: "7100Mi"
+    cpu: 1
+  requests:
+    memory: "7100Mi"
+    cpu: .05
+
+jvmMemory: 6100
+
+nodeSelector: {} 
+affinity: {}
+tolerations: {} 
+
+ingress:
+  enabled: true
+  gateways:
+    - key: location-flow-io
+      tld: api.flow.io
+      hosts:
+        - location.api.flow.io
+    - key: location-flow-pub
+      tld: flo.pub
+      hosts:
+        - location.flo.pub
+
+services:
+  live:
+    hosts:
+      - location
+      - location.api.flow.io
+      - location.flo.pub
+    gateways:
+      - mesh
+      - location-flow-io
+      - location-flow-pub
+    stages:
+      - deployment: live
+        weight: 100
+
+deployments:
+  live:
+    minReplicas: 3
+    maxReplicas: 3
+    maxUnavailable: 1
+    disruptionBudgetEnabled: true
+    targetCPUUtilizationPercentage: 80
+    version: #from commandline
+    strategy: RollingUpdate
