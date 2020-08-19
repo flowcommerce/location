@@ -1,5 +1,6 @@
 builds:
   - root:
+      cluster: k8s
       instance.type: m5.xlarge
       initial.number.instances: 3
       port.container: 9000
