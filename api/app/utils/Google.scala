@@ -118,17 +118,18 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  private[this] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
+  private[utils] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
     components match {
       case None => Nil
-      case Some(comps) => comps.split("|").map { case c =>
+      case Some(comps) => comps.split("\\|").toList.flatMap { c =>
         val keyValue = c.split(":")
         val value = keyValue.tail.mkString("")
 
         keyValue.headOption match {
-          case Some("country") => ComponentFilter.country(value)
-          case Some("postal_code") => ComponentFilter.postalCode(value)
-          case Some("postal_code_prefix") => new ComponentFilter("postal_code_prefix", value);
+          case Some("country") => Some(ComponentFilter.country(value))
+          case Some("postal_code") => Some(ComponentFilter.postalCode(value))
+          case Some("postal_code_prefix") => Some(new ComponentFilter("postal_code_prefix", value))
+          case _ => None
         }
       }
     }
