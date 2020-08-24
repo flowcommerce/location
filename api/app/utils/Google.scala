@@ -4,8 +4,8 @@ package utils
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
-import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
+import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
+import com.google.maps.{GeoApiContext, GeocodingApi, GeocodingApiRequest, TimeZoneApi}
 import io.flow.common.v0.models.Address
 import io.flow.google.places.v0.models.AddressComponentType
 import io.flow.google.places.v0.{models => Google}
@@ -92,13 +92,20 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
+  def getLocationsByAddress(address: String, components: Option[String]): Future[Seq[Address]] = {
+    val baseRequest = GeocodingApi.geocode(context, address)
+    val componentFilters: Seq[ComponentFilter] = getComponentFilters(components)
+    val geocodingApiRequest: GeocodingApiRequest = componentFilters.toList match {
+      case Nil => baseRequest
+      case filters => baseRequest.components(filters:_*)
+    }
+
     Future {
       Try {
         sortAddresses(
           parseResults(
             address = address,
-            results = GeocodingApi.geocode(context, address).await().toList
+            results = geocodingApiRequest.await().toList
           )
         )
       } match {
@@ -106,6 +113,22 @@ class Google @javax.inject.Inject() (
         case Failure(e) => {
           logger.warn(s"Encountered the following error from the geocoding API", e)
           Nil
+        }
+      }
+    }
+  }
+
+  private[this] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
+    components match {
+      case None => Nil
+      case Some(comps) => comps.split("|").map { case c =>
+        val keyValue = c.split(":")
+        val value = keyValue.tail.mkString("")
+
+        keyValue.headOption match {
+          case Some("country") => ComponentFilter.country(value)
+          case Some("postal_code") => ComponentFilter.postalCode(value)
+          case Some("postal_code_prefix") => new ComponentFilter("postal_code_prefix", value);
         }
       }
     }
