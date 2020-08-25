@@ -34,6 +34,18 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     }
   }
 
+  "GET /addresses?ip=23.16.0.0&components=country:CA" in {
+    val locations = await(
+      client.addresses.get(ip = Some("23.16.0.0"), components = Some("country:CA"))
+    )
+
+    // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
+    Json.toJson(locations).validate[Seq[Address]] match {
+      case JsSuccess(_,_) => assert(true)
+      case JsError(_) => assert(false)
+    }
+  }
+
   "POST /addresses/verifications" in {
     expectErrors(LocationErrorCode.AddressRequired)(
       client.addresses.postVerifications(address = Address())
