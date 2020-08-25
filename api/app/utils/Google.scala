@@ -126,28 +126,17 @@ class Google @javax.inject.Inject() (
     components match {
       case None => Nil
       case Some(comps) => comps.split("\\|").toList.flatMap(_.split(":") match {
-        case Array(key, value) =>
-          key match {
-            case "country" => Some(ComponentFilter.country(value))
-            case "postal_code" => Some(ComponentFilter.postalCode(value))
-            case "postal_code_prefix" => Some(new ComponentFilter("postal_code_prefix", value))
-            case "route" => Some(ComponentFilter.route(value))
-            case "locality" => Some(ComponentFilter.locality(value))
-            case "administrative_area" => Some(ComponentFilter.administrativeArea(value))
-            case _ =>
-              logger
-                .fingerprint(this.getClass.getName)
-                .withKeyValue("component_filter_key", key)
-                .withKeyValue("component_filter_value", value)
-                .info("Unsupported component filter key")
-              None
-          }
-
+        case Array("country", value) => Some(ComponentFilter.country(value))
+        case Array("postal_code", value) => Some(ComponentFilter.postalCode(value))
+        case Array("postal_code_prefix", value) => Some(new ComponentFilter("postal_code_prefix", value))
+        case Array("route", value) => Some(ComponentFilter.route(value))
+        case Array("locality", value) => Some(ComponentFilter.locality(value))
+        case Array("administrative_area", value) => Some(ComponentFilter.administrativeArea(value))
         case other =>
           logger
             .fingerprint(this.getClass.getName)
-            .withKeyValue("component_filter", other.mkString(":"))
-            .info("Malformed component filter")
+            .withKeyValue("component_filter", other)
+            .info("Unsupported component filter")
           None
       })
     }
