@@ -20,7 +20,7 @@ class Healthchecks @javax.inject.Inject() (
     // force loading of config
     assert(environmentVariables.digitalElementFileUri.nonEmpty)
 
-    addresses.get(address = None, ip = Some("0.0.0.0"), components = None)(request).map { _ =>
+    addresses.get(address = None, ip = Some("0.0.0.0"), countryCode = None, postalCodePrefix = None)(request).map { _ =>
       Ok(Json.toJson(Healthcheck("healthy")))
     }
   }

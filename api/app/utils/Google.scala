@@ -92,9 +92,13 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  def getLocationsByAddress(address: String, components: Option[String]): Future[Seq[Address]] = {
+  def getLocationsByAddress(
+    address: String,
+    countryCode: Option[String],
+    postalCodePrefix: Option[String]
+  ): Future[Seq[Address]] = {
     val baseRequest = GeocodingApi.geocode(context, address)
-    val componentFilters: Seq[ComponentFilter] = getComponentFilters(components)
+    val componentFilters: Seq[ComponentFilter] = getComponentFilters(countryCode, postalCodePrefix)
     val geocodingApiRequest: GeocodingApiRequest = componentFilters.toList match {
       case Nil => baseRequest
       case filters => baseRequest.components(filters:_*)
@@ -122,24 +126,13 @@ class Google @javax.inject.Inject() (
    * Google Geocoding Component Filtering
    * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
    */
-  private[utils] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
-    components match {
-      case None => Nil
-      case Some(comps) => comps.split("\\|").toList.flatMap(_.split(":") match {
-        case Array("country", value) => Some(ComponentFilter.country(value))
-        case Array("postal_code", value) => Some(ComponentFilter.postalCode(value))
-        case Array("postal_code_prefix", value) => Some(new ComponentFilter("postal_code_prefix", value))
-        case Array("route", value) => Some(ComponentFilter.route(value))
-        case Array("locality", value) => Some(ComponentFilter.locality(value))
-        case Array("administrative_area", value) => Some(ComponentFilter.administrativeArea(value))
-        case other =>
-          logger
-            .fingerprint(this.getClass.getName)
-            .withKeyValue("component_filter", other)
-            .info("Unsupported component filter")
-          None
-      })
+  private[utils] def getComponentFilters(countryCode: Option[String], postalCodePrefix: Option[String]): Seq[ComponentFilter] = {
+    val countryCodeFilter: Option[ComponentFilter] = countryCode.flatMap { c =>
+      Countries.find(c).map(_.iso31662).map(ComponentFilter.country)
     }
+    val postalCodePrefixFilter: Option[ComponentFilter] = postalCodePrefix.map(new ComponentFilter("postal_code_prefix", _))
+
+    Seq(countryCodeFilter, postalCodePrefixFilter).flatten
   }
 
   /**

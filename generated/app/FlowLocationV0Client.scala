@@ -440,13 +440,15 @@ package io.flow.location.v0 {
       override def get(
         address: _root_.scala.Option[String] = None,
         ip: _root_.scala.Option[String] = None,
-        components: _root_.scala.Option[String] = None,
+        countryCode: _root_.scala.Option[String] = None,
+        postalCodePrefix: _root_.scala.Option[String] = None,
         requestHeaders: Seq[(String, String)] = Nil
       )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.common.v0.models.Address]] = {
         val queryParameters = Seq(
           address.map("address" -> _),
           ip.map("ip" -> _),
-          components.map("components" -> _)
+          countryCode.map("country_code" -> _),
+          postalCodePrefix.map("postal_code_prefix" -> _)
         ).flatten
 
         _executeRequest("GET", s"/addresses", queryParameters = queryParameters, requestHeaders = requestHeaders).map {
@@ -639,15 +641,14 @@ package io.flow.location.v0 {
      * Geolocates the request based on the provided parameters, returning a list of
      * potential matching addresses.
      *
-     * @param components Specify the restriction using the components filter. A filter consists of a list
-     *        of component:value pairs separated by a pipe (|).  Supported filters are
-     *        country, postal_code, postal_code_prefix, route, locality, and
-     *        administrative_area.
+     * @param countryCode The ISO 3166 2 or 3 character code for the country. Case insensitive. See
+     *        https://api.flow.io/reference/countries
      */
     def get(
       address: _root_.scala.Option[String] = None,
       ip: _root_.scala.Option[String] = None,
-      components: _root_.scala.Option[String] = None,
+      countryCode: _root_.scala.Option[String] = None,
+      postalCodePrefix: _root_.scala.Option[String] = None,
       requestHeaders: Seq[(String, String)] = Nil
     )(implicit ec: scala.concurrent.ExecutionContext): scala.concurrent.Future[Seq[io.flow.common.v0.models.Address]]
 
