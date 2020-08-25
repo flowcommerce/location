@@ -9,6 +9,8 @@ class GoogleSpec extends FlowPlaySpec {
   "getComponentFilters" in {
     google.getComponentFilters(None) mustBe Nil
 
+    google.getComponentFilters(Some("invalid:test")) mustBe Nil
+
     val countryCompFilter = google.getComponentFilters(Some("country:JP")).head
     countryCompFilter.component mustBe "country"
     countryCompFilter.value mustBe Countries.Jpn.iso31662.toUpperCase
@@ -16,6 +18,14 @@ class GoogleSpec extends FlowPlaySpec {
     val postalCompFilter = google.getComponentFilters(Some("postal_code_prefix:190")).head
     postalCompFilter.component mustBe "postal_code_prefix"
     postalCompFilter.value mustBe "190"
+
+    val routeCompFilter = google.getComponentFilters(Some("route:test")).head
+    routeCompFilter.component mustBe "route"
+    routeCompFilter.value mustBe "test"
+
+    val localityCompFilter = google.getComponentFilters(Some("locality:test")).head
+    localityCompFilter.component mustBe "locality"
+    localityCompFilter.value mustBe "test"
 
     val complexCompFilter = google.getComponentFilters(Some("country:JP|postal_code_prefix:190"))
     val firstCompFilter = complexCompFilter.head
