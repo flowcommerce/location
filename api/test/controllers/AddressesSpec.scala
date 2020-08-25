@@ -18,9 +18,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   "GET /addresses without an IP returns a proper message" in {
     expectErrors(LocationErrorCode.IpRequired)(
       client.addresses.get(ip = None)
-    ).messages must be(
-      Seq("Must specify either 'address' or 'ip'")
-    )
+    ).messages mustBe Seq("Must specify either 'address' or 'ip'")
   }
 
   "GET /addresses?ip=23.16.0.0" in {
@@ -29,10 +27,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] match {
-      case JsSuccess(_,_) => assert(true)
-      case JsError(_) => assert(false)
-    }
+    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
   }
 
   "GET /addresses?address=190 Japan&country_code=Japan&postal_code_prefix=190" in {
@@ -41,36 +36,29 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] match {
-      case JsSuccess(_,_) => assert(true)
-      case JsError(_) => assert(false)
-    }
+    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
   }
+
   "GET /addresses?address=190 Japan" in {
     val locations = await(
       client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}"))
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] match {
-      case JsSuccess(_,_) => assert(true)
-      case JsError(_) => assert(false)
-    }
+    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
   }
 
   "POST /addresses/verifications" in {
     expectErrors(LocationErrorCode.AddressRequired)(
       client.addresses.postVerifications(address = Address())
-    ).messages must be(
-      Seq("Address to verify cannot be empty")
-    )
+    ).messages mustBe Seq("Address to verify cannot be empty")
   }
 
   "POST /addresses/verifications with UK address" in {
     val result = await(
       client.addresses.postVerifications(address = Address(text = Some("76 Belsize Park NW3-4NG")))
     )
-    result.valid must be(true)
+    result.valid mustBe true
   }
 
 }
