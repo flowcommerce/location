@@ -45,7 +45,8 @@ class Helpers @javax.inject.Inject() (
     country: Option[String] = None,
     address: Option[String] = None,
     ip: Option[String] = None,
-    components: Option[String] = None
+    countryCode: Option[String] = None,
+    postalCodePrefix: Option[String] = None
   )(
     implicit ec: ExecutionContext
   ): Future[Either[LocationError, Seq[Address]]] = {
@@ -61,7 +62,7 @@ class Helpers @javax.inject.Inject() (
         // Special case to enable specifying just a country code in the address line
         Countries.find(a) match {
           case Some(c) => Future.successful(Right(Seq(Address(country = Some(c.iso31663)))))
-          case None => google.getLocationsByAddress(a, components).map(Right.apply)
+          case None => google.getLocationsByAddress(a, countryCode, postalCodePrefix).map(Right.apply)
         }
       }
           
