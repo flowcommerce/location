@@ -24,9 +24,10 @@ class Addresses @javax.inject.Inject() (
 
   def get(
     address: Option[String],
-    ip: Option[String]
+    ip: Option[String],
+    components: Option[String]
   ) = Action.async { _ =>
-    helpers.getLocations(address = address, ip = ip).map {
+    helpers.getLocations(address = address, ip = ip, components = components).map {
       case Left(error) => UnprocessableEntity(Json.toJson(error))
       case Right(locations) => Ok(Json.toJson(locations))
     }

@@ -4,8 +4,8 @@ package utils
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
-import com.google.maps.model.{AddressComponent, GeocodingResult, LatLng}
-import com.google.maps.{GeoApiContext, GeocodingApi, TimeZoneApi}
+import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
+import com.google.maps.{GeoApiContext, GeocodingApi, GeocodingApiRequest, TimeZoneApi}
 import io.flow.common.v0.models.Address
 import io.flow.google.places.v0.models.AddressComponentType
 import io.flow.google.places.v0.{models => Google}
@@ -92,13 +92,20 @@ class Google @javax.inject.Inject() (
     }
   }
 
-  def getLocationsByAddress(address: String): Future[Seq[Address]] = {
+  def getLocationsByAddress(address: String, components: Option[String]): Future[Seq[Address]] = {
+    val baseRequest = GeocodingApi.geocode(context, address)
+    val componentFilters: Seq[ComponentFilter] = getComponentFilters(components)
+    val geocodingApiRequest: GeocodingApiRequest = componentFilters.toList match {
+      case Nil => baseRequest
+      case filters => baseRequest.components(filters:_*)
+    }
+
     Future {
       Try {
         sortAddresses(
           parseResults(
             address = address,
-            results = GeocodingApi.geocode(context, address).await().toList
+            results = geocodingApiRequest.await().toList
           )
         )
       } match {
@@ -108,6 +115,30 @@ class Google @javax.inject.Inject() (
           Nil
         }
       }
+    }
+  }
+
+  /**
+   * Google Geocoding Component Filtering
+   * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+   */
+  private[utils] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
+    components match {
+      case None => Nil
+      case Some(comps) => comps.split("\\|").toList.flatMap(_.split(":") match {
+        case Array("country", value) => Some(ComponentFilter.country(value))
+        case Array("postal_code", value) => Some(ComponentFilter.postalCode(value))
+        case Array("postal_code_prefix", value) => Some(new ComponentFilter("postal_code_prefix", value))
+        case Array("route", value) => Some(ComponentFilter.route(value))
+        case Array("locality", value) => Some(ComponentFilter.locality(value))
+        case Array("administrative_area", value) => Some(ComponentFilter.administrativeArea(value))
+        case other =>
+          logger
+            .fingerprint(this.getClass.getName)
+            .withKeyValue("component_filter", other)
+            .info("Unsupported component filter")
+          None
+      })
     }
   }
 
