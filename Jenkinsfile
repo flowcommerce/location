@@ -49,12 +49,12 @@ pipeline {
         container('docker') {
           script {
             semver = VERSION.printable()
-            
+
             docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
               db = docker.build("$ORG/location:$semver", '--network=host -f Dockerfile .')
               db.push()
             }
-            
+
           }
         }
       }
@@ -65,9 +65,9 @@ pipeline {
       steps {
         container('helm') {
           script {
-          
-            new helmDeploy().deploy('location', VERSION.printable())
-          
+
+            new helmDeploy().deploy('location', VERSION.printable(), 600)
+
           }
         }
       }
