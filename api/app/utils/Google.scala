@@ -118,6 +118,10 @@ class Google @javax.inject.Inject() (
     }
   }
 
+  /**
+   * Google Geocoding Component Filtering
+   * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+   */
   private[utils] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
     components match {
       case None => Nil
@@ -129,7 +133,17 @@ class Google @javax.inject.Inject() (
           case Some("country") => Some(ComponentFilter.country(value))
           case Some("postal_code") => Some(ComponentFilter.postalCode(value))
           case Some("postal_code_prefix") => Some(new ComponentFilter("postal_code_prefix", value))
-          case _ => None
+          case Some("route") => Some(ComponentFilter.route(value))
+          case Some("locality") => Some(ComponentFilter.locality(value))
+          case Some("administrative_area") => Some(ComponentFilter.administrativeArea(value))
+          case Some(key) =>
+            logger
+              .fingerprint(this.getClass.getName)
+              .withKeyValue("component_filter_key", key)
+              .withKeyValue("component_filter_value", value)
+              .info("Unsupported component filter key")
+            None
+          case None => None
         }
       }
     }
