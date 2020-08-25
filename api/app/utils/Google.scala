@@ -94,7 +94,7 @@ class Google @javax.inject.Inject() (
     TimeZoneApi
       .getTimeZone(context, new LatLng(lat, lng))
       .runAsync()
-      .map(tz =>Timezones.find(tz.getID))
+      .map(tz => Timezones.find(tz.getID))
       .recover {
         case NonFatal(e) =>
           logger.warn(s"Encountered the following error from the timezone API", e)
