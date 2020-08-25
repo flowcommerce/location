@@ -37,7 +37,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   "GET /addresses?address=190 Japan&country_code=Japan&postal_code_prefix=190" in {
     val locations = await(
-      client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}"), countryCode = Some(Countries.Jpn.name), postalCodePrefix = Some("190"))
+      client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}"), country = Some(Countries.Jpn.name), postalPrefix = Some("190"))
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
