@@ -127,7 +127,7 @@ class Google @javax.inject.Inject() (
       case None => Nil
       case Some(comps) => comps.split("\\|").toList.flatMap { c =>
         val keyValue = c.split(":")
-        val value = keyValue.tail.mkString("")
+        val value = keyValue.tail.mkString
 
         keyValue.headOption match {
           case Some("country") => Some(ComponentFilter.country(value))
