@@ -94,11 +94,11 @@ class Google @javax.inject.Inject() (
 
   def getLocationsByAddress(
     address: String,
-    countryCode: Option[String],
-    postalCodePrefix: Option[String]
+    country: Option[String],
+    postalPrefix: Option[String]
   ): Future[Seq[Address]] = {
     val baseRequest = GeocodingApi.geocode(context, address)
-    val componentFilters: Seq[ComponentFilter] = getComponentFilters(countryCode, postalCodePrefix)
+    val componentFilters: Seq[ComponentFilter] = getComponentFilters(country, postalPrefix)
     val geocodingApiRequest: GeocodingApiRequest = componentFilters.toList match {
       case Nil => baseRequest
       case filters => baseRequest.components(filters:_*)
@@ -126,11 +126,11 @@ class Google @javax.inject.Inject() (
    * Google Geocoding Component Filtering
    * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
    */
-  private[utils] def getComponentFilters(countryCode: Option[String], postalCodePrefix: Option[String]): Seq[ComponentFilter] = {
-    val countryCodeFilter: Option[ComponentFilter] = countryCode.flatMap { c =>
+  private[utils] def getComponentFilters(country: Option[String], postalPrefix: Option[String]): Seq[ComponentFilter] = {
+    val countryCodeFilter: Option[ComponentFilter] = country.flatMap { c =>
       Countries.find(c).map(_.iso31662).map(ComponentFilter.country)
     }
-    val postalCodePrefixFilter: Option[ComponentFilter] = postalCodePrefix.map(new ComponentFilter("postal_code_prefix", _))
+    val postalCodePrefixFilter: Option[ComponentFilter] = postalPrefix.map(new ComponentFilter("postal_code_prefix", _))
 
     Seq(countryCodeFilter, postalCodePrefixFilter).flatten
   }
