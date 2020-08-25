@@ -128,12 +128,12 @@ class Google @javax.inject.Inject() (
       case Some(comps) => comps.split("\\|").toList.flatMap(_.split(":") match {
         case Array(key, value) =>
           key match {
-            case "country" => Some(ComponentFilter.country(value.mkString))
-            case "postal_code" => Some(ComponentFilter.postalCode(value.mkString))
-            case "postal_code_prefix" => Some(new ComponentFilter("postal_code_prefix", value.mkString))
-            case "route" => Some(ComponentFilter.route(value.mkString))
-            case "locality" => Some(ComponentFilter.locality(value.mkString))
-            case "administrative_area" => Some(ComponentFilter.administrativeArea(value.mkString))
+            case "country" => Some(ComponentFilter.country(value))
+            case "postal_code" => Some(ComponentFilter.postalCode(value))
+            case "postal_code_prefix" => Some(new ComponentFilter("postal_code_prefix", value))
+            case "route" => Some(ComponentFilter.route(value))
+            case "locality" => Some(ComponentFilter.locality(value))
+            case "administrative_area" => Some(ComponentFilter.administrativeArea(value))
             case _ =>
               logger
                 .fingerprint(this.getClass.getName)
