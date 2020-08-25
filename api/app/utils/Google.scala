@@ -125,27 +125,24 @@ class Google @javax.inject.Inject() (
   private[utils] def getComponentFilters(components: Option[String]): Seq[ComponentFilter] = {
     components match {
       case None => Nil
-      case Some(comps) => comps.split("\\|").toList.flatMap { c =>
-        val keyValue = c.split(":")
-        val value = keyValue.tail.mkString
-
-        keyValue.headOption match {
-          case Some("country") => Some(ComponentFilter.country(value))
-          case Some("postal_code") => Some(ComponentFilter.postalCode(value))
-          case Some("postal_code_prefix") => Some(new ComponentFilter("postal_code_prefix", value))
-          case Some("route") => Some(ComponentFilter.route(value))
-          case Some("locality") => Some(ComponentFilter.locality(value))
-          case Some("administrative_area") => Some(ComponentFilter.administrativeArea(value))
-          case Some(key) =>
-            logger
-              .fingerprint(this.getClass.getName)
-              .withKeyValue("component_filter_key", key)
-              .withKeyValue("component_filter_value", value)
-              .info("Unsupported component filter key")
-            None
-          case None => None
-        }
-      }
+      case Some(comps) => comps.split("\\|").toList.flatMap(_.split(":") match {
+        case Array(key, value) =>
+          key match {
+            case "country" => Some(ComponentFilter.country(value.mkString))
+            case "postal_code" => Some(ComponentFilter.postalCode(value.mkString))
+            case "postal_code_prefix" => Some(new ComponentFilter("postal_code_prefix", value.mkString))
+            case "route" => Some(ComponentFilter.route(value.mkString))
+            case "locality" => Some(ComponentFilter.locality(value.mkString))
+            case "administrative_area" => Some(ComponentFilter.administrativeArea(value.mkString))
+            case _ =>
+              logger
+                .fingerprint(this.getClass.getName)
+                .withKeyValue("component_filter_key", key)
+                .withKeyValue("component_filter_value", value)
+                .info("Unsupported component filter key")
+              None
+          }
+      })
     }
   }
 
