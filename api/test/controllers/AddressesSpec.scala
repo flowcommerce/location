@@ -6,6 +6,7 @@ import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import io.flow.location.v0.Client
 import io.flow.common.v0.models.json._
 import io.flow.location.v0.models.LocationErrorCode
+import io.flow.reference.data.Countries
 import io.flow.test.utils.FlowPlaySpec
 
 class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHelpers {
@@ -34,9 +35,9 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     }
   }
 
-  "GET /addresses?ip=23.16.0.0&components=country:CA" in {
+  "GET /addresses?address=M4S Canada&components=country:Canada" in {
     val locations = await(
-      client.addresses.get(ip = Some("23.16.0.0"), components = Some("country:CA"))
+      client.addresses.get(address = Some(s"M4S ${Countries.Can.name}"), components = Some(s"country:${Countries.Can.name}"))
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
