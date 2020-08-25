@@ -142,6 +142,13 @@ class Google @javax.inject.Inject() (
                 .info("Unsupported component filter key")
               None
           }
+
+        case other =>
+          logger
+            .fingerprint(this.getClass.getName)
+            .withKeyValue("component_filter", other.mkString(":"))
+            .info("Malformed component filter")
+          None
       })
     }
   }
