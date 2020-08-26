@@ -17,7 +17,7 @@ class NonBlockingDemoSpec extends FlowPlaySpec {
 
   private def printlnTime(s: String) = println(ISODateTimeFormat.basicTime().print(DateTime.now) + " - " + s)
 
-  "blocks" in {
+  "blocks" ignore {
     printlnTime("==============")
     printlnTime("BLOCKS")
 
@@ -50,7 +50,7 @@ class NonBlockingDemoSpec extends FlowPlaySpec {
     succeed
   }
 
-  "does not blocks" in {
+  "does not blocks" ignore {
     printlnTime("==============")
     printlnTime("DOES NOT BLOCK")
 
