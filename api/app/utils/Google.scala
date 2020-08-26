@@ -1,11 +1,11 @@
 package utils
 
-
 import java.util.concurrent.TimeUnit
 
 import akka.actor.ActorSystem
+import com.google.maps.PendingResult.Callback
 import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
-import com.google.maps.{GeoApiContext, GeocodingApi, GeocodingApiRequest, TimeZoneApi}
+import com.google.maps._
 import io.flow.common.v0.models.Address
 import io.flow.google.places.v0.models.AddressComponentType
 import io.flow.google.places.v0.{models => Google}
@@ -13,12 +13,12 @@ import io.flow.log.RollbarLogger
 import io.flow.reference.v0.models.Timezone
 import io.flow.reference.{Countries, Timezones}
 
-import scala.concurrent.Future
-import scala.util.{Failure, Success, Try}
+import scala.concurrent.{Future, Promise}
+import scala.util.control.NonFatal
 
 object Implicits {
   // Provides an easy way to extract address components from a geocoding result
-  implicit class RichGeocodingResult(result: GeocodingResult) {
+  implicit class RichGeocodingResult(val result: GeocodingResult) extends AnyVal {
     // Extracts "Ontario" instead of "ON", etc.
     def extractLongName(types: AddressComponentType*): Option[String] = {
       findAsString(
@@ -55,6 +55,20 @@ object Implicits {
       c.types.map(t => Google.AddressComponentType(t.toString)).exists(types.contains)
     }
   }
+
+  implicit class PendingResultScala[T](val pendingRes: PendingResult[T]) extends AnyVal {
+
+    def runAsync(): Future[T] = {
+      val p = Promise[T]()
+      pendingRes.setCallback(new Callback[T] {
+        override def onResult(result: T): Unit = p.success(result)
+        override def onFailure(e: Throwable): Unit = p.failure(e)
+      })
+      p.future
+    }
+
+  }
+
 }
 
 /**
@@ -76,21 +90,16 @@ class Google @javax.inject.Inject() (
 
   private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
-  def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] = {
-    Future {
-      // returns java.util.TimeZone, which has getID()
-      Try {
-        val tz = TimeZoneApi.getTimeZone(context, new LatLng(lat, lng)).await()
-        Timezones.find(tz.getID)
-      } match {
-        case Success(result) => result
-        case Failure(e) => {
+  def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] =
+    TimeZoneApi
+      .getTimeZone(context, new LatLng(lat, lng))
+      .runAsync()
+      .map(tz => Timezones.find(tz.getID))
+      .recover {
+        case NonFatal(e) =>
           logger.warn(s"Encountered the following error from the timezone API", e)
           None
-        }
       }
-    }
-  }
 
   def getLocationsByAddress(
     address: String,
@@ -99,26 +108,16 @@ class Google @javax.inject.Inject() (
   ): Future[Seq[Address]] = {
     val baseRequest = GeocodingApi.geocode(context, address)
     val componentFilters: Seq[ComponentFilter] = getComponentFilters(country, postalPrefix)
-    val geocodingApiRequest: GeocodingApiRequest = componentFilters.toList match {
-      case Nil => baseRequest
-      case filters => baseRequest.components(filters:_*)
-    }
+    val geocodingApiRequest: GeocodingApiRequest =
+      if (componentFilters.isEmpty) baseRequest else baseRequest.components(componentFilters: _*)
 
-    Future {
-      Try {
-        sortAddresses(
-          parseResults(
-            address = address,
-            results = geocodingApiRequest.await().toList
-          )
-        )
-      } match {
-        case Success(result) => result
-        case Failure(e) => {
-          logger.warn(s"Encountered the following error from the geocoding API", e)
-          Nil
-        }
-      }
+    geocodingApiRequest.runAsync().map { addresses =>
+      val parsed = parseResults(address = address, results = addresses.toSeq)
+      sortAddresses(parsed)
+    }.recover {
+      case NonFatal(e) =>
+        logger.warn(s"Encountered the following error from the geocoding API", e)
+        Nil
     }
   }
 
