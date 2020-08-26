@@ -1,26 +1,22 @@
 package controllers
 
-import akka.actor.ActorSystem
-import play.api.libs.json._
-import play.api.mvc._
 import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
-import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.location.v0.models.json._
+import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.log.RollbarLogger
-
-import scala.concurrent.Future
+import play.api.libs.json._
+import play.api.mvc._
 import utils.AddressVerifier
+
+import scala.concurrent.{ExecutionContext, Future}
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   logger: RollbarLogger,
   helpers: Helpers,
-  system: ActorSystem
-) extends BaseController {
-
-  private[this] implicit val ec = system.dispatchers.lookup("addresses-controller-context")
+)(implicit ec: ExecutionContext) extends BaseController {
 
   def get(
     address: Option[String],

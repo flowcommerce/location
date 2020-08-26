@@ -2,10 +2,9 @@ package utils
 
 import java.util.concurrent.TimeUnit
 
-import akka.actor.ActorSystem
 import com.google.maps.PendingResult.Callback
-import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
 import com.google.maps._
+import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
 import io.flow.common.v0.models.Address
 import io.flow.google.places.v0.models.AddressComponentType
 import io.flow.google.places.v0.{models => Google}
@@ -13,7 +12,7 @@ import io.flow.log.RollbarLogger
 import io.flow.reference.v0.models.Timezone
 import io.flow.reference.{Countries, Timezones}
 
-import scala.concurrent.{Future, Promise}
+import scala.concurrent.{ExecutionContext, Future, Promise}
 import scala.util.control.NonFatal
 
 object Implicits {
@@ -77,9 +76,8 @@ object Implicits {
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
-  system: ActorSystem,
   logger: RollbarLogger
-) {
+)(implicit ec: ExecutionContext) {
   import Implicits._
 
   private[this] val context = new GeoApiContext.Builder()
@@ -87,8 +85,6 @@ class Google @javax.inject.Inject() (
     .readTimeout(1000, TimeUnit.MILLISECONDS)
     .apiKey(environmentVariables.googleApiKey)
     .build()
-
-  private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
   def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] =
     TimeZoneApi
@@ -111,14 +107,16 @@ class Google @javax.inject.Inject() (
     val geocodingApiRequest: GeocodingApiRequest =
       if (componentFilters.isEmpty) baseRequest else baseRequest.components(componentFilters: _*)
 
-    geocodingApiRequest.runAsync().map { addresses =>
-      val parsed = parseResults(address = address, results = addresses.toSeq)
-      sortAddresses(parsed)
-    }.recover {
-      case NonFatal(e) =>
-        logger.warn(s"Encountered the following error from the geocoding API", e)
-        Nil
-    }
+    geocodingApiRequest
+      .runAsync()
+      .map { addresses =>
+        val parsed = parseResults(address = address, results = addresses.toSeq)
+        sortAddresses(parsed)
+      }.recover {
+        case NonFatal(e) =>
+          logger.warn(s"Encountered the following error from the geocoding API", e)
+          Nil
+      }
   }
 
   /**
