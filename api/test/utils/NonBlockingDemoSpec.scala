@@ -17,6 +17,31 @@ class NonBlockingDemoSpec extends FlowPlaySpec {
 
   private def printlnTime(s: String) = println(ISODateTimeFormat.basicTime().print(DateTime.now) + " - " + s)
 
+  // Output:
+  // 114856.755-0400 - ==============
+  // 114856.785-0400 - BLOCKS
+  // 114856.785-0400 - Started 1
+  // 114856.786-0400 - Waiting for f1...
+  // 114901.804-0400 - Done 1
+  // 114901.804-0400 - Started 2
+  // 114901.804-0400 - f1 done...
+  // 114901.804-0400 - Waiting for f2...
+  // 114906.825-0400 - Done 2
+  // 114906.825-0400 - f2 done...
+  // 114906.825-0400 - took 10040 ms
+  // [info] - blocks
+  // 114906.835-0400 - ==============
+  // 114906.835-0400 - DOES NOT BLOCK
+  // 114906.836-0400 - Started 1
+  // 114906.836-0400 - Waiting for f1...
+  // 114906.836-0400 - Started 2
+  // 114911.854-0400 - Done 2
+  // 114911.854-0400 - f1 done...
+  // 114911.854-0400 - Done 1
+  // 114911.854-0400 - Waiting for f2...
+  // 114911.854-0400 - f2 done...
+  // 114911.854-0400 - took 5019 ms9s
+
   "blocks" ignore {
     printlnTime("==============")
     printlnTime("BLOCKS")
