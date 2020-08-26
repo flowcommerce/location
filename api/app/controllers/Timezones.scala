@@ -1,22 +1,29 @@
 package controllers
 
-import io.flow.location.v0.models.json._
+import akka.actor.ActorSystem
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
-import io.flow.reference.v0.models.json._
 import play.api.libs.json._
 import play.api.mvc._
+import io.flow.location.v0.models.json._
+import io.flow.reference.v0.models.json._
 import utils.DigitalElementIndex
+
+import scala.concurrent.{ExecutionContext, Future}
 
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
+  system: ActorSystem,
   helpers: Helpers
 ) extends BaseController {
 
+  private[this] implicit val ec: ExecutionContext = system.dispatchers.lookup("timezones-controller-context")
+
   def get(
     ip: Option[String]
-  ) = Action { _ =>
+  ) = Action.async { _ =>
+    Future {
       helpers.validateRequiredIp(ip) match {
         case Left(error) => {
           UnprocessableEntity(Json.toJson(error))
@@ -39,6 +46,7 @@ class Timezones @javax.inject.Inject() (
             }
           }
       }
+    }
   }
 
 }

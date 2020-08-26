@@ -3,6 +3,7 @@ package utils
 
 import java.util.concurrent.TimeUnit
 
+import akka.actor.ActorSystem
 import com.google.maps.model.{AddressComponent, ComponentFilter, GeocodingResult, LatLng}
 import com.google.maps.{GeoApiContext, GeocodingApi, GeocodingApiRequest, TimeZoneApi}
 import io.flow.common.v0.models.Address
@@ -12,7 +13,7 @@ import io.flow.log.RollbarLogger
 import io.flow.reference.v0.models.Timezone
 import io.flow.reference.{Countries, Timezones}
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 import scala.util.{Failure, Success, Try}
 
 object Implicits {
@@ -62,8 +63,9 @@ object Implicits {
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
+  system: ActorSystem,
   logger: RollbarLogger
-)(implicit ec: ExecutionContext) {
+) {
   import Implicits._
 
   private[this] val context = new GeoApiContext.Builder()
@@ -71,6 +73,8 @@ class Google @javax.inject.Inject() (
     .readTimeout(1000, TimeUnit.MILLISECONDS)
     .apiKey(environmentVariables.googleApiKey)
     .build()
+
+  private[this] implicit val ec = system.dispatchers.lookup("google-api-context")
 
   def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] = {
     Future {

@@ -1,19 +1,24 @@
 package controllers
 
+import akka.actor.ActorSystem
 import io.flow.location.v0.models
 import io.flow.location.v0.models.json._
-import io.flow.reference.{Countries, data}
+import io.flow.reference.data
 import io.flow.reference.v0.models.Country
+import io.flow.reference.Countries
 import play.api.libs.json._
 import play.api.mvc._
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class CountryDefaults @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   helpers: Helpers,
-)(implicit ec: ExecutionContext) extends BaseController {
+  system: ActorSystem
+) extends BaseController {
+
+  private[this] implicit val ec = system.dispatchers.lookup("country-defaults-controller-context")
 
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
   private[this] val DefaultLanguage = "en"  // Remove once every country has at least one language in reference data
@@ -22,7 +27,7 @@ class CountryDefaults @javax.inject.Inject() (
     country: Option[String],
     ip: Option[String]
   ) = Action.async { _ =>
-    helpers.getLocations(country = country, ip = ip).map {
+    helpers.getLocations(country= country, ip = ip).map {
       case Left(_) => data.Countries.all
       case Right(locations) => locations.flatMap(_.country).flatMap(Countries.find)
     }.map { countries =>
