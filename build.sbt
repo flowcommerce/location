@@ -65,3 +65,4 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   )
 )
 version := "0.6.99"
+version := "0.7.0"
