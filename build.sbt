@@ -64,5 +64,4 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     System.getenv("ARTIFACTORY_PASSWORD")
   )
 )
-version := "0.6.99"
-version := "0.7.0"
+version := "0.7.1"
