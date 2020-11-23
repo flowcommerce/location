@@ -16,7 +16,7 @@ resources:
     cpu: 1
   requests:
     memory: "7100Mi"
-    cpu: .05
+    cpu: 1
 
 jvmMemory: 6100
 
