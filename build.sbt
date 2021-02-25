@@ -52,8 +52,6 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.7.4",
     "com.typesafe.play" %% "play-json" % "2.8.1",
-    compilerPlugin("com.github.ghik" %% "silencer-plugin" % "1.4.4" cross CrossVersion.full),
-    "com.github.ghik" %% "silencer-lib" % "1.4.4" % Provided cross CrossVersion.full
   ),
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
