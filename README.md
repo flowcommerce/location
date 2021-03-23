@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/flowcommerce/location.svg?branch=master)](https://travis-ci.org/flowcommerce/location)
+[![Build Status](https://travis-ci.org/flowcommerce/location.svg?branch=main)](https://travis-ci.org/flowcommerce/location)
 
 location
 =========
