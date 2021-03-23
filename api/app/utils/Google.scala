@@ -71,7 +71,7 @@ object Implicits {
 }
 
 /**
-  * Mostly copied from: https://github.com/flowcommerce/scrapbook/blob/master/lib/src/main/scala/geo/AddressExploration.scala
+  * Mostly copied from: https://github.com/flowcommerce/scrapbook/blob/main/lib/src/main/scala/geo/AddressExploration.scala
   */
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
