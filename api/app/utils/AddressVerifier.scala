@@ -52,7 +52,7 @@ object AddressVerifier {
             case false => a
             case true => {
               a.copy(
-                streets = a.streets.getOrElse(Nil) match {
+                streets = a.streets.getOrElse(Nil).toList match {
                   case Nil => None
                   case a :: Nil => Some(Seq(a))
                   case a :: b :: rest => {
