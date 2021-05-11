@@ -8,3 +8,4 @@ logs/
 *.swo
 .DS_Store
 GeoLite2-City.mmdb
+.bsp/
