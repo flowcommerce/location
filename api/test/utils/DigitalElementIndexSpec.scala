@@ -1,10 +1,12 @@
 package utils
 
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+
 import java.io._
 import java.nio.file.{Files, Paths}
-import org.scalatest.{Matchers, WordSpec}
 
-class DigitalElementIndexSpec extends WordSpec with Matchers {
+class DigitalElementIndexSpec extends AnyWordSpec with Matchers {
 
   "buildIndex" should {
 
