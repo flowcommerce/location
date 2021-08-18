@@ -2,10 +2,11 @@ package utils
 
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
-import org.scalatest.{Matchers, WordSpec}
+import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 import utils.DigitalElement.ValidatedIpAddress
 
-class DigitalElementSpec extends WordSpec with Matchers {
+class DigitalElementSpec extends AnyWordSpec with Matchers {
 
   // convenience to build DigitalElementIndexRecord fixtures with defaults
   def indexRecordFactory(
