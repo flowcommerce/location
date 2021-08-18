@@ -30,20 +30,20 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "io.kamon" % "kanela-agent" % "1.0.4",
+    javaAgents += "io.kamon" % "kanela-agent" % "1.0.11",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play28" % "0.5.91",
-      "io.flow" %% "lib-play-graphite-play28" % "0.1.36",
-      "io.flow" %% "lib-reference-scala" % "0.2.36",
-      "io.flow" %% "lib-s3-play28" % "0.2.80",
-      "com.google.maps" % "google-maps-services" % "0.10.2",
-      "org.scalacheck" %% "scalacheck" % "1.14.3" % "test",
-      "io.flow" %% "lib-test-utils-play28" % "0.0.81" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.1.15",
-      "io.flow" %% "lib-log" % "0.0.97"
+      "io.flow" %% "lib-play-play28" % "0.6.48",
+      "io.flow" %% "lib-play-graphite-play28" % "0.2.1",
+      "io.flow" %% "lib-reference-scala" % "0.2.89",
+      "io.flow" %% "lib-s3-play28" % "0.3.33",
+      "com.google.maps" % "google-maps-services" % "0.19.0",
+      "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
+      "io.flow" %% "lib-test-utils-play28" % "0.1.43" % Test,
+      "io.flow" %% "lib-usage-play28" % "0.1.70",
+      "io.flow" %% "lib-log" % "0.1.47"
     ),
   )
 
@@ -52,8 +52,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     guice,
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.7.4",
-    "com.typesafe.play" %% "play-json" % "2.8.1",
+    "com.typesafe.play" %% "play-json-joda" % "2.9.2",
+    "com.typesafe.play" %% "play-json" % "2.9.2",
   ),
   scalacOptions ++= allScalacOptions,
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
