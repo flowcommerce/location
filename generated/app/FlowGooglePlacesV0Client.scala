@@ -9,11 +9,21 @@ package io.flow.google.places.v0.models {
 
   object AddressComponentType {
 
-    case object AdministrativeAreaLevel1 extends AddressComponentType { override def toString = "administrative_area_level_1" }
-    case object AdministrativeAreaLevel2 extends AddressComponentType { override def toString = "administrative_area_level_2" }
-    case object AdministrativeAreaLevel3 extends AddressComponentType { override def toString = "administrative_area_level_3" }
-    case object AdministrativeAreaLevel4 extends AddressComponentType { override def toString = "administrative_area_level_4" }
-    case object AdministrativeAreaLevel5 extends AddressComponentType { override def toString = "administrative_area_level_5" }
+    case object AdministrativeAreaLevel1 extends AddressComponentType {
+      override def toString = "administrative_area_level_1"
+    }
+    case object AdministrativeAreaLevel2 extends AddressComponentType {
+      override def toString = "administrative_area_level_2"
+    }
+    case object AdministrativeAreaLevel3 extends AddressComponentType {
+      override def toString = "administrative_area_level_3"
+    }
+    case object AdministrativeAreaLevel4 extends AddressComponentType {
+      override def toString = "administrative_area_level_4"
+    }
+    case object AdministrativeAreaLevel5 extends AddressComponentType {
+      override def toString = "administrative_area_level_5"
+    }
     case object Airport extends AddressComponentType { override def toString = "airport" }
     case object BusStation extends AddressComponentType { override def toString = "bus_station" }
     case object ColloquialArea extends AddressComponentType { override def toString = "colloquial_area" }
@@ -48,7 +58,6 @@ package io.flow.google.places.v0.models {
     case object TrainStation extends AddressComponentType { override def toString = "train_station" }
     case object TransitStation extends AddressComponentType { override def toString = "transit_station" }
     case object Unknown extends AddressComponentType { override def toString = "unknown" }
-
     /**
      * UNDEFINED captures values that are sent either in error or
      * that were added by the server after this library was
@@ -87,35 +96,29 @@ package io.flow.google.places.v0.models {
     import play.api.libs.functional.syntax._
     import io.flow.google.places.v0.models.json._
 
-    private[v0] implicit val jsonReadsUUID = __.read[String].map { str =>
+    private[v0] implicit val jsonReadsUUID: play.api.libs.json.Reads[_root_.java.util.UUID] = __.read[String].map { str =>
       _root_.java.util.UUID.fromString(str)
     }
 
-    private[v0] implicit val jsonWritesUUID = new Writes[_root_.java.util.UUID] {
-      def writes(x: _root_.java.util.UUID) = JsString(x.toString)
-    }
+    private[v0] implicit val jsonWritesUUID: play.api.libs.json.Writes[_root_.java.util.UUID] = (x: _root_.java.util.UUID) => play.api.libs.json.JsString(x.toString)
 
-    private[v0] implicit val jsonReadsJodaDateTime = __.read[String].map { str =>
+    private[v0] implicit val jsonReadsJodaDateTime: play.api.libs.json.Reads[_root_.org.joda.time.DateTime] = __.read[String].map { str =>
       _root_.org.joda.time.format.ISODateTimeFormat.dateTimeParser.parseDateTime(str)
     }
 
-    private[v0] implicit val jsonWritesJodaDateTime = new Writes[_root_.org.joda.time.DateTime] {
-      def writes(x: _root_.org.joda.time.DateTime) = {
-        JsString(_root_.org.joda.time.format.ISODateTimeFormat.dateTime.print(x))
-      }
+    private[v0] implicit val jsonWritesJodaDateTime: play.api.libs.json.Writes[_root_.org.joda.time.DateTime] = (x: _root_.org.joda.time.DateTime) => {
+      play.api.libs.json.JsString(_root_.org.joda.time.format.ISODateTimeFormat.dateTime.print(x))
     }
 
-    private[v0] implicit val jsonReadsJodaLocalDate = __.read[String].map { str =>
+    private[v0] implicit val jsonReadsJodaLocalDate: play.api.libs.json.Reads[_root_.org.joda.time.LocalDate] = __.read[String].map { str =>
       _root_.org.joda.time.format.ISODateTimeFormat.dateTimeParser.parseLocalDate(str)
     }
 
-    private[v0] implicit val jsonWritesJodaLocalDate = new Writes[_root_.org.joda.time.LocalDate] {
-      def writes(x: _root_.org.joda.time.LocalDate) = {
-        JsString(_root_.org.joda.time.format.ISODateTimeFormat.date.print(x))
-      }
+    private[v0] implicit val jsonWritesJodaLocalDate: play.api.libs.json.Writes[_root_.org.joda.time.LocalDate] = (x: _root_.org.joda.time.LocalDate) => {
+      play.api.libs.json.JsString(_root_.org.joda.time.format.ISODateTimeFormat.date.print(x))
     }
 
-    implicit val jsonReadsGooglePlacesAddressComponentType = new play.api.libs.json.Reads[io.flow.google.places.v0.models.AddressComponentType] {
+    implicit val jsonReadsGooglePlacesAddressComponentType: play.api.libs.json.Reads[io.flow.google.places.v0.models.AddressComponentType] = new play.api.libs.json.Reads[io.flow.google.places.v0.models.AddressComponentType] {
       def reads(js: play.api.libs.json.JsValue): play.api.libs.json.JsResult[io.flow.google.places.v0.models.AddressComponentType] = {
         js match {
           case v: play.api.libs.json.JsString => play.api.libs.json.JsSuccess(io.flow.google.places.v0.models.AddressComponentType(v.value))
@@ -142,10 +145,8 @@ package io.flow.google.places.v0.models {
     }
 
     implicit def jsonWritesGooglePlacesAddressComponentType: play.api.libs.json.Writes[AddressComponentType] = {
-      new play.api.libs.json.Writes[io.flow.google.places.v0.models.AddressComponentType] {
-        def writes(obj: io.flow.google.places.v0.models.AddressComponentType) = {
-          jsonWritesGooglePlacesAddressComponentType(obj)
-        }
+      (obj: io.flow.google.places.v0.models.AddressComponentType) => {
+        jsonWritesGooglePlacesAddressComponentType(obj)
       }
     }
   }
@@ -360,7 +361,7 @@ package io.flow.google.places.v0 {
      */
     def _withJsonContentType(headers: Seq[(String, String)]): Seq[(String, String)] = {
       headers.find { _._1.toUpperCase == "CONTENT-TYPE" } match {
-        case None => headers ++ Seq(("Content-Type" -> "application/json; charset=UTF-8"))
+        case None => headers ++ Seq("Content-Type" -> "application/json; charset=UTF-8")
         case Some(_) => headers
       }
     }

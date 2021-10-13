@@ -30,12 +30,12 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "0.87.0",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "0.88.0",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play28" % "0.6.53",
+      "io.flow" %% "lib-play-play28" % "0.7.0",
       "io.flow" %% "lib-metrics-play28" % "1.0.6",
       "io.flow" %% "lib-reference-scala" % "0.2.91",
       "io.flow" %% "lib-s3-play28" % "0.3.36",
