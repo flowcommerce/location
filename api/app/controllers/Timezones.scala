@@ -8,6 +8,8 @@ import play.api.libs.json._
 import play.api.mvc._
 import utils.DigitalElementIndex
 
+import scala.concurrent.Future
+
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
@@ -20,6 +22,7 @@ class Timezones @javax.inject.Inject() (
   def get(
     ip: Option[String]
   ) = Action.async { _ =>
+    Future {
       helpers.validateRequiredIp(ip) match {
         case Left(error) => {
           UnprocessableEntity(Json.toJson(error))
@@ -42,6 +45,7 @@ class Timezones @javax.inject.Inject() (
             }
           }
       }
+    }
   }
 
 }
