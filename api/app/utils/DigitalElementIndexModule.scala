@@ -33,7 +33,7 @@ class DigitalElementIndexModule extends AbstractModule {
     logger.
       fingerprint(getClass.getName).
       withKeyValue("uri", environmentVariables.digitalElementFileUri).
-      info(s"Building index")
+      info("Building index")
     val start = System.currentTimeMillis()
     val index = DigitalElement.buildIndex(is, ';', '\n')
     is.close()

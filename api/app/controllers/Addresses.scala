@@ -47,10 +47,15 @@ class Addresses @javax.inject.Inject() (
           case Left(error) => {
             logger
               .withKeyValue("address", text)
-              .withKeyValue("error_code", error.code)
+              .withKeyValue("error_code", error.code.toString)
               .withKeyValue("error_messages", error.messages)
               .error("Error in address verification")
-            sys.error(s"Error in address verification: $error")
+            UnprocessableEntity(Json.toJson(
+              LocationError(
+                code = LocationErrorCode.AddressRequired,
+                messages = Seq(s"Error in address verification: $error")
+              )
+            ))
           }
 
           case Right(locations) => {

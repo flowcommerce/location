@@ -9,10 +9,7 @@ class EnvironmentVariables @javax.inject.Inject() (
   playEnv: Environment
 ) {
 
-  val googleApiKey: String = playEnv.mode match {
-    case Mode.Test => config.requiredString("google.api.key")
-    case _ => config.requiredString("google.api.key")
-  }
+  val googleApiKey: String = config.requiredString("google.api.key")
 
   val digitalElementFileUri: String = config.requiredString("digitalelement.file.uri")
 

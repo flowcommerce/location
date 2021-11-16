@@ -76,9 +76,11 @@ object Implicits {
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
-  logger: RollbarLogger
+  rollbar: RollbarLogger
 )(implicit ec: ExecutionContext) {
   import Implicits._
+
+  private[this] val logger = rollbar.fingerprint(getClass.getName)
 
   private[this] val context = new GeoApiContext.Builder()
     .connectTimeout(1000, TimeUnit.MILLISECONDS)
@@ -93,7 +95,7 @@ class Google @javax.inject.Inject() (
       .map(tz => Timezones.find(tz.getID))
       .recover {
         case NonFatal(e) =>
-          logger.warn(s"Encountered the following error from the timezone API", e)
+          logger.warn("Encountered the following error from the timezone API", e)
           None
       }
 
@@ -114,7 +116,7 @@ class Google @javax.inject.Inject() (
         sortAddresses(parsed)
       }.recover {
         case NonFatal(e) =>
-          logger.warn(s"Encountered the following error from the geocoding API", e)
+          logger.warn("Encountered the following error from the geocoding API", e)
           Nil
       }
   }
@@ -162,7 +164,7 @@ class Google @javax.inject.Inject() (
         .extractLongName(Google.AddressComponentType.Country)
         .flatMap(Countries.find)
         .map(_.iso31663) orElse {
-          logger.withKeyValue("address",address).info(s"Could not determine country for address or the country code was not valid")
+          logger.withKeyValue("address",address).info("Could not determine country for address or the country code was not valid")
           None
         }
 
