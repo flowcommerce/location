@@ -1,5 +1,6 @@
 package controllers
 
+import akka.actor.ActorSystem
 import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
 import io.flow.location.v0.models.json._
@@ -9,14 +10,16 @@ import play.api.libs.json._
 import play.api.mvc._
 import utils.AddressVerifier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   logger: RollbarLogger,
   helpers: Helpers,
-)(implicit ec: ExecutionContext) extends BaseController {
+  system: ActorSystem,
+) extends BaseController {
+  private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
   def get(
     address: Option[String],
