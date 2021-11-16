@@ -1,5 +1,6 @@
 package controllers
 
+import akka.actor.ActorSystem
 import io.flow.common.v0.models.Address
 import io.flow.common.v0.models.json._
 import io.flow.location.v0.models.json._
@@ -9,14 +10,16 @@ import play.api.libs.json._
 import play.api.mvc._
 import utils.AddressVerifier
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
 @javax.inject.Singleton
 class Addresses @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   logger: RollbarLogger,
   helpers: Helpers,
-)(implicit ec: ExecutionContext) extends BaseController {
+  system: ActorSystem,
+) extends BaseController {
+  private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
   def get(
     address: Option[String],
@@ -47,10 +50,15 @@ class Addresses @javax.inject.Inject() (
           case Left(error) => {
             logger
               .withKeyValue("address", text)
-              .withKeyValue("error_code", error.code)
+              .withKeyValue("error_code", error.code.toString)
               .withKeyValue("error_messages", error.messages)
               .error("Error in address verification")
-            sys.error(s"Error in address verification: $error")
+            UnprocessableEntity(Json.toJson(
+              LocationError(
+                code = LocationErrorCode.AddressRequired,
+                messages = Seq(s"Error in address verification: $error")
+              )
+            ))
           }
 
           case Right(locations) => {
