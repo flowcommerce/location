@@ -21,7 +21,6 @@ resources:
 jvmMemory: 6100
 
 nodeSelector: {} 
-affinity: {}
 tolerations: {} 
 
 ingress:
