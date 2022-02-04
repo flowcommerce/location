@@ -36,13 +36,13 @@ lazy val api = project
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
       "io.flow" %% "lib-play-play28" % "0.7.23",
-      "io.flow" %% "lib-metrics-play28" % "1.0.20",
+      "io.flow" %% "lib-metrics-play28" % "1.0.21",
       "io.flow" %% "lib-reference-scala" % "0.2.98",
-      "io.flow" %% "lib-s3-play28" % "0.3.45",
+      "io.flow" %% "lib-s3-play28" % "0.3.46",
       "com.google.maps" % "google-maps-services" % "2.0.0",
       "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
-      "io.flow" %% "lib-test-utils-play28" % "0.1.65" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.1.86",
+      "io.flow" %% "lib-test-utils-play28" % "0.1.66" % Test,
+      "io.flow" %% "lib-usage-play28" % "0.1.87",
       "io.flow" %% "lib-log" % "0.1.63"
     ),
   )
