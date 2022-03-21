@@ -37,7 +37,7 @@ lazy val api = project
     libraryDependencies ++= Seq(
       "io.flow" %% "lib-play-play28" % "0.7.27",
       "io.flow" %% "lib-metrics-play28" % "1.0.24",
-      "io.flow" %% "lib-reference-scala" % "0.3.0",
+      "io.flow" %% "lib-reference-scala" % "0.3.1",
       "io.flow" %% "lib-s3-play28" % "0.3.48",
       "com.google.maps" % "google-maps-services" % "2.0.0",
       "org.scalacheck" %% "scalacheck" % "1.15.4" % "test",
