@@ -13,7 +13,11 @@ pipeline {
       inheritFrom 'default'
 
       containerTemplates([
+<<<<<<< HEAD
         containerTemplate(name: 'helm', image: "flowcommerce/k8s-build-helm2:0.0.50", command: 'cat', ttyEnabled: true),
+=======
+        containerTemplate(name: 'helm', image: "lachlanevenson/k8s-helm:v2.17.0", command: 'cat', ttyEnabled: true),
+>>>>>>> eacd895b88e8a21bca45826b2ea31af405848f43
         containerTemplate(name: 'docker', image: 'docker:18', resourceRequestCpu: '1', resourceRequestMemory: '2Gi', command: 'cat', ttyEnabled: true)
       ])
     }

@@ -29,5 +29,9 @@ rolloutResource:
 
 canary: 
     # Disable this to follow the default RollingUpdate Strategy
+<<<<<<< HEAD
     enabled: false
     
+=======
+    enabled: false
+>>>>>>> eacd895b88e8a21bca45826b2ea31af405848f43
