@@ -61,26 +61,19 @@ pipeline {
     }
 
     stage ('Display Helm Diff') {
-      when {
-        allOf {
-         changeRequest()
-         changeset "deploy/**" 
-        }
-      }
-            steps {
-              script {
-                container('helm') {
-                  withCredentials([string(credentialsId: "jenkins-hub-api-token", variable: 'GITHUB_TOKEN')]) {
-                  sh ("helm init")
-                  sh ("helm repo add generic-charts-helm https://flow.jfrog.io/artifactory/api/helm/generic-charts-helm")
-                  sh ("helm repo update generic-charts-helm")
-                  helm_diff = sh(returnStdout: true, script: 'helm diff upgrade location  generic-charts-helm/flow-generic --version ^1.0.0 --set deployments.live.version=$(git describe) --values deploy/location/values.yaml -q  --no-color').trim()             
-                  pullRequest.comment('```diff\n'+"${helm_diff}"+'\n```')
-                  }
-                
-                }
-              }  
+        when {
+            allOf {
+            changeRequest()
+            changeset "deploy/**" 
             }
+        }
+        steps {
+            script {
+                container('helm') {
+                    new helmDiff().diff('location')
+                }
+            }  
+        }
     }
 
     stage('Deploy Helm chart') {
