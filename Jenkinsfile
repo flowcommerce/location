@@ -60,20 +60,20 @@ pipeline {
       }
     }
 
-    stage ('Display Helm Diff') {
-        when {
-            allOf {
-            changeRequest()
-            changeset "deploy/**" 
-            }
+    stage('Display Helm Diff') {
+      when {
+        allOf {
+         changeRequest()
+         changeset "deploy/**" 
         }
-        steps {
-            script {
-                container('helm') {
-                    new helmDiff().diff('location')
-                }
-            }  
-        }
+      }
+      steps {
+        script {
+          container('helm') {
+            new helmDiff().diff('location')
+          }
+        }  
+      }
     }
 
     stage('Deploy Helm chart') {
