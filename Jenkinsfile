@@ -63,8 +63,11 @@ pipeline {
     stage('Display Helm Diff') {
       when {
         allOf {
-         changeRequest()
-         changeset "deploy/**" 
+          not { branch 'main' }
+          changeRequest()
+          expression {
+            return changesCheck.hasChangesInDir('deploy')
+          }        
         }
       }
       steps {
@@ -72,7 +75,7 @@ pipeline {
           container('helm') {
             new helmDiff().diff('location')
           }
-        }  
+        }
       }
     }
 
