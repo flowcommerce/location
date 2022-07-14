@@ -87,7 +87,7 @@ pipeline {
           steps {
             script {
               container('helm') {
-                new helmCommonDeploy().deploy('location', 'production', VERSION.printable())
+                new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 600)
               }
             }
           }
