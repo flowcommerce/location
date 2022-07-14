@@ -24,9 +24,19 @@ deployments:
     maxReplicas: 3
     maxUnavailable: 1
 
-rolloutResource:
-    enabled: false
-
-canary: 
-    # Disable this to follow the default RollingUpdate Strategy
-    enabled: false
+rollout:
+  enabled: true
+  migration: true
+  analysis:
+    - name: error-rate
+      successCondition: default(result, 0) <= 0.0
+      provider:
+        datadog:
+          query: |
+            sum:trace.akka_http.request.errors{service:location}.as_count()  /
+            sum:trace.akka_http.request.hits{service:location}.as_count()
+    - name: response-time
+      successCondition: default(result, 0) < 0.005
+      provider:
+        datadog:
+          query: p95:trace.akka_http.request{service:location}
