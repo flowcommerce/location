@@ -35,8 +35,13 @@ rollout:
           query: |
             sum:trace.akka_http.request.errors{service:location}.as_count()  /
             sum:trace.akka_http.request.hits{service:location}.as_count()
-    - name: response-time
-      successCondition: default(result, 0) < 0.005
+    - name: response-time-p50
+      successCondition: default(result, 0) < 0.002
+      provider:
+        datadog:
+          query: p50:trace.akka_http.request{service:location}
+    - name: response-time-p95
+      successCondition: default(result, 0) < 0.1
       provider:
         datadog:
           query: p95:trace.akka_http.request{service:location}
