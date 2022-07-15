@@ -26,7 +26,6 @@ deployments:
 
 rollout:
   enabled: true
-  migration: true
   analysis:
     - name: error-rate
       successCondition: default(result, 0) <= 0.0
