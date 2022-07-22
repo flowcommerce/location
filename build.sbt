@@ -30,20 +30,20 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "0.102.0",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "0.104.0",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play28" % "0.7.33",
-      "io.flow" %% "lib-metrics-play28" % "1.0.31",
-      "io.flow" %% "lib-reference-scala" % "0.3.4",
-      "io.flow" %% "lib-s3-play28" % "0.3.53",
-      "com.google.maps" % "google-maps-services" % "2.0.0",
+      "io.flow" %% "lib-play-play28" % "0.7.35",
+      "io.flow" %% "lib-metrics-play28" % "1.0.32",
+      "io.flow" %% "lib-reference-scala" % "0.3.5",
+      "io.flow" %% "lib-s3-play28" % "0.3.54",
+      "com.google.maps" % "google-maps-services" % "2.1.0",
       "org.scalacheck" %% "scalacheck" % "1.16.0" % "test",
-      "io.flow" %% "lib-test-utils-play28" % "0.1.77" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.1.94",
-      "io.flow" %% "lib-log" % "0.1.70"
+      "io.flow" %% "lib-test-utils-play28" % "0.1.78" % Test,
+      "io.flow" %% "lib-usage-play28" % "0.1.95",
+      "io.flow" %% "lib-log" % "0.1.71"
     ),
   )
 
