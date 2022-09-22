@@ -1,13 +1,10 @@
 package utils
 
-import io.flow.play.util.UrlKey
 import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{AddressVerification, AddressSuggestion}
 import io.flow.reference.Countries
 
 object AddressVerifier {
-
-  private[this] val urlKey = UrlKey(minKeyLength = 1)
 
   /**
     * Given an address and list of suggested matches, transforms into
@@ -84,7 +81,11 @@ object AddressVerifier {
   }
 
   private[utils] def isDifferent(a: Option[String], b: Option[String]): Boolean = {
-    urlKey.format(a.getOrElse("")) != urlKey.format(b.getOrElse(""))
+    formatText(a.getOrElse("")) != formatText(b.getOrElse(""))
+  }
+
+  private[utils] def formatText(text: String): String = {
+    text.toLowerCase.trim.filter(c => "[a-z\\d]".r.matches(c.toString))
   }
 
   def toText(address: Address): Option[String] = {
