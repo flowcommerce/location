@@ -30,5 +30,6 @@ rollout:
       successCondition: default(result, 0) <= 0.0
     p50ResponseTime:
       successCondition: default(result, 0) < 0.002
+      failureLimit: 1
     p95ResponseTime:
       successCondition: default(result, 0) < 0.1
