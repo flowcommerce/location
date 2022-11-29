@@ -1,6 +1,11 @@
 nameOverride: "location"
 fullnameOverride: "location"
 
+service:
+  startupHealthcheckEndpoint: /_internal_/startup
+  livenessHealthcheckEndpoint: /_internal_/live
+  readinessHealthcheckEndpoint: /_internal_/ready
+  
 team: "core"
 
 iamRole: arn:aws:iam::479720515435:role/ecsInstanceRole
