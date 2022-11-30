@@ -40,7 +40,7 @@ lazy val api = project
       "io.flow" %% "lib-reference-scala" % "0.3.9",
       "io.flow" %% "lib-s3-play28" % "0.3.60",
       "com.google.maps" % "google-maps-services" % "2.0.0",
-      "io.flow" %% "lib-healthcheck-play28" % "0.0.1",
+      "io.flow" %% "lib-healthcheck-play28" % "0.0.2",
       "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
       "io.flow" %% "lib-test-utils-play28" % "0.1.82" % Test,
       "io.flow" %% "lib-usage-play28" % "0.2.1",
