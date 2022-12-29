@@ -36,15 +36,15 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play28" % "0.7.54",
-      "io.flow" %% "lib-metrics-play28" % "1.0.45",
-      "io.flow" %% "lib-reference-scala" % "0.3.12",
-      "io.flow" %% "lib-s3-play28" % "0.3.66",
+      "io.flow" %% "lib-play-play28" % "0.7.55",
+      "io.flow" %% "lib-metrics-play28" % "1.0.46",
+      "io.flow" %% "lib-reference-scala" % "0.3.13",
+      "io.flow" %% "lib-s3-play28" % "0.3.67",
       "com.google.maps" % "google-maps-services" % "2.0.0",
       "io.flow" %% "lib-healthcheck-play28" % "0.0.4",
       "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
-      "io.flow" %% "lib-test-utils-play28" % "0.1.90" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.2.7",
+      "io.flow" %% "lib-test-utils-play28" % "0.1.91" % Test,
+      "io.flow" %% "lib-usage-play28" % "0.2.8",
       "io.flow" %% "lib-log" % "0.1.83"
     ),
   )
