@@ -21,6 +21,7 @@ pipeline {
 
   environment {
     ORG      = 'flowcommerce'
+    GOOGLE_API_KEY = credentials('location-google-api-key')
   }
 
   stages {
