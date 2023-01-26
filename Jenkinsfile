@@ -54,11 +54,13 @@ pipeline {
       steps {
         container('docker') {
           script {
-            docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+              docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
                 docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
                   sh 'sbt clean flowLint test doc'
                   junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
                 }
+              }
             }
           }
         }
