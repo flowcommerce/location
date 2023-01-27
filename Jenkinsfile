@@ -45,11 +45,7 @@ pipeline {
     }
 
     stage('SBT Tests On Main Branch') {
-      when {
-        anyOf {
-          branch 'main'
-        }
-      }
+      when { branch 'main' }
       steps {
         container('docker') {
           script {
@@ -67,11 +63,7 @@ pipeline {
     }
 
     stage('SBT Test') {
-      when {
-        anyOf {
-          changeRequest()
-        }
-      }
+      when { changeRequest() }
       steps {
         container('docker') {
           script {
