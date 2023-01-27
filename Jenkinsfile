@@ -52,8 +52,9 @@ pipeline {
         }
       }
       environment {
-        if (env.CHANGE_BRANCH == 'main') { buildResult = 'SUCCESS' }
-        if (env.CHANGE_BRANCH == 'himanshuupadhyay101-patch-1') { buildResult = 'FAILURE' }
+        BRANCH_NAME = "${GIT_BRANCH.split('/').size() > 1 ? GIT_BRANCH.split('/')[1..-1].join('/') : GIT_BRANCH}"
+        if (env.BRANCH_NAME == 'main') { buildResult = 'SUCCESS' }
+        if (env.BRANCH_NAME == 'himanshuupadhyay101-patch-1') { buildResult = 'FAILURE' }
       }
       steps {
         container('docker') {
