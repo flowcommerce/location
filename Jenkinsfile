@@ -44,7 +44,7 @@ pipeline {
       }
     }
 
-    stage('SBT Test') {
+    stage('SBT Tests On Main Branch') {
       when {
         anyOf {
           branch 'main'
