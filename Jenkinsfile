@@ -51,10 +51,13 @@ pipeline {
           changeRequest()
         }
       }
+      environment {
+        if (env.BRANCH_NAME == 'main') { buildResult = 'SUCCESS' }
+      }
       steps {
         container('docker') {
           script {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
+            catchError(buildResult: $buildResult, stageResult: 'FAILURE'){
               docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
                 docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
                   sh 'sbt clean flowLint test doc'
