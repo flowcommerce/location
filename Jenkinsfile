@@ -48,18 +48,12 @@ pipeline {
       when {
         anyOf {
           branch 'main'
-          changeRequest()
         }
-      }
-      environment {
-        BRANCH_NAME = "${GIT_BRANCH.split('/').size() > 1 ? GIT_BRANCH.split('/')[1..-1].join('/') : GIT_BRANCH}"
-        if (env.BRANCH_NAME == 'main') { buildResult = 'SUCCESS' }
-        if (env.BRANCH_NAME == 'himanshuupadhyay101-patch-1') { buildResult = 'FAILURE' }
       }
       steps {
         container('docker') {
           script {
-            catchError(buildResult: $buildResult, stageResult: 'FAILURE'){
+            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
               docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
                 docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
                   sh 'sbt clean flowLint test doc'
@@ -72,6 +66,26 @@ pipeline {
       }
     }
 
+    stage('SBT Test') {
+      when {
+        anyOf {
+          changeRequest()
+        }
+      }
+      steps {
+        container('docker') {
+          script {
+            docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
+              docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
+                sh 'sbt clean flowLint test doc'
+                junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
+              }
+            }
+          }
+        }
+      }
+    }
+ 
     stage('Build and push docker image release') {
       when { branch 'main' }
       steps {
