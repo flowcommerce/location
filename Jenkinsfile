@@ -45,22 +45,15 @@ pipeline {
     }
 
     stage('SBT Test') {
-      when {
-        anyOf {
-          branch 'main'
-          changeRequest()
-        }
-      }
+      when { changeRequest() }
       steps {
         container('docker') {
           script {
-            catchError(buildResult: 'SUCCESS', stageResult: 'FAILURE'){
-              docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
+            docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
                 docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
                   sh 'sbt clean flowLint test doc'
                   junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
                 }
-              }
             }
           }
         }
