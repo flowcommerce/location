@@ -31,21 +31,21 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.3.0",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.7.0",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play28" % "0.7.55",
-      "io.flow" %% "lib-metrics-play28" % "1.0.46",
-      "io.flow" %% "lib-reference-scala" % "0.3.13",
-      "io.flow" %% "lib-s3-play28" % "0.3.67",
+      "io.flow" %% "lib-play-play28" % "0.7.56",
+      "io.flow" %% "lib-metrics-play28" % "1.0.48",
+      "io.flow" %% "lib-reference-scala" % "0.3.15",
+      "io.flow" %% "lib-s3-play28" % "0.3.69",
       "com.google.maps" % "google-maps-services" % "2.0.0",
-      "io.flow" %% "lib-healthcheck-play28" % "0.0.4",
+      "io.flow" %% "lib-healthcheck-play28" % "0.0.5",
       "org.scalacheck" %% "scalacheck" % "1.17.0" % "test",
-      "io.flow" %% "lib-test-utils-play28" % "0.1.91" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.2.8",
-      "io.flow" %% "lib-log" % "0.1.83"
+      "io.flow" %% "lib-test-utils-play28" % "0.1.93" % Test,
+      "io.flow" %% "lib-usage-play28" % "0.2.10",
+      "io.flow" %% "lib-log" % "0.1.87"
     ),
   )
 
@@ -54,8 +54,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     guice,
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.9.3",
-    "com.typesafe.play" %% "play-json" % "2.9.3",
+    "com.typesafe.play" %% "play-json-joda" % "2.9.4",
+    "com.typesafe.play" %% "play-json" % "2.9.4",
   ),
   scalacOptions ++= allScalacOptions,
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
