@@ -101,16 +101,10 @@ pipeline {
               }
             }
             stage('Deploy location') {
-              when { branch 'main' }
-              parallel {
-                
-                stage('deploy location') {
-                  steps {
-                    script {
-                      container('helm') {
-                        new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
-                      }
-                    }
+              steps {
+                script {
+                  container('helm') {
+                    new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
                   }
                 }
               }
