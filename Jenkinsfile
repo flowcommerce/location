@@ -74,7 +74,7 @@ pipeline {
             }
           }
         }
-        stage('Build and deploy merchant-onboarding-api') {
+        stage('Build and deploy location') {
           when { branch 'main' }
           stages {
 
