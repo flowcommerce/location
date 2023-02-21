@@ -13,7 +13,6 @@ pipeline {
       inheritFrom 'generic'
 
       containerTemplates([
-        containerTemplate(name: 'postgres', image: 'flowcommerce/location-postgresql:latest', alwaysPullImage: true, resourceRequestMemory: '1Gi'),
         containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java13', alwaysPullImage: true, resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true)
       ])
     }
@@ -69,14 +68,7 @@ pipeline {
           steps {
             container('play') {
               script {
-                sh '''
-                  echo "$(date) - waiting for database to start"
-                  until pg_isready -h localhost
-                  do
-                    sleep 10
-                  done
-                  sbt clean flowLint test doc
-                '''
+                sh 'sbt clean flowLint test doc'
                 junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
               }
             }
