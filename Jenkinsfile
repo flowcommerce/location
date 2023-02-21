@@ -10,11 +10,11 @@ pipeline {
   agent {
     kubernetes {
       label 'worker-location'
-      inheritFrom 'default'
+      inheritFrom 'generic'
 
       containerTemplates([
-        containerTemplate(name: 'helm', image: "flowcommerce/k8s-build-helm2:0.0.50", command: 'cat', ttyEnabled: true),
-        containerTemplate(name: 'docker', image: 'docker:18', resourceRequestCpu: '1', resourceRequestMemory: '2Gi', command: 'cat', ttyEnabled: true),
+        containerTemplate(name: 'postgres', image: 'flowcommerce/location-postgresql:latest', alwaysPullImage: true, resourceRequestMemory: '1Gi'),
+        containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java13', alwaysPullImage: true, resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true)
       ])
     }
   }
@@ -44,39 +44,6 @@ pipeline {
       }
     }
 
-    stage('SBT Test') {
-      when { changeRequest() }
-      steps {
-        container('docker') {
-          script {
-            docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
-                docker.image('flowdocker/play_builder:latest-java13').inside("--network=host ") {
-                  sh 'sbt clean flowLint test doc'
-                  junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
-                }
-            }
-          }
-        }
-      }
-    }
-
-    stage('Build and push docker image release') {
-      when { branch 'main' }
-      steps {
-        container('docker') {
-          script {
-            semver = VERSION.printable()
-            
-            docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
-              db = docker.build("$ORG/location:$semver", '--network=host -f Dockerfile .')
-              db.push()
-            }
-            
-          }
-        }
-      }
-    }
-
     stage('Display Helm Diff') {
       when {
         allOf {
@@ -96,20 +63,60 @@ pipeline {
       }
     }
 
-    stage('Deploy Helm chart') {
-      when { branch 'main' }
+    stage("All in parallel") {
       parallel {
-        
-        stage('deploy location') {
+        stage('SBT Test') {
           steps {
-            script {
-              container('helm') {
-                new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
+            container('play') {
+              script {
+                sh '''
+                  echo "$(date) - waiting for database to start"
+                  until pg_isready -h localhost
+                  do
+                    sleep 10
+                  done
+                  sbt clean flowLint test doc
+                '''
+                junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
               }
             }
           }
         }
-        
+        stage('Build and deploy merchant-onboarding-api') {
+          when { branch 'main' }
+          stages {
+
+            stage('Build and push docker image release') {
+              steps {
+                container('docker') {
+                  script {
+                    semver = VERSION.printable()
+                    
+                    docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
+                      db = docker.build("$ORG/location:$semver", '--network=host -f Dockerfile .')
+                      db.push()
+                    }
+                  }
+                }
+              }
+            }
+            stage('Deploy location') {
+              when { branch 'main' }
+              parallel {
+                
+                stage('deploy location') {
+                  steps {
+                    script {
+                      container('helm') {
+                        new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
       }
     }
   }
