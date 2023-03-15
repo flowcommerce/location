@@ -68,8 +68,12 @@ pipeline {
           steps {
             container('play') {
               script {
-                sh 'sbt clean flowLint test doc'
-                junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
+                try {
+                  sh 'sbt clean flowLint test doc'
+                }
+                finally {
+                  junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
+                }
               }
             }
           }
