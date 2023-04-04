@@ -16,10 +16,9 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses without an IP returns a proper message" in {
-
-    expectErrors(
+    expectUnprocessableEntity(
       client.addresses.get(ip = None)
-    ).status mustBe 422
+    ).status mustBe UnprocessableEntityStatusCode
   }
 
   "GET /addresses?ip=23.16.0.0" in {

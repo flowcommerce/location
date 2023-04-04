@@ -10,6 +10,8 @@ import scala.util.{Failure, Success, Try}
 trait TestHelpers {
   self: FlowPlaySpec =>
 
+  val UnprocessableEntityStatusCode = 422
+
   def expectErrors[T](code: LocationErrorCode)(
     f: => Future[T]
   ): LocationError = {
@@ -31,7 +33,7 @@ trait TestHelpers {
     }
   }
 
-  def expectErrors[T](
+  def expectUnprocessableEntity[T](
     f: => Future[T]
   ): UnitResponse = {
     Try(await(f)) match {
@@ -40,8 +42,8 @@ trait TestHelpers {
       }
       case Failure(ex) => ex match {
         case e: UnitResponse => {
-          if (e.status != 422) {
-            sys.error(s"Expected 422 status code but got[${e.status}]")
+          if (e.status != UnprocessableEntityStatusCode) {
+            sys.error(s"Expected ${UnprocessableEntityStatusCode} status code but got[${e.status}]")
           }
           e
         }
