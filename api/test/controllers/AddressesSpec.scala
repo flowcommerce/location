@@ -16,6 +16,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
   private[this] lazy val client = new Client(wsClient, s"http://localhost:$port")
 
   "GET /addresses without an IP returns a proper message" in {
+
     expectErrors(
       client.addresses.get(ip = None)
     ).status mustBe 422

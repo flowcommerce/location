@@ -39,11 +39,11 @@ trait TestHelpers {
         sys.error("Expected function to fail but it succeeded with: " + response)
       }
       case Failure(ex) => ex match {
-        case e: LocationErrorResponse => {
-          if (e.locationError.code != code) {
-            sys.error(s"Expected location error code[$code] but got[${e.locationError.code}]")
+        case e: UnitResponse => {
+          if (e.status != 422) {
+            sys.error(s"Expected 422 status code but got[${e.status}]")
           }
-          e.locationError
+          e
         }
         case e => {
           sys.error(s"Expected an exception of type[LocationError] but got[$e]")
