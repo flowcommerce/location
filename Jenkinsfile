@@ -9,8 +9,7 @@ pipeline {
 
   agent {
     kubernetes {
-      label 'worker-location'
-      inheritFrom 'generic'
+      inheritFrom 'kaniko-slim'
 
       containerTemplates([
         containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java13', alwaysPullImage: true, resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true)
@@ -84,14 +83,15 @@ pipeline {
 
             stage('Build and push docker image release') {
               steps {
-                container('docker') {
+                container('kaniko') {
                   script {
                     semver = VERSION.printable()
                     
-                    docker.withRegistry('https://index.docker.io/v1/', 'jenkins-dockerhub') {
-                      db = docker.build("$ORG/location:$semver", '--network=host -f Dockerfile .')
-                      db.push()
-                    }
+                    sh """
+                      /kaniko/executor -f `pwd`/Dockerfile -c `pwd` \
+                      --snapshot-mode=redo --use-new-run  \
+                      --destination ${env.ORG}/location:$semver
+                    """
                   }
                 }
               }
