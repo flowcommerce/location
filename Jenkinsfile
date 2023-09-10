@@ -12,7 +12,7 @@ pipeline {
       inheritFrom 'kaniko-slim'
 
       containerTemplates([
-        containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java13', alwaysPullImage: true, resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true)
+        containerTemplate(name: 'play', image: 'flowdocker/play_builder:latest-java17', alwaysPullImage: true, resourceRequestMemory: '1Gi', command: 'cat', ttyEnabled: true)
       ])
     }
   }
