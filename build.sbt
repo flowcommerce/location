@@ -4,8 +4,6 @@ name := "location"
 
 ThisBuild / scalaVersion := "2.13.6"
 
-ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
-
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",
