@@ -3,7 +3,7 @@ import play.sbt.PlayScala._
 name := "location"
 
 ThisBuild / scalaVersion := "2.13.6"
-
+ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",
@@ -33,6 +33,10 @@ lazy val api = project
   .settings(
     javaAgents += "com.datadoghq" % "dd-java-agent" % "1.20.0",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
+    Test / javaOptions ++= Seq(
+      "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
+      "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
+    ),
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
@@ -52,10 +56,16 @@ lazy val api = project
 lazy val commonSettings: Seq[Setting[_]] = Seq(
   name ~= ("location-" + _),
   libraryDependencies ++= Seq(
-    guice,
+    "com.google.inject" % "guice" % "5.1.0",
+    "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
+    "org.projectlombok" % "lombok" % "1.18.28" % "provided",
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.9.4",
     "com.typesafe.play" %% "play-json" % "2.9.4",
+  ),
+  Test / javaOptions ++= Seq(
+    "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
+    "--add-opens=java.base/sun.security.ssl=ALL-UNNAMED"
   ),
   scalacOptions ++= allScalacOptions,
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
