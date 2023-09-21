@@ -60,8 +60,8 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
     "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
     "org.projectlombok" % "lombok" % "1.18.28" % "provided",
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.10.1",
-    "com.typesafe.play" %% "play-json" % "2.10.1",
+    "com.typesafe.play" %% "play-json-joda" % "2.9.4",
+    "com.typesafe.play" %% "play-json" % "2.9.4",
   ),
   Test / javaOptions ++= Seq(
     "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
