@@ -31,7 +31,7 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.21.0",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.20.1",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
@@ -58,7 +58,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     "com.google.inject" % "guice" % "5.1.0",
     "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
-    "org.projectlombok" % "lombok" % "1.18.30" % "provided",
+    "org.projectlombok" % "lombok" % "1.18.28" % "provided",
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.9.4",
     "com.typesafe.play" %% "play-json" % "2.9.4",
