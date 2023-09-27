@@ -27,7 +27,6 @@ lazy val api = project
   .in(file("api"))
   .dependsOn(generated)
   .enablePlugins(PlayScala)
-  .enablePlugins(NewRelic)
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
