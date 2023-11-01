@@ -4,7 +4,7 @@ import io.flow.play.util.Config
 
 @javax.inject.Singleton
 class EnvironmentVariables @javax.inject.Inject() (
-  config: Config,
+  config: Config
 ) {
 
   val googleApiKey: String = config.requiredString("google.api.key")

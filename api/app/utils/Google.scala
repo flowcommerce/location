@@ -49,7 +49,10 @@ object Implicits {
     }
   }
 
-  private def find(components: Seq[AddressComponent], types: Seq[Google.AddressComponentType]): Seq[AddressComponent] = {
+  private def find(
+    components: Seq[AddressComponent],
+    types: Seq[Google.AddressComponentType]
+  ): Seq[AddressComponent] = {
     components.filter { c =>
       c.types.map(t => Google.AddressComponentType(t.toString)).exists(types.contains)
     }
@@ -70,8 +73,8 @@ object Implicits {
 
 }
 
-/**
-  * Mostly copied from: https://github.com/flowcommerce/scrapbook/blob/main/lib/src/main/scala/geo/AddressExploration.scala
+/** Mostly copied from:
+  * https://github.com/flowcommerce/scrapbook/blob/main/lib/src/main/scala/geo/AddressExploration.scala
   */
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
@@ -93,10 +96,9 @@ class Google @javax.inject.Inject() (
       .getTimeZone(context, new LatLng(lat, lng))
       .runAsync()
       .map(tz => Timezones.find(tz.getID))
-      .recover {
-        case NonFatal(e) =>
-          logger.warn("Encountered the following error from the timezone API", e)
-          None
+      .recover { case NonFatal(e) =>
+        logger.warn("Encountered the following error from the timezone API", e)
+        None
       }
 
   def getLocationsByAddress(
@@ -114,18 +116,20 @@ class Google @javax.inject.Inject() (
       .map { addresses =>
         val parsed = parseResults(address = address, results = addresses.toSeq)
         sortAddresses(parsed)
-      }.recover {
-        case NonFatal(e) =>
-          logger.warn("Encountered the following error from the geocoding API", e)
-          Nil
+      }
+      .recover { case NonFatal(e) =>
+        logger.warn("Encountered the following error from the geocoding API", e)
+        Nil
       }
   }
 
-  /**
-   * Google Geocoding Component Filtering
-   * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
-   */
-  private[utils] def getComponentFilters(country: Option[String], postalPrefix: Option[String]): Seq[ComponentFilter] = {
+  /** Google Geocoding Component Filtering
+    * https://developers.google.com/maps/documentation/javascript/geocoding#ComponentFiltering
+    */
+  private[utils] def getComponentFilters(
+    country: Option[String],
+    postalPrefix: Option[String]
+  ): Seq[ComponentFilter] = {
     val countryCodeFilter: Option[ComponentFilter] = country.flatMap { c =>
       Countries.find(c).map(_.iso31662).map(ComponentFilter.country)
     }
@@ -134,15 +138,13 @@ class Google @javax.inject.Inject() (
     Seq(countryCodeFilter, postalCodePrefixFilter).flatten
   }
 
-  /**
-    * Ensures addresses w/ countries are defined earlier in list
+  /** Ensures addresses w/ countries are defined earlier in list
     */
   private[this] def sortAddresses(addresses: Seq[Address]): Seq[Address] = {
     sortByPostalCode(addresses.filter(_.country.isDefined)) ++ sortByPostalCode(addresses.filter(_.country.isEmpty))
   }
 
-  /**
-    * Prefer longer postal code as that indicates more precision
+  /** Prefer longer postal code as that indicates more precision
     */
   private[this] def sortByPostalCode(addresses: Seq[Address]): Seq[Address] = {
     addresses.sortBy { a => a.postal.map(_.length).getOrElse(0) }.reverse
@@ -155,7 +157,7 @@ class Google @javax.inject.Inject() (
         Seq(
           Google.AddressComponentType.StreetAddress,
           Google.AddressComponentType.Route
-        ):_*
+        ): _*
       )
 
       val streets = Some(Seq(streetNumber, streetAddress).flatten).filter(_.nonEmpty)
@@ -164,9 +166,11 @@ class Google @javax.inject.Inject() (
         .extractLongName(Google.AddressComponentType.Country)
         .flatMap(Countries.find)
         .map(_.iso31663) orElse {
-          logger.withKeyValue("address",address).info("Could not determine country for address or the country code was not valid")
-          None
-        }
+        logger
+          .withKeyValue("address", address)
+          .info("Could not determine country for address or the country code was not valid")
+        None
+      }
 
       // best effort to find city/town name
       val city = Seq(

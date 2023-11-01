@@ -12,10 +12,10 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
   def indexRecordFactory(
     rangeStart: BigInt = Long.MinValue,
     rangeEnd: BigInt = Long.MaxValue,
-    country   : String = "",
+    country: String = "",
     region: String = "",
     city: String = "",
-    latitude  : Double = 0.0,
+    latitude: Double = 0.0,
     longitude: Double = 0.0,
     postalCode: String = "",
     fieldDelimiter: Char = ';'
@@ -30,15 +30,15 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
 
   "validateIp" should {
     "ignore empty IP" in {
-      DigitalElement.validateIp(None) should be (Right(None))
-      DigitalElement.validateIp(Some("        ")) should be (Right(None))
-      DigitalElement.validateIp(Some("  192.168.1.1  ")) should be (
+      DigitalElement.validateIp(None) should be(Right(None))
+      DigitalElement.validateIp(Some("        ")) should be(Right(None))
+      DigitalElement.validateIp(Some("  192.168.1.1  ")) should be(
         Right(
           Some(
-            ValidatedIpAddress("192.168.1.1", BigInt("3232235777")
+            ValidatedIpAddress("192.168.1.1", BigInt("3232235777"))
           )
         )
-      ))
+      )
     }
   }
 
@@ -63,7 +63,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
 
     "fail" in {
       def test(ip: String) = {
-        DigitalElement.ipToDecimal(ip) shouldBe(
+        DigitalElement.ipToDecimal(ip) shouldBe (
           Left(LocationError(LocationErrorCode.IpInvalid, Seq(s"Unable to parse ip address $ip")))
         )
       }
@@ -131,7 +131,8 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
         rangeStart = 1153680280,
         rangeEnd = 1153680287,
         fieldDelimiter = ';',
-        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes())
+        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes()
+      )
 
       val expected = Address(
         city = Some("hoboken"),

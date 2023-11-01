@@ -19,17 +19,18 @@ trait TestHelpers {
       case Success(response) => {
         sys.error("Expected function to fail but it succeeded with: " + response)
       }
-      case Failure(ex) =>  ex match {
-        case e: LocationErrorResponse => {
-          if (e.locationError.code != code) {
-            sys.error(s"Expected location error code[$code] but got[${e.locationError.code}]")
+      case Failure(ex) =>
+        ex match {
+          case e: LocationErrorResponse => {
+            if (e.locationError.code != code) {
+              sys.error(s"Expected location error code[$code] but got[${e.locationError.code}]")
+            }
+            e.locationError
           }
-          e.locationError
+          case e => {
+            sys.error(s"Expected an exception of type[LocationError] but got[$e]")
+          }
         }
-        case e => {
-          sys.error(s"Expected an exception of type[LocationError] but got[$e]")
-        }
-      }
     }
   }
 
@@ -40,17 +41,18 @@ trait TestHelpers {
       case Success(response) => {
         sys.error("Expected function to fail but it succeeded with: " + response)
       }
-      case Failure(ex) => ex match {
-        case e: UnitResponse => {
-          if (e.status != UnprocessableEntityStatusCode) {
-            sys.error(s"Expected ${UnprocessableEntityStatusCode} status code but got[${e.status}]")
+      case Failure(ex) =>
+        ex match {
+          case e: UnitResponse => {
+            if (e.status != UnprocessableEntityStatusCode) {
+              sys.error(s"Expected ${UnprocessableEntityStatusCode} status code but got[${e.status}]")
+            }
+            e
           }
-          e
+          case e => {
+            sys.error(s"Expected an exception of type[LocationError] but got[$e]")
+          }
         }
-        case e => {
-          sys.error(s"Expected an exception of type[LocationError] but got[$e]")
-        }
-      }
     }
   }
 }

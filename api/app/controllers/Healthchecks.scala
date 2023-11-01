@@ -11,7 +11,7 @@ class Healthchecks @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   environmentVariables: utils.EnvironmentVariables,
   addresses: Addresses,
-  system: ActorSystem,
+  system: ActorSystem
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 

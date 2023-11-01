@@ -27,13 +27,13 @@ class CountryDefaultsSpec extends FlowPlaySpec with GuiceOneServerPerSuite with 
     defaults.find(_.country == "CAN").get must equal(can)
     defaults.find(_.country == "FRA").get must equal(fra)
   }
-  
+
   "GET /geolocation/defaults?country=USA" in {
     await(client.countryDefaults.get(country = Some("USA"))) must equal(Seq(usa))
   }
-  
+
   "GET /geolocation/defaults?ip=23.16.0.0" in {
     await(client.countryDefaults.get(ip = Some("23.16.0.0"))) must equal(Seq(can))
   }
-  
+
 }
