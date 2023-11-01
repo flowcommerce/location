@@ -27,16 +27,20 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
+    Json.toJson(locations).validate[Seq[Address]] mustBe a[JsSuccess[_]]
   }
 
   "GET /addresses?address=190 Japan&country_code=Japan&postal_code_prefix=190" in {
     val locations = await(
-      client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}"), country = Some(Countries.Jpn.name), postalPrefix = Some("190"))
+      client.addresses.get(
+        address = Some(s"190 ${Countries.Jpn.name}"),
+        country = Some(Countries.Jpn.name),
+        postalPrefix = Some("190")
+      )
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
+    Json.toJson(locations).validate[Seq[Address]] mustBe a[JsSuccess[_]]
   }
 
   "GET /addresses?address=190 Japan" in {
@@ -45,7 +49,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
-    Json.toJson(locations).validate[Seq[Address]] mustBe a [JsSuccess[_]]
+    Json.toJson(locations).validate[Seq[Address]] mustBe a[JsSuccess[_]]
   }
 
   "POST /addresses/verifications" in {

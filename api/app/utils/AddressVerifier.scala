@@ -6,9 +6,7 @@ import io.flow.reference.Countries
 
 object AddressVerifier {
 
-  /**
-    * Given an address and list of suggested matches, transforms into
-    * an AddressVerification object
+  /** Given an address and list of suggested matches, transforms into an AddressVerification object
     */
   def apply(address: Address, matched: Seq[Address]): AddressVerification = {
     val isValid = matched.toList match {
@@ -37,8 +35,7 @@ object AddressVerifier {
     )
   }
 
-  /**
-    * Our clients list streets as '123 main st' - annoying to have google return as ['123', 'main st']
+  /** Our clients list streets as '123 main st' - annoying to have google return as ['123', 'main st']
     */
   private[utils] def collapseStreets(primary: Address, addresses: Seq[Address]): Seq[Address] = {
     primary.streets.getOrElse(Nil).headOption.map { v => v.trim.split("\\s+").head } match {
@@ -106,5 +103,5 @@ object AddressVerifier {
       case v => Some(v)
     }
   }
-  
+
 }

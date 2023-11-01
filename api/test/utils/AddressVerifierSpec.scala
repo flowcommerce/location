@@ -76,7 +76,7 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
     val variant = yongeStreet.copy(
       streets = Some(Seq("123", "Yonge Street"))
     )
-    
+
     AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(yongeStreet))
   }
 
@@ -84,7 +84,7 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
     val variant = yongeStreet.copy(
       streets = Some(Seq("931", "Yonge Street"))
     )
-    
+
     AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(variant))
   }
 

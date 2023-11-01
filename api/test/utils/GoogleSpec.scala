@@ -26,7 +26,7 @@ class GoogleSpec extends FlowPlaySpec {
     postalCompFilter.component mustBe "postal_code_prefix"
     postalCompFilter.value mustBe "190"
 
-    val complexCompFilter = google.getComponentFilters(Some(Countries.Jpn.iso31662),Some("190"))
+    val complexCompFilter = google.getComponentFilters(Some(Countries.Jpn.iso31662), Some("190"))
     val firstCompFilter = complexCompFilter.head
     val secondCompFilter = complexCompFilter.reverse.head
     firstCompFilter.component mustBe "country"

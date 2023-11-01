@@ -17,7 +17,7 @@ class Addresses @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   logger: RollbarLogger,
   helpers: Helpers,
-  system: ActorSystem,
+  system: ActorSystem
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
@@ -37,12 +37,16 @@ class Addresses @javax.inject.Inject() (
     val address = request.body.as[Address]
     AddressVerifier.toText(address) match {
       case None => {
-        Future.successful(UnprocessableEntity(Json.toJson(
-          LocationError(
-            code = LocationErrorCode.AddressRequired,
-            messages = Seq("Address to verify cannot be empty")
+        Future.successful(
+          UnprocessableEntity(
+            Json.toJson(
+              LocationError(
+                code = LocationErrorCode.AddressRequired,
+                messages = Seq("Address to verify cannot be empty")
+              )
+            )
           )
-        )))
+        )
       }
 
       case Some(text) => {
@@ -53,12 +57,14 @@ class Addresses @javax.inject.Inject() (
               .withKeyValue("error_code", error.code.toString)
               .withKeyValue("error_messages", error.messages)
               .error("Error in address verification")
-            UnprocessableEntity(Json.toJson(
-              LocationError(
-                code = LocationErrorCode.AddressRequired,
-                messages = Seq(s"Error in address verification: $error")
+            UnprocessableEntity(
+              Json.toJson(
+                LocationError(
+                  code = LocationErrorCode.AddressRequired,
+                  messages = Seq(s"Error in address verification: $error")
+                )
               )
-            ))
+            )
           }
 
           case Right(locations) => {

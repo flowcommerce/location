@@ -68,7 +68,7 @@ pipeline {
             container('play') {
               script {
                 try {
-                  sh 'sbt clean flowLint test doc'
+                  sh 'sbt clean flowLint test scalafmtSbtCheck scalafmtCheck doc'
                 }
                 finally {
                   junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'

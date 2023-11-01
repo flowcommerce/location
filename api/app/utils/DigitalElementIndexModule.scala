@@ -28,23 +28,24 @@ class DigitalElementIndexModule extends AbstractModule {
         val s3: AmazonS3 = AmazonS3ClientBuilder.standard().build()
         s3.getObject(bucket, key).getObjectContent()
       }
-      case _ => throw new IllegalArgumentException("Invalid digitalElementFileUri.  Must use either s3:// or file:// protocol")
+      case _ =>
+        throw new IllegalArgumentException("Invalid digitalElementFileUri.  Must use either s3:// or file:// protocol")
     }
-    logger.
-      fingerprint(getClass.getName).
-      withKeyValue("uri", environmentVariables.digitalElementFileUri).
-      info("Building index")
+    logger
+      .fingerprint(getClass.getName)
+      .withKeyValue("uri", environmentVariables.digitalElementFileUri)
+      .info("Building index")
     val start = System.currentTimeMillis()
     val index = DigitalElement.buildIndex(is, ';', '\n')
     is.close()
 
     val elapsedTime = (System.currentTimeMillis() - start) / 1000
-    logger.
-      fingerprint(getClass.getName).
-      withKeyValue("uri", environmentVariables.digitalElementFileUri).
-      withKeyValue("size",index.size).
-      withKeyValue("elapsed_seconds", elapsedTime).
-      info("Indexed Records")
+    logger
+      .fingerprint(getClass.getName)
+      .withKeyValue("uri", environmentVariables.digitalElementFileUri)
+      .withKeyValue("size", index.size)
+      .withKeyValue("elapsed_seconds", elapsedTime)
+      .info("Indexed Records")
     index
   }
 

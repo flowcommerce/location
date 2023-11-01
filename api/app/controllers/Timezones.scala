@@ -15,7 +15,7 @@ class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
   helpers: Helpers,
-  system: ActorSystem,
+  system: ActorSystem
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
@@ -30,14 +30,16 @@ class Timezones @javax.inject.Inject() (
         case Right(valid) =>
           digitalElementIndex.lookup(valid).flatMap(_.timezone) match {
             case None => {
-              UnprocessableEntity(Json.toJson(
-                LocationError(
-                  code = LocationErrorCode.TimezoneUnavailable,
-                  messages = Seq(
-                    s"Timezone information not available for ip '${ip.get.trim}'"
+              UnprocessableEntity(
+                Json.toJson(
+                  LocationError(
+                    code = LocationErrorCode.TimezoneUnavailable,
+                    messages = Seq(
+                      s"Timezone information not available for ip '${ip.get.trim}'"
+                    )
                   )
                 )
-              ))
+              )
             }
 
             case Some(tz) => {

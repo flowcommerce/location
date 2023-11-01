@@ -17,38 +17,47 @@ class Helpers @javax.inject.Inject() (
   def getTimezones(
     address: Option[String] = None,
     ip: Option[String] = None
-  )(
-    implicit ec: ExecutionContext
+  )(implicit
+    ec: ExecutionContext
   ): Future[Either[Seq[String], Seq[Timezone]]] = {
     getLocations(address = address, ip = ip).flatMap {
       case Left(_) => Future.successful(Left(Seq("Must specify either 'address' or 'ip'")))
       case Right(addresses) => {
         val eithersFuture = Future.sequence(addresses.map { a =>
           (a.latitude, a.longitude) match {
-            case (Some(lat), Some(lng)) => google.getTimezone(lat.toDouble, lng.toDouble).map {
-              case None => Left("Unable to determine timezone based on address/ip")
-              case Some(tz) => Right(tz)
-            }
-            case _ => Future.successful(Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup"))
+            case (Some(lat), Some(lng)) =>
+              google.getTimezone(lat.toDouble, lng.toDouble).map {
+                case None => Left("Unable to determine timezone based on address/ip")
+                case Some(tz) => Right(tz)
+              }
+            case _ =>
+              Future.successful(
+                Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup")
+              )
           }
         })
 
-        eithersFuture.map(eithers => eithers.collect { case Left(e) => e } match {
-          case Nil => Right(eithers.collect { case Right(timezone) => timezone }) // if there are no errors, then get all the timezones
-          case errors => Left(errors)
-        })
+        eithersFuture.map(eithers =>
+          eithers.collect { case Left(e) => e } match {
+            case Nil =>
+              Right(eithers.collect { case Right(timezone) =>
+                timezone
+              }) // if there are no errors, then get all the timezones
+            case errors => Left(errors)
+          }
+        )
       }
     }
   }
-  
+
   def getLocations(
     country: Option[String] = None,
     address: Option[String] = None,
     ip: Option[String] = None,
     countryParam: Option[String] = None,
     postalPrefix: Option[String] = None
-  )(
-    implicit ec: ExecutionContext
+  )(implicit
+    ec: ExecutionContext
   ): Future[Either[LocationError, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
@@ -65,19 +74,23 @@ class Helpers @javax.inject.Inject() (
           case None => google.getLocationsByAddress(a, countryParam, postalPrefix).map(Right.apply)
         }
       }
-          
-      case (_, _, Some(i)) => Future.successful {
-        DigitalElement.ipToDecimal(i) map { ip =>
-          digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
-        }
-      }
 
-      case _ => Future.successful(Left(
-        LocationError(
-          code = LocationErrorCode.IpRequired,
-          messages = Seq("Must specify either 'address' or 'ip'")
+      case (_, _, Some(i)) =>
+        Future.successful {
+          DigitalElement.ipToDecimal(i) map { ip =>
+            digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
+          }
+        }
+
+      case _ =>
+        Future.successful(
+          Left(
+            LocationError(
+              code = LocationErrorCode.IpRequired,
+              messages = Seq("Must specify either 'address' or 'ip'")
+            )
+          )
         )
-      ))
     }
   }
 
@@ -88,12 +101,13 @@ class Helpers @javax.inject.Inject() (
   def validateRequiredIp(ip: Option[String]): Either[LocationError, DigitalElement.ValidatedIpAddress] = {
     DigitalElement.validateIp(ip) match {
       case Left(error) => Left(error)
-      case Right(None) => Left(
-        LocationError(
-          code = LocationErrorCode.IpRequired,
-          messages = Seq("Must specify 'ip' parameter")
+      case Right(None) =>
+        Left(
+          LocationError(
+            code = LocationErrorCode.IpRequired,
+            messages = Seq("Must specify 'ip' parameter")
+          )
         )
-      )
       case Right(Some(v)) => Right(v)
     }
   }
