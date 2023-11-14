@@ -15,12 +15,12 @@ class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
   helpers: Helpers,
-  system: ActorSystem
+  system: ActorSystem,
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
   def get(
-    ip: Option[String]
+    ip: Option[String],
   ) = Action.async { _ =>
     Future {
       helpers.validateRequiredIp(ip) match {
@@ -35,10 +35,10 @@ class Timezones @javax.inject.Inject() (
                   LocationError(
                     code = LocationErrorCode.TimezoneUnavailable,
                     messages = Seq(
-                      s"Timezone information not available for ip '${ip.get.trim}'"
-                    )
-                  )
-                )
+                      s"Timezone information not available for ip '${ip.get.trim}'",
+                    ),
+                  ),
+                ),
               )
             }
 

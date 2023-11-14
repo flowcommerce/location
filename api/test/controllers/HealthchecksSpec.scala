@@ -13,9 +13,9 @@ class HealthchecksSpec extends FlowPlaySpec with FutureAwaits with DefaultAwaitT
 
   "GET /_internal_/healthcheck" in {
     await(
-      client.healthchecks.getHealthcheck()
+      client.healthchecks.getHealthcheck(),
     ) must equal(
-      Healthcheck("healthy")
+      Healthcheck("healthy"),
     )
   }
 

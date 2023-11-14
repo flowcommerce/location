@@ -12,14 +12,14 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
     city = Some("Toronto"),
     province = Some("Ontario"),
     postal = Some("M5C 1W4"),
-    country = Some("CAN")
+    country = Some("CAN"),
   )
 
   val ukGardens = Address(
     streets = Some(Seq("76 Belsize Park Gardens")),
     city = Some("London"),
     postal = Some("NW3 4NG"),
-    country = Some("UK")
+    country = Some("UK"),
   )
 
   "toText" in {
@@ -74,7 +74,7 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   "collapseStreets will collapse leading prefix from google result" in {
     val variant = yongeStreet.copy(
-      streets = Some(Seq("123", "Yonge Street"))
+      streets = Some(Seq("123", "Yonge Street")),
     )
 
     AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(yongeStreet))
@@ -82,7 +82,7 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
 
   "collapseStreets will not merge streets if leading prefix is different" in {
     val variant = yongeStreet.copy(
-      streets = Some(Seq("931", "Yonge Street"))
+      streets = Some(Seq("931", "Yonge Street")),
     )
 
     AddressVerifier.collapseStreets(yongeStreet, Seq(variant)) must equal(Seq(variant))
@@ -93,8 +93,8 @@ class AddressVerifierSpec extends PlaySpec with GuiceOneAppPerSuite {
       AddressVerification(
         address = yongeStreet,
         valid = false,
-        suggestions = Nil
-      )
+        suggestions = Nil,
+      ),
     )
 
     AddressVerifier(yongeStreet, Seq(ukGardens)).valid must equal(false)

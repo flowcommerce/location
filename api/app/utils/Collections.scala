@@ -19,13 +19,13 @@ object Collections {
     *   The element if found, None otherwise
     */
   def searchWithBoundary[A, B](elems: IndexedSeq[A], boundary: B, candidate: Option[A] = None)(implicit
-    compare: (A, B) => Boolean
+    compare: (A, B) => Boolean,
   ): Option[A] =
     searchWithBoundaryRec(elems.view, boundary, candidate)(compare)
 
   @tailrec
   private def searchWithBoundaryRec[A, B](elems: IndexedSeqView[A], boundary: B, candidate: Option[A])(implicit
-    compare: (A, B) => Boolean
+    compare: (A, B) => Boolean,
   ): Option[A] =
     if (elems.isEmpty)
       candidate

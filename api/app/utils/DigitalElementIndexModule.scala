@@ -20,7 +20,7 @@ class DigitalElementIndexModule extends AbstractModule {
   @Singleton
   def getIndex(
     @javax.inject.Inject() environmentVariables: EnvironmentVariables,
-    @javax.inject.Inject() logger: RollbarLogger
+    @javax.inject.Inject() logger: RollbarLogger,
   ): DigitalElementIndex = {
     val is: InputStream = environmentVariables.digitalElementFileUri match {
       case fileUri(path) => new BufferedInputStream(Files.newInputStream(Paths.get(path)))

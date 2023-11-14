@@ -17,7 +17,7 @@ class Addresses @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   logger: RollbarLogger,
   helpers: Helpers,
-  system: ActorSystem
+  system: ActorSystem,
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
 
@@ -25,7 +25,7 @@ class Addresses @javax.inject.Inject() (
     address: Option[String],
     ip: Option[String],
     country: Option[String],
-    postalPrefix: Option[String]
+    postalPrefix: Option[String],
   ) = Action.async { _ =>
     helpers.getLocations(address = address, ip = ip, countryParam = country, postalPrefix = postalPrefix).map {
       case Left(error) => UnprocessableEntity(Json.toJson(error))
@@ -42,10 +42,10 @@ class Addresses @javax.inject.Inject() (
             Json.toJson(
               LocationError(
                 code = LocationErrorCode.AddressRequired,
-                messages = Seq("Address to verify cannot be empty")
-              )
-            )
-          )
+                messages = Seq("Address to verify cannot be empty"),
+              ),
+            ),
+          ),
         )
       }
 
@@ -61,9 +61,9 @@ class Addresses @javax.inject.Inject() (
               Json.toJson(
                 LocationError(
                   code = LocationErrorCode.AddressRequired,
-                  messages = Seq(s"Error in address verification: $error")
-                )
-              )
+                  messages = Seq(s"Error in address verification: $error"),
+                ),
+              ),
             )
           }
 

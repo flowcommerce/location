@@ -14,7 +14,7 @@ import scala.concurrent.Future
 class CountryDefaults @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
   helpers: Helpers,
-  system: ActorSystem
+  system: ActorSystem,
 ) extends BaseController {
   private[this] implicit val ec = system.dispatchers.lookup("controller-context")
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
@@ -22,7 +22,7 @@ class CountryDefaults @javax.inject.Inject() (
 
   def get(
     country: Option[String],
-    ip: Option[String]
+    ip: Option[String],
   ) = Action.async { _ =>
     helpers
       .getLocations(country = country, ip = ip)
@@ -35,14 +35,14 @@ class CountryDefaults @javax.inject.Inject() (
           Json.toJson(
             countries.map { c =>
               countryDefaults(c)
-            }
-          )
+            },
+          ),
         )
       }
   }
 
   def getByCountry(
-    country: String
+    country: String,
   ) = Action.async { _ =>
     Future.successful(
       Countries.find(country) match {
@@ -50,14 +50,14 @@ class CountryDefaults @javax.inject.Inject() (
         case Some(c) => {
           Ok(Json.toJson(countryDefaults(c)))
         }
-      }
+      },
     )
   }
 
   private[this] def countryDefaults(c: Country) = models.CountryDefaults(
     country = c.iso31663,
     currency = c.defaultCurrency.getOrElse(DefaultCurrency),
-    language = c.languages.headOption.getOrElse(DefaultLanguage)
+    language = c.languages.headOption.getOrElse(DefaultLanguage),
   )
 
 }

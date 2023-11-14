@@ -18,14 +18,14 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
     latitude: Double = 0.0,
     longitude: Double = 0.0,
     postalCode: String = "",
-    fieldDelimiter: Char = ';'
+    fieldDelimiter: Char = ';',
   ) = DigitalElementIndexRecord(
     rangeStart = rangeStart,
     rangeEnd = rangeEnd,
     fieldDelimiter = fieldDelimiter,
     bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
       .mkString(fieldDelimiter.toString)
-      .getBytes()
+      .getBytes(),
   )
 
   "validateIp" should {
@@ -35,9 +35,9 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       DigitalElement.validateIp(Some("  192.168.1.1  ")) should be(
         Right(
           Some(
-            ValidatedIpAddress("192.168.1.1", BigInt("3232235777"))
-          )
-        )
+            ValidatedIpAddress("192.168.1.1", BigInt("3232235777")),
+          ),
+        ),
       )
     }
   }
@@ -78,7 +78,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       val fixture = IndexedSeq(
         indexRecordFactory(rangeStart = 0, rangeEnd = 10),
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
-        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30),
       )
       fixture.lookup(15) should equal(Some(fixture(1)))
     }
@@ -89,7 +89,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       val fixture = IndexedSeq(
         indexRecordFactory(rangeStart = 0, rangeEnd = 15),
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
-        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30),
       )
       fixture.lookup(13) should equal(Some(fixture(1)))
     }
@@ -99,7 +99,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       val fixture = IndexedSeq(
         indexRecordFactory(rangeStart = 0, rangeEnd = 15),
         indexRecordFactory(rangeStart = 20, rangeEnd = 30),
-        indexRecordFactory(rangeStart = 31, rangeEnd = 40)
+        indexRecordFactory(rangeStart = 31, rangeEnd = 40),
       )
       fixture.lookup(17) shouldBe None
     }
@@ -108,7 +108,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       val fixture = IndexedSeq(
         indexRecordFactory(rangeStart = 0, rangeEnd = 10),
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
-        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30),
       )
       fixture.lookup(11) should equal(Some(fixture(1)))
       fixture.lookup(20) should equal(Some(fixture(1)))
@@ -118,7 +118,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
       val fixture = IndexedSeq(
         indexRecordFactory(rangeStart = 5, rangeEnd = 10),
         indexRecordFactory(rangeStart = 11, rangeEnd = 20),
-        indexRecordFactory(rangeStart = 21, rangeEnd = 30)
+        indexRecordFactory(rangeStart = 21, rangeEnd = 30),
       )
       fixture.lookup(4) shouldBe None
       fixture.lookup(31) shouldBe None
@@ -131,7 +131,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
         rangeStart = 1153680280,
         rangeEnd = 1153680287,
         fieldDelimiter = ';',
-        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes()
+        bytes = "1153680280;1153680287;usa;nj;hoboken;40.7478;-74.0339;###;".getBytes(),
       )
 
       val expected = Address(
@@ -140,7 +140,7 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
         postal = None,
         country = Some("USA"),
         latitude = Some("40.7478"),
-        longitude = Some("-74.0339")
+        longitude = Some("-74.0339"),
       )
 
       fixture.toAddress should equal(expected)

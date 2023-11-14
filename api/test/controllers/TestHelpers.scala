@@ -13,7 +13,7 @@ trait TestHelpers {
   val UnprocessableEntityStatusCode = 422
 
   def expectErrors[T](code: LocationErrorCode)(
-    f: => Future[T]
+    f: => Future[T],
   ): LocationError = {
     Try(await(f)) match {
       case Success(response) => {
@@ -35,7 +35,7 @@ trait TestHelpers {
   }
 
   def expectUnprocessableEntity[T](
-    f: => Future[T]
+    f: => Future[T],
   ): UnitResponse = {
     Try(await(f)) match {
       case Success(response) => {
