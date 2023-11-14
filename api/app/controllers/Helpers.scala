@@ -12,13 +12,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class Helpers @javax.inject.Inject() (
   google: Google,
   @javax.inject.Named("DigitalElementIndex")
-  digitalElementIndex: DigitalElementIndex
+  digitalElementIndex: DigitalElementIndex,
 ) {
   def getTimezones(
     address: Option[String] = None,
-    ip: Option[String] = None
+    ip: Option[String] = None,
   )(implicit
-    ec: ExecutionContext
+    ec: ExecutionContext,
   ): Future[Either[Seq[String], Seq[Timezone]]] = {
     getLocations(address = address, ip = ip).flatMap {
       case Left(_) => Future.successful(Left(Seq("Must specify either 'address' or 'ip'")))
@@ -32,7 +32,7 @@ class Helpers @javax.inject.Inject() (
               }
             case _ =>
               Future.successful(
-                Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup")
+                Left("Unable to determine latitude/longitude for this address/ip which is required for timezone lookup"),
               )
           }
         })
@@ -44,7 +44,7 @@ class Helpers @javax.inject.Inject() (
                 timezone
               }) // if there are no errors, then get all the timezones
             case errors => Left(errors)
-          }
+          },
         )
       }
     }
@@ -55,9 +55,9 @@ class Helpers @javax.inject.Inject() (
     address: Option[String] = None,
     ip: Option[String] = None,
     countryParam: Option[String] = None,
-    postalPrefix: Option[String] = None
+    postalPrefix: Option[String] = None,
   )(implicit
-    ec: ExecutionContext
+    ec: ExecutionContext,
   ): Future[Either[LocationError, Seq[Address]]] = {
     (country, address, ip) match {
       case (Some(code), _, _) => {
@@ -87,9 +87,9 @@ class Helpers @javax.inject.Inject() (
           Left(
             LocationError(
               code = LocationErrorCode.IpRequired,
-              messages = Seq("Must specify either 'address' or 'ip'")
-            )
-          )
+              messages = Seq("Must specify either 'address' or 'ip'"),
+            ),
+          ),
         )
     }
   }
@@ -105,8 +105,8 @@ class Helpers @javax.inject.Inject() (
         Left(
           LocationError(
             code = LocationErrorCode.IpRequired,
-            messages = Seq("Must specify 'ip' parameter")
-          )
+            messages = Seq("Must specify 'ip' parameter"),
+          ),
         )
       case Right(Some(v)) => Right(v)
     }

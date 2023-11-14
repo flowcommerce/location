@@ -31,7 +31,7 @@ object AddressVerifier {
     AddressVerification(
       address = address,
       valid = isValid,
-      suggestions = toSuggestions(address, merged)
+      suggestions = toSuggestions(address, merged),
     )
   }
 
@@ -52,7 +52,7 @@ object AddressVerifier {
                   case a :: b :: rest => {
                     Some(Seq(a + " " + b) ++ rest)
                   }
-                }
+                },
               )
             }
           }
@@ -71,8 +71,8 @@ object AddressVerifier {
         postal = isDifferent(address.postal, m.postal),
         country = isDifferent(
           address.country.flatMap(Countries.find(_).map(_.iso31663)),
-          m.country.flatMap(Countries.find(_).map(_.iso31663))
-        )
+          m.country.flatMap(Countries.find(_).map(_.iso31663)),
+        ),
       )
     }
   }
@@ -94,7 +94,7 @@ object AddressVerifier {
         address.city,
         address.province,
         address.postal,
-        address.country.flatMap { Countries.find(_).map(_.name) }
+        address.country.flatMap { Countries.find(_).map(_.name) },
       ).flatten.mkString(" ")
     }
 

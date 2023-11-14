@@ -43,7 +43,7 @@ case class DigitalElementIndexRecord(rangeStart: BigInt, rangeEnd: BigInt, field
       postal = Some(fields(7)).filter { code => code != DigitalElement.PlaceholderPostal },
       country = country.map(_.iso31663),
       latitude = Some(fields(5)),
-      longitude = Some(fields(6))
+      longitude = Some(fields(6)),
     )
   }
 }
@@ -113,8 +113,8 @@ object DigitalElement {
         Left(
           LocationError(
             code = LocationErrorCode.IpInvalid,
-            messages = Seq(s"Unable to parse ip address ${ip}")
-          )
+            messages = Seq(s"Unable to parse ip address ${ip}"),
+          ),
         )
     }
   }

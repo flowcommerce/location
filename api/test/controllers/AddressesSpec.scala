@@ -17,13 +17,13 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   "GET /addresses without an IP returns a proper message" in {
     expectUnprocessableEntity(
-      client.addresses.get(ip = None)
+      client.addresses.get(ip = None),
     ).status mustBe UnprocessableEntityStatusCode
   }
 
   "GET /addresses?ip=23.16.0.0" in {
     val locations = await(
-      client.addresses.get(ip = Some("23.16.0.0"))
+      client.addresses.get(ip = Some("23.16.0.0")),
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
@@ -35,8 +35,8 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
       client.addresses.get(
         address = Some(s"190 ${Countries.Jpn.name}"),
         country = Some(Countries.Jpn.name),
-        postalPrefix = Some("190")
-      )
+        postalPrefix = Some("190"),
+      ),
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
@@ -45,7 +45,7 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   "GET /addresses?address=190 Japan" in {
     val locations = await(
-      client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}"))
+      client.addresses.get(address = Some(s"190 ${Countries.Jpn.name}")),
     )
 
     // a bit redundant to serialize and deserialize, but makes the point of validating models as proper Json
@@ -54,13 +54,13 @@ class AddressesSpec extends FlowPlaySpec with GuiceOneServerPerSuite with TestHe
 
   "POST /addresses/verifications" in {
     expectErrors(LocationErrorCode.AddressRequired)(
-      client.addresses.postVerifications(address = Address())
+      client.addresses.postVerifications(address = Address()),
     ).messages mustBe Seq("Address to verify cannot be empty")
   }
 
   "POST /addresses/verifications with UK address" in {
     val result = await(
-      client.addresses.postVerifications(address = Address(text = Some("76 Belsize Park NW3-4NG")))
+      client.addresses.postVerifications(address = Address(text = Some("76 Belsize Park NW3-4NG"))),
     )
     result.valid mustBe true
   }

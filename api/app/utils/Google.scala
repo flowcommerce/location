@@ -23,7 +23,7 @@ object Implicits {
       findAsString(
         components = result.addressComponents.toIndexedSeq,
         types = types,
-        extractor = _.longName
+        extractor = _.longName,
       )
     }
 
@@ -32,7 +32,7 @@ object Implicits {
       findAsString(
         components = result.addressComponents.toIndexedSeq,
         types = types,
-        extractor = _.shortName
+        extractor = _.shortName,
       )
     }
   }
@@ -40,7 +40,7 @@ object Implicits {
   private def findAsString(
     components: Seq[AddressComponent],
     types: Seq[Google.AddressComponentType],
-    extractor: AddressComponent => String
+    extractor: AddressComponent => String,
   ): Option[String] = {
     find(components, types) match {
       case Nil => None
@@ -51,7 +51,7 @@ object Implicits {
 
   private def find(
     components: Seq[AddressComponent],
-    types: Seq[Google.AddressComponentType]
+    types: Seq[Google.AddressComponentType],
   ): Seq[AddressComponent] = {
     components.filter { c =>
       c.types.map(t => Google.AddressComponentType(t.toString)).exists(types.contains)
@@ -79,7 +79,7 @@ object Implicits {
 @javax.inject.Singleton
 class Google @javax.inject.Inject() (
   environmentVariables: EnvironmentVariables,
-  rollbar: RollbarLogger
+  rollbar: RollbarLogger,
 )(implicit ec: ExecutionContext) {
   import Implicits._
 
@@ -104,7 +104,7 @@ class Google @javax.inject.Inject() (
   def getLocationsByAddress(
     address: String,
     country: Option[String],
-    postalPrefix: Option[String]
+    postalPrefix: Option[String],
   ): Future[Seq[Address]] = {
     val baseRequest = GeocodingApi.geocode(context, address)
     val componentFilters: Seq[ComponentFilter] = getComponentFilters(country, postalPrefix)
@@ -128,7 +128,7 @@ class Google @javax.inject.Inject() (
     */
   private[utils] def getComponentFilters(
     country: Option[String],
-    postalPrefix: Option[String]
+    postalPrefix: Option[String],
   ): Seq[ComponentFilter] = {
     val countryCodeFilter: Option[ComponentFilter] = country.flatMap { c =>
       Countries.find(c).map(_.iso31662).map(ComponentFilter.country)
@@ -156,8 +156,8 @@ class Google @javax.inject.Inject() (
       val streetAddress = geocodingResult.extractLongName(
         Seq(
           Google.AddressComponentType.StreetAddress,
-          Google.AddressComponentType.Route
-        ): _*
+          Google.AddressComponentType.Route,
+        ): _*,
       )
 
       val streets = Some(Seq(streetNumber, streetAddress).flatten).filter(_.nonEmpty)
@@ -176,7 +176,7 @@ class Google @javax.inject.Inject() (
       val city = Seq(
         Google.AddressComponentType.Locality,
         Google.AddressComponentType.Sublocality,
-        Google.AddressComponentType.Neighborhood
+        Google.AddressComponentType.Neighborhood,
       ).flatMap(geocodingResult.extractLongName(_)).headOption
 
       val adminAreas = Seq(
@@ -184,7 +184,7 @@ class Google @javax.inject.Inject() (
         Google.AddressComponentType.AdministrativeAreaLevel2,
         Google.AddressComponentType.AdministrativeAreaLevel3,
         Google.AddressComponentType.AdministrativeAreaLevel4,
-        Google.AddressComponentType.AdministrativeAreaLevel5
+        Google.AddressComponentType.AdministrativeAreaLevel5,
       ).flatMap(geocodingResult.extractShortName(_))
 
       // `adminAreas` will contain province or state, then county, others - we just need province here
@@ -198,7 +198,7 @@ class Google @javax.inject.Inject() (
         postal = postal,
         country = country,
         latitude = Some(geocodingResult.geometry.location.lat.toString),
-        longitude = Some(geocodingResult.geometry.location.lng.toString)
+        longitude = Some(geocodingResult.geometry.location.lng.toString),
       )
     }
   }
