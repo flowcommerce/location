@@ -24,8 +24,8 @@ jvmOpts:
 
 deployments:
   live:
-    minReplicas: 3
-    maxReplicas: 3
+    minReplicas: 4
+    maxReplicas: 4
     maxUnavailable: 1
 
 rollout:
