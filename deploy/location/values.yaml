@@ -14,13 +14,13 @@ image:
 
 resources:
   limits:
-    memory: "7100Mi"
+    memory: "7500Mi"
   requests:
-    memory: "7100Mi"
+    memory: "7500Mi"
     cpu: 1
 
 jvmOpts:
-    memory: 6100m
+    memory: 6300m
 
 deployments:
   live:
