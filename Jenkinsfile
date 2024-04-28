@@ -68,10 +68,11 @@ pipeline {
             container('play') {
               script {
                 try {
-                  sh 'sbt clean flowLint test scalafmtSbtCheck scalafmtCheck doc'
+                  sh 'sbt clean coverage flowLint test scalafmtSbtCheck scalafmtCheck doc'
+                  sh 'sbt coverageAggregate'
                 }
                 finally {
-                  junit allowEmptyResults: true, testResults: '**/target/test-reports/*.xml'
+                  postSbtReport()
                 }
               }
             }
