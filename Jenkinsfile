@@ -68,7 +68,7 @@ pipeline {
             container('play') {
               script {
                 try {
-                  sh 'sbt clean coverage flowLint test scalafmtSbtCheck scalafmtCheck doc'
+                  sh 'sbt clean flowLint coverage test scalafmtSbtCheck scalafmtCheck doc'
                   sh 'sbt coverageAggregate'
                 }
                 finally {
