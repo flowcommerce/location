@@ -4,6 +4,12 @@ name := "location"
 
 ThisBuild / scalaVersion := "2.13.6"
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
+
+// Resolve scala-xml version dependency mismatch, see https://github.com/sbt/sbt/issues/7007
+ThisBuild / libraryDependencySchemes ++= Seq(
+  "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,
+)
+
 lazy val allScalacOptions = Seq(
   "-feature",
   "-Xfatal-warnings",
@@ -70,6 +76,12 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   scalacOptions ++= allScalacOptions,
   resolvers += "scalaz-bintray" at "https://dl.bintray.com/scalaz/releases",
   resolvers += "Artifactory" at "https://flow.jfrog.io/flow/libs-release/",
+  coverageExcludedFiles := ".*\\/*generated*\\/.*",
+  coverageDataDir := file("target/scala-2.13"),
+  coverageHighlighting := true,
+  coverageFailOnMinimum := true,
+  coverageMinimumStmtTotal := 74,
+  coverageMinimumBranchTotal := 64,
   credentials += Credentials(
     "Artifactory Realm",
     "flow.jfrog.io",
