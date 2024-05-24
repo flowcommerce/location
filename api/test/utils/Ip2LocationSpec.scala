@@ -11,7 +11,7 @@ import java.nio.file.{Files, Paths};
 class Ip2LocationSpec extends AnyWordSpec with Matchers {
   "buildIndex" should {
     "correctly index ipv4 addresses" when {
-      val path = Paths.get("./test/resources/IP-COUNTRY(in).csv")
+      val path = Paths.get("./test/resources/IPV4-COUNTRY.csv")
       val is = new BufferedInputStream(Files.newInputStream(path))
       val result = Ip2Location.buildIndex(is, fieldDelimiter = ',', recordDelimiter = '\n')
 
