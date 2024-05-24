@@ -20,6 +20,8 @@ pipeline {
   environment {
     ORG      = 'flowcommerce'
     GOOGLE_API_KEY = credentials('location-google-api-key')
+    IP2LOCATION_V4_FILE_URI = credentials('location-ip2location-v4-file-uri')
+    IP2LOCATION_V6_FILE_URI = credentials('location-ip2location-v4-file-uri')
   }
 
   stages {
