@@ -5,7 +5,7 @@ import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import utils.DigitalElement.ValidatedIpAddress
-
+import scala.collection.mutable.ArrayBuffer
 class DigitalElementSpec extends AnyWordSpec with Matchers {
 
   // convenience to build DigitalElementIndexRecord fixtures with defaults
@@ -19,14 +19,14 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
     longitude: Double = 0.0,
     postalCode: String = "",
     fieldDelimiter: Char = ';',
-  ) = DigitalElementIndexRecord(
-    rangeStart = rangeStart,
-    rangeEnd = rangeEnd,
-    fieldDelimiter = fieldDelimiter,
-    bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
-      .mkString(fieldDelimiter.toString)
-      .getBytes(),
-  )
+  ): DigitalElementIndexRecord = {
+    val bytes: Array[Byte] =
+      ArrayBuffer[Serializable](rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
+        .map(_.toString)
+        .mkString(fieldDelimiter.toString)
+        .getBytes()
+    DigitalElementIndexRecord(rangeStart, rangeEnd, fieldDelimiter, bytes)
+  }
 
   "validateIp" should {
     "ignore empty IP" in {

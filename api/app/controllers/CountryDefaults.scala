@@ -16,7 +16,7 @@ class CountryDefaults @javax.inject.Inject() (
   helpers: Helpers,
   system: ActorSystem,
 ) extends BaseController {
-  private[this] implicit val ec = system.dispatchers.lookup("controller-context")
+  private[this] implicit val ec: akka.dispatch.MessageDispatcher = system.dispatchers.lookup("controller-context")
   private[this] val DefaultCurrency = "usd" // Remove once every country has one defined
   private[this] val DefaultLanguage = "en" // Remove once every country has at least one language in reference data
 

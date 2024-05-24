@@ -17,7 +17,7 @@ class Timezones @javax.inject.Inject() (
   helpers: Helpers,
   system: ActorSystem,
 ) extends BaseController {
-  private[this] implicit val ec = system.dispatchers.lookup("controller-context")
+  private[this] implicit val ec: akka.dispatch.MessageDispatcher = system.dispatchers.lookup("controller-context")
 
   def get(
     ip: Option[String],
