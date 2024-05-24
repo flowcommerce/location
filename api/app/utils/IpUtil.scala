@@ -24,7 +24,6 @@ object IpUtil {
     case _ => s
   }
 
-
   def ipToDecimal(ip: String): Either[LocationError, BigInt] = {
     Try {
       ip match {
