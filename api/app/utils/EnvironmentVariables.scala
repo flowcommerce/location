@@ -11,4 +11,8 @@ class EnvironmentVariables @javax.inject.Inject() (
 
   val digitalElementFileUri: String = config.requiredString("digitalelement.file.uri")
 
+  val ip2LocationV4FileUri: String = config.requiredString("ip2location.v4.file.uri")
+
+  val ip2LocationV6FileUri: String = config.requiredString("ip2location.v6.file.uri")
+
 }
