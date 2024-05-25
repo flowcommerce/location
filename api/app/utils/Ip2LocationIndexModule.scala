@@ -27,7 +27,7 @@ class Ip2LocationIndexModule extends AbstractModule {
 
     val (ipv4, ipv6) = environment.mode match {
       case Mode.Dev | Mode.Test =>
-        val (ipv4Path, ipv6Path) = ("IP-COUNTRY(in).csv", "IPV6-COUNTRY.csv")
+        val (ipv4Path, ipv6Path) = ("IPV4-COUNTRY.csv", "IPV6-COUNTRY.csv")
         val isV4 = new BufferedInputStream(Files.newInputStream(Paths.get(ipv4Path)))
         val isV6 = new BufferedInputStream(Files.newInputStream(Paths.get(ipv6Path)))
         (isV4, isV6)
