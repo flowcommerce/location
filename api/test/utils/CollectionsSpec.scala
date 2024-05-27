@@ -13,7 +13,7 @@ case class SearchWithBoundaryFixture(elems: IndexedSeq[Long], boundary: Long)
 
 object SearchWithBoundaryProperties extends Properties("SearchWithBoundaries") {
 
-  implicit def buildableIndexedSeq[T: Ordering] = new Buildable[T, IndexedSeq[T]] {
+  implicit def buildableIndexedSeq[T: Ordering]: Buildable[T, IndexedSeq[T]] = new Buildable[T, IndexedSeq[T]] {
     def builder = new mutable.Builder[T, IndexedSeq[T]] {
       val ab = new ArrayBuffer[T]()
       override def addOne(x: T) = {

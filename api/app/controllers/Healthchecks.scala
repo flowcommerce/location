@@ -13,7 +13,7 @@ class Healthchecks @javax.inject.Inject() (
   addresses: Addresses,
   system: ActorSystem,
 ) extends BaseController {
-  private[this] implicit val ec = system.dispatchers.lookup("controller-context")
+  private[this] implicit val ec: akka.dispatch.MessageDispatcher = system.dispatchers.lookup("controller-context")
 
   def getHealthcheck() = Action.async { request =>
     // force loading of config
