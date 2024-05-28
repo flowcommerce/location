@@ -8,7 +8,7 @@ import javax.inject.Singleton
 import scala.collection.mutable
 
 case class Ip2Location(rangeStart: BigInt, rangeEnd: BigInt, fieldDelimiter: Char, bytes: Array[Byte]) {
-  def toAddress(): Address = {
+  def toAddress: Address = {
     val row = new String(bytes).split(",")
     Address(country = Countries.find(row(2)).map(_.iso31663))
   }

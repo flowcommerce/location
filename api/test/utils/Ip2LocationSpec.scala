@@ -34,36 +34,36 @@ class Ip2LocationSpec extends AnyWordSpec with Matchers {
       val Chn2BetweenRange = 17040011
 
       "value range start is provided" in {
-        result.lookup(AusRangeStart).get.toAddress().country.get mustBe Countries.Aus.iso31663
+        result.lookup(AusRangeStart).get.toAddress.country.get mustBe Countries.Aus.iso31663
 
-        result.lookup(Chn1RangeStart).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeStart).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeStart).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeStart).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
       "value range end is provided" in {
-        result.lookup(AusRangeEnd).get.toAddress().country.get mustBe Countries.Aus.iso31663
+        result.lookup(AusRangeEnd).get.toAddress.country.get mustBe Countries.Aus.iso31663
 
-        result.lookup(Chn1RangeEnd).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeEnd).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeEnd).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeEnd).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
       }
       "value on the boundary of range start and range end is provided" in {
-        result.lookup(AusRangeStartBoundary).get.toAddress().country.get mustBe Countries.Aus.iso31663
-        result.lookup(AusRangeEndBoundary).get.toAddress().country.get mustBe Countries.Aus.iso31663
+        result.lookup(AusRangeStartBoundary).get.toAddress.country.get mustBe Countries.Aus.iso31663
+        result.lookup(AusRangeEndBoundary).get.toAddress.country.get mustBe Countries.Aus.iso31663
 
-        result.lookup(Chn1RangeStartBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
-        result.lookup(Chn1RangeEndBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeStartBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeEndBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeStartBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
-        result.lookup(Chn2RangeEndBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeStartBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeEndBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
       "value in between range start and range end is provided" in {
-        result.lookup(AusBetweenRange).get.toAddress().country.get mustBe Countries.Aus.iso31663
+        result.lookup(AusBetweenRange).get.toAddress.country.get mustBe Countries.Aus.iso31663
 
-        result.lookup(Chn1BetweenRange).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1BetweenRange).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2BetweenRange).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2BetweenRange).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
 
     }
@@ -92,36 +92,36 @@ class Ip2LocationSpec extends AnyWordSpec with Matchers {
       val Chn2BetweenRange = 281470698596752L
 
       "value range start is provided" in {
-        result.lookup(UsRangeStart).get.toAddress().country.get mustBe Countries.Usa.iso31663
+        result.lookup(UsRangeStart).get.toAddress.country.get mustBe Countries.Usa.iso31663
 
-        result.lookup(Chn1RangeStart).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeStart).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeStart).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeStart).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
       "value range end is provided" in {
-        result.lookup(UsRangeEnd).get.toAddress().country.get mustBe Countries.Usa.iso31663
+        result.lookup(UsRangeEnd).get.toAddress.country.get mustBe Countries.Usa.iso31663
 
-        result.lookup(Chn1RangeEnd).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeEnd).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeEnd).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeEnd).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
       }
       "value on the boundary of range start and range end is provided" in {
-        result.lookup(UsRangeStartBoundary).get.toAddress().country.get mustBe Countries.Usa.iso31663
-        result.lookup(UsRangeEndBoundary).get.toAddress().country.get mustBe Countries.Usa.iso31663
+        result.lookup(UsRangeStartBoundary).get.toAddress.country.get mustBe Countries.Usa.iso31663
+        result.lookup(UsRangeEndBoundary).get.toAddress.country.get mustBe Countries.Usa.iso31663
 
-        result.lookup(Chn1RangeStartBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
-        result.lookup(Chn1RangeEndBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeStartBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1RangeEndBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2RangeStartBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
-        result.lookup(Chn2RangeEndBoundary).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeStartBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2RangeEndBoundary).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
       "value in between range start and range end is provided" in {
-        result.lookup(UsBetweenRange).get.toAddress().country.get mustBe Countries.Usa.iso31663
+        result.lookup(UsBetweenRange).get.toAddress.country.get mustBe Countries.Usa.iso31663
 
-        result.lookup(Chn1BetweenRange).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn1BetweenRange).get.toAddress.country.get mustBe Countries.Chn.iso31663
 
-        result.lookup(Chn2BetweenRange).get.toAddress().country.get mustBe Countries.Chn.iso31663
+        result.lookup(Chn2BetweenRange).get.toAddress.country.get mustBe Countries.Chn.iso31663
       }
     }
   }
