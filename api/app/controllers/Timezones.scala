@@ -3,17 +3,17 @@ package controllers
 import akka.actor.ActorSystem
 import io.flow.location.v0.models.json._
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
-import io.flow.reference.v0.models.json._
+import io.flow.reference.Countries
 import play.api.libs.json._
 import play.api.mvc._
-import utils.DigitalElementIndex
+import utils.Ip2Location
 
 import scala.concurrent.Future
 
 @javax.inject.Singleton
 class Timezones @javax.inject.Inject() (
   override val controllerComponents: ControllerComponents,
-  @javax.inject.Named("DigitalElementIndex") digitalElementIndex: DigitalElementIndex,
+  @javax.inject.Named("Ip2LocationIndex") ip2Location: IndexedSeq[Ip2Location],
   helpers: Helpers,
   system: ActorSystem,
 ) extends BaseController {
@@ -28,7 +28,14 @@ class Timezones @javax.inject.Inject() (
           UnprocessableEntity(Json.toJson(error))
         }
         case Right(valid) =>
-          digitalElementIndex.lookup(valid).flatMap(_.timezone) match {
+          {
+            for {
+              location <- ip2Location.lookup(valid.intValue)
+              country <- location.toAddress.country
+              timezone <- Countries.find(country).map(_.timezones)
+            } yield timezone
+          } match {
+            case Some(tz) => Ok(Json.toJson(Seq(tz)))
             case None => {
               UnprocessableEntity(
                 Json.toJson(
@@ -40,10 +47,6 @@ class Timezones @javax.inject.Inject() (
                   ),
                 ),
               )
-            }
-
-            case Some(tz) => {
-              Ok(Json.toJson(Seq(tz)))
             }
           }
       }

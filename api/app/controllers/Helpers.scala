@@ -4,7 +4,7 @@ import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
-import utils.{DigitalElement, Google, Ip2Location, IpUtil}
+import utils.{DigitalElement, Google, Ip2Location, IpUtil, ValidatedIpAddress}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -76,8 +76,12 @@ class Helpers @javax.inject.Inject() (
 
       case (_, _, Some(i)) =>
         Future.successful {
+          println(s"11111111111111111111")
           IpUtil.ipToDecimal(i) map { ip =>
-            ip2Location.lookup(ip).map(_.toAddress).toSeq
+            println(s"2222222222   $ip")
+            val res = ip2Location.lookup(ip)
+            println(s"3333333333333333 $res")
+            res.map(_.toAddress).toSeq
           }
         }
 
@@ -97,8 +101,8 @@ class Helpers @javax.inject.Inject() (
     DigitalElement.validateIp(ip)
   }
 
-  def validateRequiredIp(ip: Option[String]): Either[LocationError, DigitalElement.ValidatedIpAddress] = {
-    DigitalElement.validateIp(ip) match {
+  def validateRequiredIp(ip: Option[String]): Either[LocationError, ValidatedIpAddress] = {
+    IpUtil.validateIp(ip) match {
       case Left(error) => Left(error)
       case Right(None) =>
         Left(
