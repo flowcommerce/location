@@ -77,7 +77,7 @@ class Helpers @javax.inject.Inject() (
       case (_, _, Some(i)) =>
         Future.successful {
           IpUtil.ipToDecimal(i) map { ip =>
-            ip2Location.lookup(ip).map(_.toAddress()).toSeq
+            ip2Location.lookup(ip).map(_.toAddress).toSeq
           }
         }
 
