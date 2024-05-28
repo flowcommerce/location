@@ -4,6 +4,8 @@ import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 
 import scala.util.{Failure, Success, Try}
 
+case class ValidatedIpAddress(ip: String, intValue: BigInt)
+
 object IpUtil {
 
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
@@ -52,4 +54,15 @@ object IpUtil {
         )
     }
   }
+
+  def validateIp(ip: Option[String]): Either[LocationError, Option[ValidatedIpAddress]] = {
+    ip.map(_.trim).filter(_.nonEmpty) match {
+      case None => Right(None)
+      case Some(v) =>
+        ipToDecimal(v).map { valid =>
+          Some(ValidatedIpAddress(v, valid))
+        }
+    }
+  }
+
 }
