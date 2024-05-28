@@ -88,7 +88,7 @@ class Google @javax.inject.Inject() (
   private[this] val context = new GeoApiContext.Builder()
     .connectTimeout(1000, TimeUnit.MILLISECONDS)
     .readTimeout(1000, TimeUnit.MILLISECONDS)
-    .apiKey(environmentVariables.googleApiKey)
+    .apiKey(environmentVariables.googleApiKey.getOrElse("asdfsdfsdfads"))
     .build()
 
   def getTimezone(lat: Double, lng: Double): Future[Option[Timezone]] =

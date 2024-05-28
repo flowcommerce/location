@@ -20,21 +20,27 @@ class TimezonesSpec extends FlowPlaySpec with TestHelpers {
   }
 
   "GET /addresses for unknown IPs" in {
+    // val a = Await.result(client.timezones.get(ip = Some("1.16.64.0")), 10.seconds)
+    // println(s"3333333333#: ${a}\n")
     expectErrors(LocationErrorCode.TimezoneUnavailable) {
-      client.timezones.get(ip = Some("1.2.3.4"))
+      client.timezones.get(ip = Some("1.16.64.0"))
     }.messages must equal(
-      Seq("Timezone information not available for ip '1.2.3.4'"),
+      Seq("Timezone information not available for ip '1.16.64.0'"),
     )
   }
 
   "GET /addresses for valid IPs" in {
     val invalid = DigitalElementSampleData.IpTimezones.keys.toSeq.flatMap { ip =>
+      println(s"I AM HERE ")
       val timezone = await(
         client.timezones.get(ip = Some(ip)),
       ).headOption.getOrElse {
+        println(s"4a4a4a4a4a4a4a4a4a4a4a4a")
         sys.error("Expected 1 timezone")
       }
+      println(s"4b4b4b4b4b4b4b4b4b4b4b4b4b4b4b")
       val expected = DigitalElementSampleData.IpTimezones(ip)
+      println(s"55555555555555555\n\nEXPECTED: $expected \t TIMEZONE: $timezone\n\n")
       if (expected == timezone) {
         None
       } else {

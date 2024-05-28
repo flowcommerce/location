@@ -34,14 +34,14 @@ class Ip2LocationIndexModule extends AbstractModule {
 
       case Mode.Prod =>
         val s3: AmazonS3 = AmazonS3ClientBuilder.standard().build()
-        val isV4 = environmentVariables.ip2LocationV4FileUri match {
+        val isV4 = environmentVariables.ip2LocationV4FileUri.get match {
           case s3Uri(bucket, key) =>
             baseLogger.info("Getting ipv4 file from S3")
             s3.getObject(bucket, key).getObjectContent()
           case _ =>
             throw new IllegalArgumentException("Invalid ip2LocationFileUri. Must use either s3:// or file:// protocol")
         }
-        val isV6 = environmentVariables.ip2LocationV6FileUri match {
+        val isV6 = environmentVariables.ip2LocationV6FileUri.get match {
           case s3Uri(bucket, key) =>
             baseLogger.info("Getting ipv6 file from S3")
             s3.getObject(bucket, key).getObjectContent()

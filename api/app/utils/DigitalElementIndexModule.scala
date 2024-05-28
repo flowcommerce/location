@@ -22,7 +22,7 @@ class DigitalElementIndexModule extends AbstractModule {
     @javax.inject.Inject() environmentVariables: EnvironmentVariables,
     @javax.inject.Inject() logger: RollbarLogger,
   ): DigitalElementIndex = {
-    val is: InputStream = environmentVariables.digitalElementFileUri match {
+    val is: InputStream = environmentVariables.digitalElementFileUri.get match {
       case fileUri(path) => new BufferedInputStream(Files.newInputStream(Paths.get(path)))
       case s3Uri(bucket, key) => {
         val s3: AmazonS3 = AmazonS3ClientBuilder.standard().build()
