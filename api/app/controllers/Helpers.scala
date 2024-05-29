@@ -76,12 +76,8 @@ class Helpers @javax.inject.Inject() (
 
       case (_, _, Some(i)) =>
         Future.successful {
-          println(s"11111111111111111111")
           IpUtil.ipToDecimal(i) map { ip =>
-            println(s"2222222222   $ip")
-            val res = ip2Location.lookup(ip)
-            println(s"3333333333333333 $res")
-            res.map(_.toAddress).toSeq
+            ip2Location.lookup(ip).map(_.toAddress).toSeq
           }
         }
 

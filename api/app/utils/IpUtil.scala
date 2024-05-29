@@ -37,9 +37,25 @@ object IpUtil {
     case _ => s
   }
 
+  def expandIPv6Address(address: String): String = {
+    val parts = address.split("::", 2)
+    val leftPart =
+      if (parts.head.nonEmpty) parts.headOption.map(_.split(":")).toArrayCustom
+      else Array.empty[String]
+    val rightPart =
+      if (parts.length > 1) parts(1).split(":") else Array.empty[String]
+    val numZeroGroups = 8 - (leftPart.length + rightPart.length)
+
+    val fullAddress = (leftPart ++ Array.fill(numZeroGroups)("0000") ++ rightPart)
+      .map(part => f"${Integer.parseInt(part, 16)}%04x")
+      .mkString(":")
+
+    fullAddress
+  }
+
   def ipv6ToDecimal(ip: String): Either[LocationError, BigInt] = {
     Try {
-      ip match {
+      expandIPv6Address(ip) match {
         case ipv6a(a, b, c, d, e, f, g, h) => {
           BigInt(z(a), 16) * IpV6Byte1a +
             BigInt(z(b), 16) * IpV6Byte2a +

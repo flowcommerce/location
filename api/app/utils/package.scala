@@ -17,4 +17,13 @@ package object utils {
         .searchWithBoundary(index, ip)((a, b) => a.rangeStart <= b)
         .filter(ip <= _.rangeEnd)
   }
+
+  implicit class OptionalArrayToAnything(optList: Option[Array[String]]) {
+    def toArrayCustom: Array[String] = {
+      optList match {
+        case Some(value) => value
+        case None => Array.empty[String]
+      }
+    }
+  }
 }
