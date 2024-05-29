@@ -26,12 +26,10 @@ class Timezones @javax.inject.Inject() (
     Future {
       helpers.validateRequiredIp(ip) match {
         case Left(error) => {
-          println(s"111111111111111")
           UnprocessableEntity(Json.toJson(error))
         }
         case Right(valid) =>
           {
-            println(s"22222222222222222")
             for {
               location <- ip2Location.lookup(valid.intValue)
               country <- location.toAddress.country
@@ -39,9 +37,6 @@ class Timezones @javax.inject.Inject() (
             } yield timezone
           } match {
             case Some(tzs) =>
-              println(
-                s"\n\n333333333333333333333\t${ip2Location.lookup(valid.intValue).get.toAddress.country}\t${tzs}\n\n",
-              )
               val timezones = tzs.map(Timezones.find)
               if (timezones.isEmpty) {
                 UnprocessableEntity(
@@ -56,7 +51,6 @@ class Timezones @javax.inject.Inject() (
                 )
               } else Ok(Json.toJson(timezones))
             case None => {
-              println(s"\n\n444444444444444444444(()))(()))\n\n")
               UnprocessableEntity(
                 Json.toJson(
                   LocationError(

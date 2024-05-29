@@ -92,7 +92,6 @@ class Ip2LocationSpec extends AnyWordSpec with Matchers {
       val Chn2BetweenRange = 281470698596752L
 
       "value range start is provided" in {
-        println(result.lookup(UsRangeStart).get)
         result.lookup(UsRangeStart).get.toAddress.country.get mustBe Countries.Usa.iso31663
 
         result.lookup(Chn1RangeStart).get.toAddress.country.get mustBe Countries.Chn.iso31663
