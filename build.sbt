@@ -2,12 +2,13 @@ import play.sbt.PlayScala._
 
 name := "location"
 
-ThisBuild / scalaVersion := "2.13.6"
+ThisBuild / scalaVersion := "2.13.13"
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
 // Resolve scala-xml version dependency mismatch, see https://github.com/sbt/sbt/issues/7007
 ThisBuild / libraryDependencySchemes ++= Seq(
   "org.scala-lang.modules" %% "scala-xml" % VersionScheme.Always,
+  "org.scoverage" %% "sbt-scoverage" % VersionScheme.Always,
 )
 
 lazy val allScalacOptions = Seq(

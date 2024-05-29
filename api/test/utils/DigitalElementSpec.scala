@@ -23,7 +23,16 @@ class DigitalElementSpec extends AnyWordSpec with Matchers {
     rangeStart = rangeStart,
     rangeEnd = rangeEnd,
     fieldDelimiter = fieldDelimiter,
-    bytes = Seq(rangeStart, rangeEnd, country, region, city, latitude, longitude, postalCode)
+    bytes = Seq(
+      rangeStart.toString,
+      rangeEnd.toString,
+      country,
+      region,
+      city,
+      latitude.toString,
+      longitude.toString,
+      postalCode,
+    )
       .mkString(fieldDelimiter.toString)
       .getBytes(),
   )
