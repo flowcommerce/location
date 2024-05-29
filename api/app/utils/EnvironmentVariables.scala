@@ -7,12 +7,12 @@ class EnvironmentVariables @javax.inject.Inject() (
   config: Config,
 ) {
 
-  val googleApiKey: Option[String] = config.optionalString("google.api.key")
+  val googleApiKey: String = config.requiredString("google.api.key")
 
-  val digitalElementFileUri: Option[String] = config.optionalString("digitalelement.file.uri")
+  val digitalElementFileUri: String = config.requiredString("digitalelement.file.uri")
 
-  val ip2LocationV4FileUri: Option[String] = config.optionalString("ip2location.v4.file.uri")
+  val ip2LocationV4FileUri: String = config.requiredString("ip2location.v4.file.uri")
 
-  val ip2LocationV6FileUri: Option[String] = config.optionalString("ip2location.v6.file.uri")
+  val ip2LocationV6FileUri: String = config.requiredString("ip2location.v6.file.uri")
 
 }
