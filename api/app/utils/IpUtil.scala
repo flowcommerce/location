@@ -37,7 +37,7 @@ object IpUtil {
     case _ => s
   }
 
-  def isValidIpv6Address(address: String) = {
+  private def isValidIpv6Address(address: String): Boolean = {
     address.contains(":")
   }
 
@@ -57,33 +57,6 @@ object IpUtil {
 
       fullAddress
     } else address
-  }
-
-  def ipv6ToDecimal(ip: String): Either[LocationError, BigInt] = {
-    Try {
-      expandIfIPv6Address(ip) match {
-        case ipv6a(a, b, c, d, e, f, g, h) => {
-          BigInt(z(a), 16) * IpV6Byte1a +
-            BigInt(z(b), 16) * IpV6Byte2a +
-            BigInt(z(c), 16) * IpV6Byte3a +
-            BigInt(z(d), 16) * IpV6Byte4a +
-            BigInt(z(e), 16) * IpV6Byte5a +
-            BigInt(z(f), 16) * IpV6Byte6a +
-            BigInt(z(g), 16) * IpV6Byte7a +
-            BigInt(z(h), 16) * IpV6Byte8a
-        }
-        case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
-      }
-    } match {
-      case Success(r) => Right(r)
-      case Failure(_) =>
-        Left(
-          LocationError(
-            code = LocationErrorCode.IpInvalid,
-            messages = Seq(s"Unable to parse ip address ${ip}"),
-          ),
-        )
-    }
   }
 
   def ipToDecimal(ip: String): Either[LocationError, BigInt] = {
