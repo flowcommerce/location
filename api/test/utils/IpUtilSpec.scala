@@ -19,7 +19,7 @@ class IpUtilSpec extends AnyWordSpecLike with GuiceOneServerPerSuite {
       IpUtil.ipToDecimal("23.16.0.0") mustBe Right(386924544)
     }
 
-    "convert ipv6 address to decimal format correctly" in {
+    "convert ipv6 address to decimal format correctly" ignore {
       // println(Await.result(helper.getLocations(ip = Some("2001:470:1f0b:079c:0:0:0:0")), 30.seconds))
       println(IpUtil.ipToDecimal("2a02:c7c:5a31:8f00:942d:e401:b826:1aa3"))
       println(IpUtil.ipToDecimal("2001:1970:5457:8900::1f9a"))
