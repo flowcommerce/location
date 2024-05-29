@@ -9,7 +9,7 @@ case class ValidatedIpAddress(ip: String, intValue: BigInt)
 object IpUtil {
 
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
-  private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*)*)".r
+  // private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*)*)".r
   private[this] val ipv6a =
     "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)".r
 
@@ -18,10 +18,10 @@ object IpUtil {
   private[this] val IpV4Byte3 = scala.math.pow(256, 1).toLong
   private[this] val IpV4Byte4 = scala.math.pow(256, 0).toLong
 
-  private[this] val IpV6Byte1 = scala.math.pow(65536, 3).toLong
+  /* private[this] val IpV6Byte1 = scala.math.pow(65536, 3).toLong
   private[this] val IpV6Byte2 = scala.math.pow(65536, 2).toLong
   private[this] val IpV6Byte3 = scala.math.pow(65536, 1).toLong
-  private[this] val IpV6Byte4 = scala.math.pow(65536, 0).toLong
+  private[this] val IpV6Byte4 = scala.math.pow(65536, 0).toLong*/
 
   private[this] val IpV6Byte1a = BigInt(2).pow(16 * 7)
   private[this] val IpV6Byte2a = BigInt(2).pow(16 * 6)
@@ -37,25 +37,31 @@ object IpUtil {
     case _ => s
   }
 
-  def expandIPv6Address(address: String): String = {
-    val parts = address.split("::", 2)
-    val leftPart =
-      if (parts.head.nonEmpty) parts.headOption.map(_.split(":")).toArrayCustom
-      else Array.empty[String]
-    val rightPart =
-      if (parts.length > 1) parts(1).split(":") else Array.empty[String]
-    val numZeroGroups = 8 - (leftPart.length + rightPart.length)
+  def isValidIpv6Address(address: String) = {
+    address.contains(":")
+  }
 
-    val fullAddress = (leftPart ++ Array.fill(numZeroGroups)("0000") ++ rightPart)
-      .map(part => f"${Integer.parseInt(part, 16)}%04x")
-      .mkString(":")
+  def expandIfIPv6Address(address: String): String = {
+    if (isValidIpv6Address(address)) {
+      val parts = address.split("::", 2)
+      val leftPart =
+        if (parts.head.nonEmpty) parts.headOption.map(_.split(":")).toArrayCustom
+        else Array.empty[String]
+      val rightPart =
+        if (parts.length > 1) parts(1).split(":") else Array.empty[String]
+      val numZeroGroups = 8 - (leftPart.length + rightPart.length)
 
-    fullAddress
+      val fullAddress = (leftPart ++ Array.fill(numZeroGroups)("0000") ++ rightPart)
+        .map(part => f"${Integer.parseInt(part, 16)}%04x")
+        .mkString(":")
+
+      fullAddress
+    } else address
   }
 
   def ipv6ToDecimal(ip: String): Either[LocationError, BigInt] = {
     Try {
-      expandIPv6Address(ip) match {
+      expandIfIPv6Address(ip) match {
         case ipv6a(a, b, c, d, e, f, g, h) => {
           BigInt(z(a), 16) * IpV6Byte1a +
             BigInt(z(b), 16) * IpV6Byte2a +
@@ -82,19 +88,27 @@ object IpUtil {
 
   def ipToDecimal(ip: String): Either[LocationError, BigInt] = {
     Try {
-      ip match {
+      expandIfIPv6Address(ip) match {
         case ipv4(a, b, c, d) => {
-          a.toInt * IpV4Byte1 +
+          val res = a.toInt * IpV4Byte1 +
             b.toInt * IpV4Byte2 +
             c.toInt * IpV4Byte3 +
             d.toInt * IpV4Byte4
+
+          BigInt(res)
         }
-        case ipv6(a, b, c, d, _*) => {
-          Integer.parseInt(z(a), 16) * IpV6Byte1 +
-            Integer.parseInt(z(b), 16) * IpV6Byte2 +
-            Integer.parseInt(z(c), 16) * IpV6Byte3 +
-            Integer.parseInt(z(d), 16) * IpV6Byte4
+
+        case ipv6a(a, b, c, d, e, f, g, h) => {
+          BigInt(z(a), 16) * IpV6Byte1a +
+            BigInt(z(b), 16) * IpV6Byte2a +
+            BigInt(z(c), 16) * IpV6Byte3a +
+            BigInt(z(d), 16) * IpV6Byte4a +
+            BigInt(z(e), 16) * IpV6Byte5a +
+            BigInt(z(f), 16) * IpV6Byte6a +
+            BigInt(z(g), 16) * IpV6Byte7a +
+            BigInt(z(h), 16) * IpV6Byte8a
         }
+
         case _ => throw new IllegalArgumentException(s"Unable to parse ip address ${ip}")
       }
     } match {
