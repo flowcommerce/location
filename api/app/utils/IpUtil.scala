@@ -9,7 +9,6 @@ case class ValidatedIpAddress(ip: String, intValue: BigInt)
 object IpUtil {
 
   private[this] val ipv4 = "(?:::ffff:)?(\\d+)\\.(\\d+)\\.(\\d+)\\.(\\d+)".r
-  // private[this] val ipv6 = "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)((:[a-fA-F0-9]*)*)".r
   private[this] val ipv6a =
     "([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*):([a-fA-F0-9]*)".r
 
@@ -17,11 +16,6 @@ object IpUtil {
   private[this] val IpV4Byte2 = scala.math.pow(256, 2).toLong
   private[this] val IpV4Byte3 = scala.math.pow(256, 1).toLong
   private[this] val IpV4Byte4 = scala.math.pow(256, 0).toLong
-
-  /* private[this] val IpV6Byte1 = scala.math.pow(65536, 3).toLong
-  private[this] val IpV6Byte2 = scala.math.pow(65536, 2).toLong
-  private[this] val IpV6Byte3 = scala.math.pow(65536, 1).toLong
-  private[this] val IpV6Byte4 = scala.math.pow(65536, 0).toLong*/
 
   private[this] val IpV6Byte1a = BigInt(2).pow(16 * 7)
   private[this] val IpV6Byte2a = BigInt(2).pow(16 * 6)

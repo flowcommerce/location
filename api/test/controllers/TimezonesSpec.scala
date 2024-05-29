@@ -20,7 +20,6 @@ class TimezonesSpec extends FlowPlaySpec with TestHelpers {
   }
 
   "GET /addresses for unknown IPs" in {
-    // val a = Await.result(client.timezones.get(ip = Some("1.16.64.0")), 10.seconds)
     expectErrors(LocationErrorCode.TimezoneUnavailable) {
       client.timezones.get(ip = Some("1.16.64.0"))
     }.messages must equal(
