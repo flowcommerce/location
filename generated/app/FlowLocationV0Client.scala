@@ -511,10 +511,7 @@ package io.flow.location.v0 {
         ).flatten
 
         _executeRequest("GET", s"/geolocation/timezones", queryParameters = queryParameters, requestHeaders = requestHeaders).map {
-          case r if r.status == 200 => {
-            println(s"\n\n200 Response\n\n")
-            _root_.io.flow.location.v0.Client.parseJson("Seq[io.flow.reference.v0.models.Timezone]", r, _.validate[Seq[io.flow.reference.v0.models.Timezone]])
-          }
+          case r if r.status == 200 => _root_.io.flow.location.v0.Client.parseJson("Seq[io.flow.reference.v0.models.Timezone]", r, _.validate[Seq[io.flow.reference.v0.models.Timezone]])
           case r if r.status == 401 => throw io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 404 => throw io.flow.location.v0.errors.UnitResponse(r.status)
           case r if r.status == 422 => throw io.flow.location.v0.errors.LocationErrorResponse(r)
