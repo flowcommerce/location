@@ -20,6 +20,8 @@ pipeline {
   environment {
     ORG      = 'flowcommerce'
     GOOGLE_API_KEY = credentials('location-google-api-key')
+    IP2LOCATION_V4_FILE_URI = 's3://io-flow-location/ip2location/IPV4-COUNTRY.csv'
+    IP2LOCATION_V6_FILE_URI = 's3://io-flow-location/ip2location/IPV6-COUNTRY.csv'
   }
 
   stages {

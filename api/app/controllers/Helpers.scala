@@ -4,15 +4,14 @@ import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
-import utils.{DigitalElement, DigitalElementIndex, Google}
+import utils.{DigitalElement, Google, Ip2Location, IpUtil, ValidatedIpAddress}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @javax.inject.Singleton
 class Helpers @javax.inject.Inject() (
   google: Google,
-  @javax.inject.Named("DigitalElementIndex")
-  digitalElementIndex: DigitalElementIndex,
+  @javax.inject.Named("Ip2LocationIndex") ip2Location: IndexedSeq[Ip2Location],
 ) {
   def getTimezones(
     address: Option[String] = None,
@@ -77,8 +76,8 @@ class Helpers @javax.inject.Inject() (
 
       case (_, _, Some(i)) =>
         Future.successful {
-          DigitalElement.ipToDecimal(i) map { ip =>
-            digitalElementIndex.lookup(ip).map(_.toAddress).toSeq
+          IpUtil.ipToDecimal(i) map { ip =>
+            ip2Location.lookup(ip).map(_.toAddress).toSeq
           }
         }
 
@@ -98,8 +97,8 @@ class Helpers @javax.inject.Inject() (
     DigitalElement.validateIp(ip)
   }
 
-  def validateRequiredIp(ip: Option[String]): Either[LocationError, DigitalElement.ValidatedIpAddress] = {
-    DigitalElement.validateIp(ip) match {
+  def validateRequiredIp(ip: Option[String]): Either[LocationError, ValidatedIpAddress] = {
+    IpUtil.validateIp(ip) match {
       case Left(error) => Left(error)
       case Right(None) =>
         Left(
