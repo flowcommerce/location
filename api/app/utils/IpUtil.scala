@@ -38,11 +38,13 @@ object IpUtil {
   def expandIfIPv6Address(address: String): String = {
     if (isValidIpv6Address(address)) {
       val parts = address.split("::", 2)
-      val leftPart =
-        if (parts.head.nonEmpty) parts.headOption.map(_.split(":")).toArrayCustom
+      val leftPart = {
+        if (parts(0).nonEmpty) parts.headOption.map(_.split(":")).toArrayCustom
         else Array.empty[String]
+      }
       val rightPart =
-        if (parts.length > 1) parts(1).split(":") else Array.empty[String]
+        if (parts.length > 1 && parts(1).nonEmpty) parts(1).split(":") else Array.empty[String]
+
       val numZeroGroups = 8 - (leftPart.length + rightPart.length)
 
       val fullAddress = (leftPart ++ Array.fill(numZeroGroups)("0000") ++ rightPart)
