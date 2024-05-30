@@ -1,6 +1,3 @@
--> / healthcheck.Routes
 -> / location.Routes
-
 -> / usage.Routes
-
 -> / kubehealthchecks.Routes
