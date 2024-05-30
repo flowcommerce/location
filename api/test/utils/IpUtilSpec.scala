@@ -15,7 +15,7 @@ class IpUtilSpec extends AnyWordSpecLike with GuiceOneServerPerSuite {
 
     "convert ipv6 address to decimal format correctly" in {
       IpUtil.ipToDecimal("2001:0470:1f0b:79c:0:0:0:0") mustBe Right(BigInt("42540578174775828387572776328824356864"))
-      IpUtil.ipToDecimal("2001:470:1f0b:79c:0:0:0:0") mustBe Right(BigInt("42540578174775828387572776328824356864"))
+      IpUtil.ipToDecimal("::ffff:106:0") mustBe Right(BigInt("281470698913792"))
     }
   }
 
@@ -31,6 +31,7 @@ class IpUtilSpec extends AnyWordSpecLike with GuiceOneServerPerSuite {
 
       "it is loopback" in {
         IpUtil.expandIfIPv6Address("::1f9a") mustBe "0000:0000:0000:0000:0000:0000:0000:1f9a"
+        IpUtil.expandIfIPv6Address("::ffff:106:0") mustBe "0000:0000:0000:0000:0000:ffff:0106:0000"
       }
 
       "it is unspecified" in {
