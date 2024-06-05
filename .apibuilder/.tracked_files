@@ -9,11 +9,6 @@ flow:
   google-places:
     play_2_8_client:
     - generated/app/FlowGooglePlacesV0Client.scala
-  healthcheck:
-    play_2_8_client:
-    - generated/app/FlowHealthcheckV0Client.scala
-    play_2_x_routes:
-    - api/conf/healthcheck.routes
   location:
     play_2_8_client:
     - generated/app/FlowLocationV0Client.scala
