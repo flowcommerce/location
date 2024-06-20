@@ -4,7 +4,7 @@ import io.flow.common.v0.models.Address
 import io.flow.location.v0.models.{LocationError, LocationErrorCode}
 import io.flow.reference.Countries
 import io.flow.reference.v0.models.Timezone
-import utils.{DigitalElement, Google, Ip2Location, IpUtil, ValidatedIpAddress}
+import utils.{Google, Ip2Location, IpUtil, ValidatedIpAddress}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -91,10 +91,6 @@ class Helpers @javax.inject.Inject() (
           ),
         )
     }
-  }
-
-  def validateIp(ip: Option[String]): Either[LocationError, Option[DigitalElement.ValidatedIpAddress]] = {
-    DigitalElement.validateIp(ip)
   }
 
   def validateRequiredIp(ip: Option[String]): Either[LocationError, ValidatedIpAddress] = {

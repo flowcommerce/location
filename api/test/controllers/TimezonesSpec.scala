@@ -3,7 +3,7 @@ package controllers
 import io.flow.location.v0.Client
 import io.flow.location.v0.models.LocationErrorCode
 import io.flow.test.utils.FlowPlaySpec
-import utils.DigitalElementSampleData
+import utils.TimezoneSampleData
 
 class TimezonesSpec extends FlowPlaySpec with TestHelpers {
 
@@ -28,12 +28,12 @@ class TimezonesSpec extends FlowPlaySpec with TestHelpers {
   }
 
   "GET /addresses for valid IPs" in {
-    val invalid = DigitalElementSampleData.IpTimezones.keys.toSeq.flatMap { ip =>
+    val invalid = TimezoneSampleData.IpTimezones.keys.toSeq.flatMap { ip =>
       val timezone = await(
         client.timezones.get(ip = Some(ip)),
       ).headOption.getOrElse(sys.error("Expected 1 timezone"))
 
-      val expected = DigitalElementSampleData.IpTimezones(ip)
+      val expected = TimezoneSampleData.IpTimezones(ip)
       if (expected == timezone) {
         None
       } else {

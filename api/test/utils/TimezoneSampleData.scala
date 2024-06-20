@@ -2,7 +2,7 @@ package utils
 
 import io.flow.reference.data.Timezones
 
-object DigitalElementSampleData {
+object TimezoneSampleData {
 
   val IpTimezones = Map(
     "37.187.99.146" -> Timezones.AfricaAlgiers,
