@@ -54,7 +54,7 @@ lazy val api = project
       "io.flow" %% "lib-healthcheck-play28" % "0.0.31",
       "org.scalacheck" %% "scalacheck" % "1.18.0" % "test",
       "io.flow" %% "lib-test-utils-play28" % "0.2.37" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.2.53",
+      "io.flow" %% "lib-usage-play28" % "0.2.54",
       "io.flow" %% "lib-log" % "0.2.23",
     ),
   )
