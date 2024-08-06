@@ -63,7 +63,7 @@ pipeline {
     stage("Build, Deploy, SBT test") {
       stages {
           stage('Build location images') {
-              // when { branch 'main' }
+              when { branch 'main' }
               stages {
                   stage('Build and push docker image release') {
                       stages {
@@ -80,8 +80,7 @@ pipeline {
                                                       serviceName: 'location',
                                                       platform: 'amd64',
                                                       dockerfilePath: '/Dockerfile',
-                                                     // semver: semversion
-                                                      semver: 'test'
+                                                      semver: semversion
                                                   )
                                               }
                                           }
@@ -104,8 +103,7 @@ pipeline {
                                                       serviceName: 'location',
                                                       platform: 'arm64',
                                                       dockerfilePath: '/Dockerfile',
-                                                     // semver: semversion
-                                                      semver: 'test'
+                                                      semver: semversion
                                                   )
                                               }
                                           }
@@ -117,8 +115,7 @@ pipeline {
                               steps {
                                   container('kaniko') {
                                       script {
-                                          // semver = VERSION.printable()
-                                          semver = 'test'
+                                          semver = VERSION.printable()
                                           String templateName = "location-ARCH:${semver}"
                                           String targetName = "location:${semver}"
                                           String orgName = "flowcommerce"
