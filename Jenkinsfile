@@ -60,53 +60,108 @@ pipeline {
       }
     }
 
-    stage("All in parallel") {
-      parallel {
-        stage('SBT Test') {
-          steps {
-            container('play') {
-              script {
-                try {
-                  sh 'sbt clean flowLint coverage test scalafmtSbtCheck scalafmtCheck doc'
-                  sh 'sbt coverageAggregate'
-                }
-                finally {
-                  postSbtReport()
-                }
-              }
-            }
-          }
-        }
-        stage('Build and deploy location') {
-          when { branch 'main' }
-          stages {
-
-            stage('Build and push docker image release') {
-              steps {
-                container('kaniko') {
-                  script {
-                    semver = VERSION.printable()
-                    
-                    sh """
-                      /kaniko/executor -f `pwd`/Dockerfile -c `pwd` \
-                      --snapshot-mode=redo --use-new-run  \
-                      --destination ${env.ORG}/location:$semver
-                    """
+    stage("Build, Deploy, SBT test") {
+      stages {
+          stage('Build location images') {
+              when { branch 'main' }
+              stages {
+                  stage('Build and push docker image release') {
+                      stages {
+                          stage('parallel image builds') {
+                              parallel {
+                                  // we are going reuse main pipeline agent to build location-api image 
+                                  stage("Build x86_64/amd64 location") {
+                                      steps {
+                                          container('kaniko') {
+                                              script {
+                                                  String semversion = VERSION.printable()
+                                                  imageBuild(
+                                                      orgName: 'flowcommerce',
+                                                      serviceName: 'location',
+                                                      platform: 'amd64',
+                                                      dockerfilePath: '/Dockerfile',
+                                                      semver: semversion
+                                                  )
+                                              }
+                                          }
+                                      }
+                                  }
+                                  // create new agent to avoid conflicts with the main pipeline agent
+                                  stage("Build arm64 location") {
+                                      agent {
+                                          kubernetes {
+                                              label 'location-arm64'
+                                              inheritFrom 'kaniko-slim-arm64'
+                                          }
+                                      }
+                                      steps {
+                                          container('kaniko') {
+                                              script {
+                                                  String semversion = VERSION.printable()
+                                                  imageBuild(
+                                                      orgName: 'flowcommerce',
+                                                      serviceName: 'location',
+                                                      platform: 'arm64',
+                                                      dockerfilePath: '/Dockerfile',
+                                                      semver: semversion
+                                                  )
+                                              }
+                                          }
+                                      }
+                                  }
+                              }
+                          }
+                          stage('run manifest tool for location') {
+                              steps {
+                                  container('kaniko') {
+                                      script {
+                                          semver = VERSION.printable()
+                                          String templateName = "location-ARCH:${semver}"
+                                          String targetName = "location:${semver}"
+                                          String orgName = "flowcommerce"
+                                          String jenkinsAgentArch = "amd64"
+                                          manifestTool(templateName, targetName, orgName, jenkinsAgentArch)
+                                      }
+                                  }
+                              }
+                          }
+                      }
                   }
-                }
               }
-            }
-            stage('Deploy location') {
-              steps {
+          }
+          stage('Deploy location services') {
+              when { branch 'main' }
+              stages {
+                  stage('Build location-api and location-jobs servcies') {
+                      parallel {
+                          stage('Deploy location Service') {
+                              steps {
+                                  script {
+                                      container('helm') {
+                                          new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
+                                      }
+                                  }
+                              }
+                          }
+                      }
+                  }
+              }
+          }
+          stage('SBT Test') {
+            steps {
+              container('play') {
                 script {
-                  container('helm') {
-                    new helmCommonDeploy().deploy('location', 'production', VERSION.printable(), 900)
+                  try {
+                    sh 'sbt clean flowLint coverage test scalafmtSbtCheck scalafmtCheck doc'
+                    sh 'sbt coverageAggregate'
+                  }
+                  finally {
+                    postSbtReport()
                   }
                 }
               }
             }
           }
-        }
       }
     }
   }
