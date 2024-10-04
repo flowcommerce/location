@@ -2,7 +2,7 @@ import play.sbt.PlayScala._
 
 name := "location"
 
-ThisBuild / scalaVersion := "2.13.14"
+ThisBuild / scalaVersion := "2.13.15"
 ThisBuild / javacOptions ++= Seq("-source", "17", "-target", "17")
 
 // Resolve scala-xml version dependency mismatch, see https://github.com/sbt/sbt/issues/7007
