@@ -14,9 +14,9 @@ image:
 
 resources:
   limits:
-    memory: "5632Mi"
+    memory: "7100Mi"
   requests:
-    memory: "5632Mi"
+    memory: "7100Mi"
     cpu: 1
 
 jvmOpts:
