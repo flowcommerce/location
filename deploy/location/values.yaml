@@ -15,12 +15,23 @@ image:
 resources:
   limits:
     memory: "7100Mi"
+    cpu: 2
   requests:
     memory: "7100Mi"
-    cpu: 1
+    cpu: 500m
 
 jvmOpts:
     memory: 6100m
+
+nodeSelector:
+  karpenter/role: workers
+tolerations:
+  - key: "role"
+    operator: "Equal"
+    value: "workers"
+    effect: "NoSchedule"
+topologySpreadConstraints:
+  schedule: "DoNotSchedule"
 
 deployments:
   live:
