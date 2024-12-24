@@ -37,7 +37,7 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.43.0",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.44.1",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
@@ -51,7 +51,7 @@ lazy val api = project
       "io.flow" %% "lib-reference-scala" % "0.3.57",
       "io.flow" %% "lib-s3-play28" % "0.4.15",
       "com.google.maps" % "google-maps-services" % "2.0.0",
-      "io.flow" %% "lib-healthcheck-play28" % "0.0.32",
+      "io.flow" %% "lib-healthcheck-play28" % "0.0.33",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
       "io.flow" %% "lib-test-utils-play28" % "0.2.42" % Test,
       "io.flow" %% "lib-usage-play28" % "0.2.63",
