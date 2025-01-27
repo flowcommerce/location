@@ -56,6 +56,7 @@ lazy val api = project
       "io.flow" %% "lib-test-utils-play28" % "0.2.43" % Test,
       "io.flow" %% "lib-usage-play28" % "0.2.64",
       "io.flow" %% "lib-log" % "0.2.29",
+      "io.flow" %% "lib-event-play28" % "1.2.47",
     ),
   )
 

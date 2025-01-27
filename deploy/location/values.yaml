@@ -8,7 +8,6 @@ service:
   
 team: "core"
 
-iamRole: arn:aws:iam::479720515435:role/ecsInstanceRole
 image:
   repository: flowcommerce/location
 
@@ -38,6 +37,8 @@ deployments:
     minReplicas: 3
     maxReplicas: 3
     maxUnavailable: 1
+    serviceAccountName: "flow-prod-eks-production-location-sa"
+    serviceAccountIamRole: "arn:aws:iam::479720515435:role/flow-prod-eks-production-role"
 
 rollout:
   enabled: true
