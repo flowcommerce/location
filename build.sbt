@@ -37,7 +37,7 @@ lazy val api = project
   .enablePlugins(JavaAppPackaging, JavaAgent)
   .settings(commonSettings: _*)
   .settings(
-    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.44.1",
+    javaAgents += "com.datadoghq" % "dd-java-agent" % "1.45.2",
     Test / javaOptions += "-Dconfig.file=conf/application.test.conf",
     Test / javaOptions ++= Seq(
       "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
@@ -54,8 +54,8 @@ lazy val api = project
       "io.flow" %% "lib-healthcheck-play28" % "0.0.33",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
       "io.flow" %% "lib-test-utils-play28" % "0.2.43" % Test,
-      "io.flow" %% "lib-usage-play28" % "0.2.64",
-      "io.flow" %% "lib-log" % "0.2.29",
+      "io.flow" %% "lib-usage-play28" % "0.2.65",
+      "io.flow" %% "lib-log" % "0.2.30",
     ),
   )
 
