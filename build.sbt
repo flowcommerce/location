@@ -46,16 +46,16 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play29" % "0.8.9",
-      "io.flow" %% "lib-metrics-play29" % "1.1.4",
+      "io.flow" %% "lib-play-play29" % "0.8.10",
+      "io.flow" %% "lib-metrics-play29" % "1.1.6",
       "io.flow" %% "lib-reference-scala" % "0.3.57",
-      "io.flow" %% "lib-s3-play29" % "0.4.17",
+      "io.flow" %% "lib-s3-play29" % "0.4.19",
       "com.google.maps" % "google-maps-services" % "2.0.0",
-      "io.flow" %% "lib-healthcheck-play29" % "0.0.33",
+      "io.flow" %% "lib-healthcheck-play29" % "0.0.34",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
-      "io.flow" %% "lib-test-utils-play29" % "0.2.43" % Test,
-      "io.flow" %% "lib-usage-play29" % "0.2.64",
-      "io.flow" %% "lib-log-play29" % "0.2.29",
+      "io.flow" %% "lib-test-utils-play29" % "0.2.45" % Test,
+      "io.flow" %% "lib-usage-play29" % "0.2.67",
+      "io.flow" %% "lib-log-play29" % "0.2.33",
     ),
   )
 
@@ -63,8 +63,6 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   scalafmtOnCompile := true,
   name ~= ("location-" + _),
   libraryDependencies ++= Seq(
-    "com.google.inject" % "guice" % "5.1.0",
-    "com.google.inject.extensions" % "guice-assistedinject" % "5.1.0",
     "org.projectlombok" % "lombok" % "1.18.36" % "provided",
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.10.6",
