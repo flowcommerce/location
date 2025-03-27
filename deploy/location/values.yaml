@@ -54,3 +54,4 @@ rollout:
 datadogMonitors:
 - type: trace.akka_http.request.errors-sum
 - type: trace.akka_http.request-avg
+- type: missing-metrics
