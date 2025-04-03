@@ -37,8 +37,7 @@ deployments:
     minReplicas: 3
     maxReplicas: 3
     maxUnavailable: 1
-    serviceAccountName: "flow-prod-eks-production-location-sa"
-    serviceAccountIamRole: "arn:aws:iam::479720515435:role/flow-prod-eks-production-role"
+    AWSRole: "arn:aws:iam::479720515435:role/flow-prod-eks-production-role"
 
 rollout:
   enabled: true
