@@ -46,16 +46,16 @@ lazy val api = project
     routesImport += "io.flow.location.v0.Bindables._",
     routesGenerator := InjectedRoutesGenerator,
     libraryDependencies ++= Seq(
-      "io.flow" %% "lib-play-play29" % "0.8.15",
-      "io.flow" %% "lib-metrics-play29" % "1.1.12",
-      "io.flow" %% "lib-reference-scala" % "0.3.62",
-      "io.flow" %% "lib-s3-play29" % "0.4.25",
+      "io.flow" %% "lib-play-play29" % "0.8.16",
+      "io.flow" %% "lib-metrics-play29" % "1.1.13",
+      "io.flow" %% "lib-reference-scala" % "0.3.63",
+      "io.flow" %% "lib-s3-play29" % "0.4.26",
       "com.google.maps" % "google-maps-services" % "2.0.0",
       "io.flow" %% "lib-healthcheck-play29" % "0.0.37",
       "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
-      "io.flow" %% "lib-test-utils-play29" % "0.2.49" % Test,
-      "io.flow" %% "lib-usage-play29" % "0.2.72",
-      "io.flow" %% "lib-log-play29" % "0.2.37",
+      "io.flow" %% "lib-test-utils-play29" % "0.2.51" % Test,
+      "io.flow" %% "lib-usage-play29" % "0.2.73",
+      "io.flow" %% "lib-log-play29" % "0.2.40",
     ),
   )
 
@@ -63,7 +63,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   scalafmtOnCompile := true,
   name ~= ("location-" + _),
   libraryDependencies ++= Seq(
-    "org.projectlombok" % "lombok" % "1.18.36" % "provided",
+    "org.projectlombok" % "lombok" % "1.18.38" % "provided",
     ws,
     "com.typesafe.play" %% "play-json-joda" % "2.10.6",
     "com.typesafe.play" %% "play-json" % "2.10.6",
