@@ -55,7 +55,6 @@ lazy val api = project
       "org.scalacheck" %% "scalacheck" % "1.18.1" % "test",
       "io.flow" %% "lib-test-utils-play29" % "0.2.51" % Test,
       "io.flow" %% "lib-usage-play29" % "0.2.73",
-      "io.flow" %% "lib-log-play29" % "0.2.40",
     ),
   )
 
@@ -65,8 +64,7 @@ lazy val commonSettings: Seq[Setting[_]] = Seq(
   libraryDependencies ++= Seq(
     "org.projectlombok" % "lombok" % "1.18.38" % "provided",
     ws,
-    "com.typesafe.play" %% "play-json-joda" % "2.10.6",
-    "com.typesafe.play" %% "play-json" % "2.10.6",
+    "io.flow" %% "lib-log-play29" % "0.2.40",
   ),
   Test / javaOptions ++= Seq(
     "--add-exports=java.base/sun.security.x509=ALL-UNNAMED",
