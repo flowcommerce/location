@@ -34,9 +34,11 @@ topologySpreadConstraints:
 
 deployments:
   live:
-    minReplicas: 3
+    minReplicas: 2
     maxReplicas: 3
-    maxUnavailable: 1
+    maxUnavailable: 0
+    averageUtilization: 70
+    autoscaleEnabled: true
     AWSRole: "arn:aws:iam::479720515435:role/flow-prod-eks-production-role"
 
 rollout:
