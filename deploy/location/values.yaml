@@ -36,7 +36,7 @@ deployments:
   live:
     minReplicas: 2
     maxReplicas: 3
-    maxUnavailable: 0
+    maxUnavailable: 1
     averageUtilization: 70
     autoscaleEnabled: true
     AWSRole: "arn:aws:iam::479720515435:role/flow-prod-eks-production-role"
